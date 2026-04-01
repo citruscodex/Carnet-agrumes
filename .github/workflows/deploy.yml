@@ -1,0 +1,22 @@
+name: Deploy to citruscodex.fr
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'index.html' ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: 62.210.237.49
+          username: root
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: index.html
+          target: /var/www/cca/
