@@ -13,6 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Agrumes"/>
+<link rel="manifest" href="manifest.json"/>
 <title>Carnet Agrumes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
@@ -23,7 +24,7 @@
   --cream:#faf5eb;--cream2:#f0e8d5;--cream3:#e8dcc8;
   --amber:#e8941a;--amber2:#fef3dc;--amber3:#c97d14;
   --brown:#7a4e2d;--bark:#c4965a;
-  --text:#1c1c1c;--muted:#606055;
+  --text:#1c1c1c;--muted:#504f4a;
   --red:#c0392b;--blue:#1565c0;
   --white:#fff;
   --terra:#8b4513;--terra2:#f5ece4;--terra3:#d4956a;
@@ -89,19 +90,24 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 .alo p{font-size:.75rem;color:var(--bark);font-family:'JetBrains Mono',monospace;letter-spacing:.08em;margin-top:4px;text-transform:uppercase}
 .acard{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:22px 20px;width:100%;max-width:380px;backdrop-filter:blur(10px);position:relative;z-index:1}
 .acard h2{font-size:1.12rem;color:var(--white);margin-bottom:4px}
-.acsub{font-size:.79rem;color:rgba(255,255,255,.48);margin-bottom:17px;line-height:1.5}
+.acsub{font-size:.79rem;color:rgba(255,255,255,.72);margin-bottom:17px;line-height:1.5}
 .afield{margin-bottom:12px}
 .afield label{display:block;font-size:.75rem;color:var(--bark);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:4px}
 .afield input{width:100%;padding:10px 12px;border:1px solid rgba(255,255,255,.13);border-radius:8px;background:rgba(255,255,255,.07);color:var(--white);font-size:.9rem;transition:border-color .2s}
 .afield input:focus{border-color:var(--bark)}
 .afield input::placeholder{color:rgba(255,255,255,.24)}
-.ahint{font-size:.75rem;color:rgba(255,255,255,.33);margin-top:3px;line-height:1.4}
+.ahint{font-size:.75rem;color:rgba(255,255,255,.55);margin-top:3px;line-height:1.4}
 .abtn{width:100%;padding:11px;border-radius:8px;font-size:.9rem;font-weight:700;background:var(--amber);color:var(--white);margin-top:5px;transition:background .15s}
 .abtn:active{background:var(--amber3)}
 .abtn:disabled{opacity:.4;cursor:not-allowed}
 .aerr{background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);color:#ffaaaa;border-radius:8px;padding:8px 12px;font-size:.77rem;margin-bottom:11px;line-height:1.5}
-.alink{text-align:center;margin-top:11px;font-size:.75rem;color:rgba(255,255,255,.33)}
+.alink{text-align:center;margin-top:11px;font-size:.75rem;color:rgba(255,255,255,.60)}
 .alink button{color:var(--bark);font-size:.75rem;text-decoration:underline}
+/* ── Skeleton screens ─────────────────────────────────── */
+@keyframes sk-shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+.sk-block{border-radius:8px;background:linear-gradient(90deg,var(--cream2) 25%,var(--cream3) 50%,var(--cream2) 75%);background-size:800px 100%;animation:sk-shimmer 1.4s infinite linear}
+.sk-card{background:var(--white);border-radius:14px;border:1px solid var(--cream3);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(22,45,31,.09)}
+.sk-stat{background:var(--white);border-radius:12px;padding:14px 12px;border:1px solid var(--cream3);display:flex;flex-direction:column;gap:8px}
 .sdots{display:flex;gap:7px;justify-content:center;margin-bottom:20px}
 .sdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.16);transition:background .3s}
 .sdot.active{background:var(--amber)}.sdot.done{background:rgba(255,255,255,.44)}
@@ -117,7 +123,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 #tb-act{display:flex;gap:7px;align-items:center}
 #main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #navbar{background:var(--white);border-top:1px solid var(--cream3);display:flex;flex-shrink:0;box-shadow:0 -1px 5px rgba(0,0,0,.05);overflow:visible;position:relative}
-.navi{flex:1;display:flex;flex-direction:column;align-items:center;padding:7px 2px 6px;gap:2px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;transition:color .15s;border-top:2px solid transparent}
+.navi{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 6px 8px;gap:2px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;transition:color .15s;border-top:2px solid transparent;background:none;border-bottom:none;border-left:none;border-right:none;cursor:pointer;min-width:44px;min-height:44px}
 .navi.active{color:var(--text-accent);border-top-color:var(--amber)}
 .navi .ni{font-size:1.15rem}
 #nv-add{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:64px;flex:none;display:flex;flex-direction:column;align-items:center;padding-bottom:5px;border-top:none;z-index:10}
@@ -1262,14 +1268,14 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
       <button class="btn btn-a" onclick="openBulkAction()">Appliquer une action</button>
     </div>
   </div>
-  <div id="navbar">
-    <div class="navi active" id="nv-dashboard" onclick="showPage('dashboard')"><span class="ni">📊</span><span class="navi-lbl" data-t="nav.dashboard">Tableau</span></div>
-    <div class="navi" id="nv-collection" onclick="showPage('collection')"><span class="ni">🍋</span><span class="navi-lbl" data-t="nav.collection">Collection</span></div>
-    <div class="navi" id="nv-fert" onclick="showPage('fert')"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></div>
-    <div class="navi" id="nv-community" onclick="showPage('community')"><span class="ni">🌍</span><span class="navi-lbl">Communauté</span></div>
-    <div class="navi" id="nv-settings" onclick="showPage('settings')"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></div>
-    <div id="nv-add" onclick="openAddPlant()"><span class="ni">＋</span><span class="navi-lbl" data-t="nav.add">Ajouter</span></div>
-  </div>
+  <nav id="navbar" role="tablist" aria-label="Navigation principale">
+    <button class="navi active" id="nv-dashboard" role="tab" aria-selected="true" onclick="showPage('dashboard')"><span class="ni">📊</span><span class="navi-lbl" data-t="nav.dashboard">Tableau</span></button>
+    <button class="navi" id="nv-collection" role="tab" aria-selected="false" onclick="showPage('collection')"><span class="ni">🍋</span><span class="navi-lbl" data-t="nav.collection">Collection</span></button>
+    <button class="navi" id="nv-fert" role="tab" aria-selected="false" onclick="showPage('fert')"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></button>
+    <button class="navi" id="nv-community" role="tab" aria-selected="false" onclick="showPage('community')"><span class="ni">🌍</span><span class="navi-lbl" data-t="nav.community">Communauté</span></button>
+    <button class="navi" id="nv-settings" role="tab" aria-selected="false" onclick="showPage('settings')"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></button>
+    <button id="nv-add" aria-label="Ajouter une plante" onclick="openAddPlant()"><span class="ni">＋</span><span class="navi-lbl" data-t="nav.add">Ajouter</span></button>
+  </nav>
 </div>
 <div id="toast"></div>
 <script>
@@ -1759,7 +1765,7 @@ const AUDIT_FIELDS={
 const LANGS={
 fr:{
   lang:'fr',locale:'fr-FR',dir:'ltr',
-  nav:{dashboard:'Accueil',collection:'Collection',add:'Ajouter',calendar:'Calendrier',eco:'Budget',profile:'Profil',pro:'Pro',nursery:'Pépinière',settings:'Réglages'},
+  nav:{dashboard:'Accueil',collection:'Collection',add:'Ajouter',calendar:'Calendrier',eco:'Budget',profile:'Profil',pro:'Pro',nursery:'Pépinière',settings:'Réglages',community:'Communauté'},
   status:{excellent:'Excellent',bon:'Bon',vigilance:'Vigilance',traitement:'En traitement',critique:'Critique'},
   et:{observation:'Observation',arrosage:'Arrosage',fertilisation:'Fertilisation',rempotage:'Rempotage',taille:'Taille',traitement:'Traitement phyto',floraison:'Floraison',fructification:'Fructification',récolte:'Récolte',hivernage:'Rentrée hivernage',sortie:'Sortie hivernage',protection:'Protection hivernale',modification:'Modification fiche',greffage:'Greffage','dégâts_gel':'Dégâts du gel'},
   lo_pot:['intérieur','orangerie','véranda','serre','extérieur'],
@@ -2509,7 +2515,7 @@ fr:{
 },
 en:{
   lang:'en',locale:'en-GB',dir:'ltr',
-  nav:{dashboard:'Dashboard',collection:'Collection',add:'Add',calendar:'Calendar',eco:'Budget',profile:'Profile',pro:'Pro',nursery:'Nursery',settings:'Settings'},
+  nav:{dashboard:'Dashboard',collection:'Collection',add:'Add',calendar:'Calendar',eco:'Budget',profile:'Profile',pro:'Pro',nursery:'Nursery',settings:'Settings',community:'Community'},
   status:{excellent:'Excellent',bon:'Good',vigilance:'Monitor',traitement:'In treatment',critique:'Critical'},
   et:{observation:'Observation',arrosage:'Watering',fertilisation:'Fertilisation',rempotage:'Repotting',taille:'Pruning',traitement:'Phyto treatment',floraison:'Flowering',fructification:'Fruiting',récolte:'Harvest',hivernage:'Bring inside',sortie:'Bring outside',protection:'Winter cover',modification:'Record edit',greffage:'Grafting','dégâts_gel':'Frost damage'},
   lo_pot:['indoor','orangery','veranda','greenhouse','outdoor'],
@@ -3390,7 +3396,7 @@ en:{
 },
 it:{
   lang:'it',locale:'it-IT',dir:'ltr',
-  nav:{dashboard:'Cruscotto',collection:'Collezione',add:'Aggiungere',calendar:'Calendario',eco:'Budget',profile:'Profilo',pro:'Pro',nursery:'Vivaio',settings:'Impostazioni'},
+  nav:{dashboard:'Cruscotto',collection:'Collezione',add:'Aggiungere',calendar:'Calendario',eco:'Budget',profile:'Profilo',pro:'Pro',nursery:'Vivaio',settings:'Impostazioni',community:'Comunità'},
   status:{excellent:'Eccellente',bon:'Buono',vigilance:'Vigilanza',traitement:'In trattamento',critique:'Critico'},
   et:{observation:'Osservazione',arrosage:'Irrigazione',fertilisation:'Fertilizzazione',rempotage:'Rinvaso',taille:'Potatura',traitement:'Trattamento fitosanitario',floraison:'Fioritura',fructification:'Fruttificazione',récolte:'Raccolta',hivernage:'Ricovero invernale',sortie:'Uscita invernale',protection:'Protezione invernale',modification:'Modifica scheda',greffage:'Innesto','dégâts_gel':'Danni da gelo'},
   lo_pot:['interno','orangerie','veranda','serra','esterno'],
@@ -4206,7 +4212,7 @@ it:{
 },
 es:{
   lang:'es',locale:'es-ES',dir:'ltr',
-  nav:{dashboard:'Inicio',collection:'Colección',add:'Añadir',calendar:'Calendario',eco:'Budget',profile:'Perfil',pro:'Pro',nursery:'Vivero',settings:'Ajustes'},
+  nav:{dashboard:'Inicio',collection:'Colección',add:'Añadir',calendar:'Calendario',eco:'Budget',profile:'Perfil',pro:'Pro',nursery:'Vivero',settings:'Ajustes',community:'Comunidad'},
   status:{excellent:'Excelente',bon:'Bueno',vigilance:'Vigilancia',traitement:'En tratamiento',critique:'Crítico'},
   et:{observation:'Observación',arrosage:'Riego',fertilisation:'Fertilización',rempotage:'Trasplante',taille:'Poda',traitement:'Tratamiento fitosanitario',floraison:'Floración',fructification:'Fructificación',récolte:'Cosecha',hivernage:'Entrada al invernadero',sortie:'Salida al exterior',protection:'Protección invernal',modification:'Edición ficha',greffage:'Injerto','dégâts_gel':'Daños por helada'},
   lo_pot:['interior','orangería','veranda','invernadero','exterior'],
@@ -5082,7 +5088,7 @@ es:{
 },
 pt:{
   lang:'pt',locale:'pt-PT',dir:'ltr',
-  nav:{dashboard:'Painel',collection:'Coleção',add:'Adicionar',calendar:'Calendário',eco:'Budget',profile:'Perfil',pro:'Pro',nursery:'Viveiro',settings:'Definições'},
+  nav:{dashboard:'Painel',collection:'Coleção',add:'Adicionar',calendar:'Calendário',eco:'Budget',profile:'Perfil',pro:'Pro',nursery:'Viveiro',settings:'Definições',community:'Comunidade'},
   status:{excellent:'Excelente',bon:'Bom',vigilance:'Vigilância',traitement:'Em tratamento',critique:'Crítico'},
   et:{observation:'Observação',arrosage:'Rega',fertilisation:'Fertilização',rempotage:'Repicagem',taille:'Poda',traitement:'Tratamento fitossanitário',floraison:'Floração',fructification:'Frutificação',récolte:'Colheita',hivernage:'Entrada invernal',sortie:'Saída invernal',protection:'Proteção invernal',modification:'Edição ficha',greffage:'Enxertia','dégâts_gel':'Danos por geada'},
   lo_pot:['interior','laranjal coberto','varanda','estufa','exterior'],
@@ -8675,12 +8681,24 @@ let selMode=false,selSet=new Set();
 
 let sStep=0,sD={};
 function startSetup(){document.getElementById('sc-setup').style.display='block';renderSS()}
+async function launchDemo(){
+  const hash=await sha256('demo-agrumes');
+  const cfg={pwdHash:hash,recoveryEmail:'',isDemoMode:true,profile:{name:'Visiteur',loc:'France',bio:'Mode découverte — données de démonstration.',since:'',notes:'',profileType:'collectionneur'},createdAt:todayStr()};
+  setCfg(cfg);
+  // Charger les données démo (INIT) si aucune donnée locale n'existe
+  if(!localStorage.getItem(currentDataKey())){
+    plants=JSON.parse(JSON.stringify(INIT));saveData();
+  }else{loadData();}
+  document.getElementById('sc-setup').style.display='none';
+  document.getElementById('sc-login').style.display='none';
+  launchApp();
+}
 function renderSS(){
   [0,1,2,3].forEach(i=>{const d=document.getElementById('sd'+i);if(d)d.className='sdot'+(i<sStep?' done':i===sStep?' active':'')});
   const c=document.getElementById('setup-card');
   if(sStep===0)c.innerHTML=`<h2>${T('misc.setupWelcomeTitle')}</h2><p class="acsub">${T('misc.setupWelcomeSub')}</p><div id="se" class="aerr" style="display:none"></div><div class="afield"><label>${T('misc.setupNamePh')}</label><input id="s-name" placeholder="ex : Jean Dupont"/></div><div class="afield"><label>${T('misc.setupEmailPh')} <span style="font-size:.75rem;color:rgba(255,255,255,.5)">— facultatif</span></label><input type="email" id="s-email" placeholder="ex : jean@example.com"/><span class="ahint">Permet de confirmer votre identité en cas de mot de passe oublié. Stocké localement uniquement.</span></div><div class="afield"><label>Localisation</label><input id="s-loc" placeholder="ex : Bordeaux, Gironde"/></div><div class="afield"><label>Description courte</label><input id="s-bio" placeholder="ex : Passionné d'agrumes depuis 2015"/></div><div class="afield"><label style="margin-bottom:8px;display:block">Type de profil</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="s-ptype-grid">
 ${['collectionneur'].map(t=>`<div id="spt-${t}" onclick="sD.profileType='${t}';[...document.querySelectorAll('[id^=spt-]')].forEach(d=>{d.style.background=d.id==='spt-${t}'?'rgba(232,148,26,.22)':'rgba(255,255,255,.06)';d.style.borderColor=d.id==='spt-${t}'?'var(--amber)':'rgba(255,255,255,.15)'})" style="cursor:pointer;padding:9px;border-radius:8px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);transition:all .15s"><div style="font-size:.8rem;font-weight:600;color:var(--white)">${{collectionneur:'🍋 Collectionneur',pepinieriste:'🌱 Pépiniériste',arboriculteur:'🌳 Arboriculteur',conservatoire:'🏛 Conservatoire'}[t]}</div><div style="font-size:.75rem;color:rgba(255,255,255,.45);margin-top:2px;line-height:1.3">${{collectionneur:'Passion & collection privée',pepinieriste:'Production & vente de plants',arboriculteur:'Exploitation professionnelle',conservatoire:'Institution & collection publique'}[t]}</div></div>`).join('')}
-</div></div><button class="abtn" onclick="nsStep()">Continuer →</button>`;
+</div></div><button class="abtn" onclick="nsStep()">Continuer →</button><div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.10);text-align:center"><div style="font-size:.75rem;color:rgba(255,255,255,.55);margin-bottom:9px">Vous voulez juste explorer avant de créer votre compte&nbsp;?</div><button onclick="launchDemo()" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.80);font-size:.88rem;cursor:pointer;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='transparent'">🍊 Découvrir l'app avec des données démo →</button></div>`;
   else if(sStep===1)c.innerHTML=`<h2>Mot de passe 🔒</h2><p class="acsub">${T('misc.setupPwdSub')}</p><div id="se" class="aerr" style="display:none"></div><div class="afield"><label>Mot de passe</label>${pwdInput("s-p1","6 caractères minimum","new-password")}</div><div class="afield"><label>Confirmer</label>${pwdInput("s-p2","Répétez","new-password")}</div><button class="abtn" onclick="nsStep()">Continuer →</button><button onclick="sStep=0;renderSS()" style="display:block;margin-top:10px;color:var(--bark);font-size:.75rem;text-decoration:underline">← Retour</button>`;
   else if(sStep===2)c.innerHTML=`<h2>${T('misc.setupGHTitle')}</h2><p class="acsub">${T('misc.setupGHSub')} Vous pouvez ignorer cette étape et configurer plus tard dans le Profil.</p><div id="se" class="aerr" style="display:none"></div><div class="afield"><label>Token (ghp_...) <span style="font-size:.75rem;color:rgba(255,255,255,.5)">— facultatif</span></label>${pwdInput("s-tk","Laisser vide pour passer cette étape","off")}<span class="ahint">github.com → Settings → Developer settings → Personal access tokens → scope : repo</span></div><div class="afield"><label>Pseudo GitHub</label><input id="s-us" placeholder="ex : Citruscodex"/></div><div class="afield"><label>${T('misc.setupRepoPh')}</label><input id="s-rp" placeholder="ex : Carnet-agrumes"/></div><button class="abtn" onclick="nsStep()">Continuer →</button><button onclick="sStep=3;sD.token='';sD.ghUser='';sD.ghRepo='';renderSS()" style="display:block;margin-top:8px;background:rgba(255,255,255,.12);color:rgba(255,255,255,.7);border:none;cursor:pointer;font-size:.8rem;padding:8px 16px;border-radius:8px;width:100%;text-align:center">Passer cette étape →</button><button onclick="sStep=1;renderSS()" style="display:block;margin-top:6px;color:var(--bark);font-size:.75rem;text-decoration:underline">← Retour</button>`;
   else c.innerHTML=`<h2>${T('misc.setupDoneTitle')}</h2><p class="acsub">${T('misc.setupDoneSub')}</p><div id="se" class="aerr" style="display:none"></div><div style="background:rgba(255,255,255,.08);border-radius:10px;padding:12px 14px;margin-bottom:16px"><div style="font-size:.82rem;color:var(--white);margin-bottom:6px">🌿 ${esc(sD.name||'—')}</div><div style="font-size:.75rem;color:rgba(255,255,255,.55)">📍 ${esc(sD.loc||'—')}</div><div style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:2px">${{collectionneur:'🍋 Collectionneur',pepinieriste:'🌱 Pépiniériste',arboriculteur:'🌳 Arboriculteur',conservatoire:'🏛 Conservatoire'}[sD.profileType||'collectionneur']}</div><div style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:2px">${T('misc.setupPwdOk')}</div><div style="font-size:.75rem;color:rgba(255,255,255,.55);margin-top:2px">📁 ${esc(sD.ghUser||'—')} / ${esc(sD.ghRepo||'—')}</div></div><button class="abtn" onclick="finalSetup()">${T('misc.setupDoneOpen')}</button><button onclick="sStep=2;renderSS()" style="display:block;margin-top:10px;color:var(--bark);font-size:.75rem;text-decoration:underline">← Retour</button>`;
@@ -8779,6 +8797,15 @@ function togglePwdVis(id){
   const btn=el.parentElement?.querySelector('.pwd-eye');
   if(btn)btn.textContent=el.type==='password'?'👁':'🙈';
 }
+function _skeletonDash(){
+  const card=`<div class="sk-card"><div class="sk-block" style="height:80px;border-radius:14px 14px 0 0"></div><div style="padding:10px 12px;display:flex;flex-direction:column;gap:7px"><div class="sk-block" style="height:13px;width:70%;border-radius:6px"></div><div class="sk-block" style="height:11px;width:45%;border-radius:6px"></div><div class="sk-block" style="height:10px;width:55%;border-radius:6px;margin-top:4px"></div></div></div>`;
+  const stat=`<div class="sk-stat"><div class="sk-block" style="height:11px;width:50%;border-radius:6px"></div><div class="sk-block" style="height:22px;width:35%;border-radius:6px"></div></div>`;
+  return `<div class="page" style="padding:14px;display:flex;flex-direction:column;gap:12px">
+<div class="sk-block" style="height:88px;border-radius:14px"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${stat}${stat}${stat}${stat}</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${card}${card}${card}${card}</div>
+</div>`;
+}
 function launchApp(){
   const cfg=getCfg();
   if(!cfg.lang){
@@ -8787,8 +8814,13 @@ function launchApp(){
     const detected=LANGS.includes(nav)?nav:'fr';
     setCfg({...cfg,lang:detected});
   }
-  initI18n();applyI18nDOM();applyDarkMode();document.getElementById('app').style.display='flex';loadFerts();loadAmendments();loadEpandage();loadSaisonniers();loadEco();loadStocks();loadLots();loadNursery();loadClients();loadDevis();loadEau();loadExchanges();loadWishlist();loadSortis();loadLight();loadCertifs();loadYield();loadSuppliers();vergerData=getVergerData();initPushNotifications();startIoTPolling();_updateNavbarForProfile();showPage('dashboard')}
-function showPage(p){if(p==='nursery')p='pro';page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>document.getElementById('nv-'+n)?.classList.toggle('active',n===p));document.getElementById('nv-add')?.classList.remove('active');_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
+  initI18n();applyI18nDOM();applyDarkMode();
+  const _appEl=document.getElementById('app');
+  _appEl.style.display='flex';
+  document.getElementById('main').innerHTML=_skeletonDash();
+  loadFerts();loadAmendments();loadEpandage();loadSaisonniers();loadEco();loadStocks();loadLots();loadNursery();loadClients();loadDevis();loadEau();loadExchanges();loadWishlist();loadSortis();loadLight();loadCertifs();loadYield();loadSuppliers();vergerData=getVergerData();initPushNotifications();startIoTPolling();_updateNavbarForProfile();
+  requestAnimationFrame(()=>showPage('dashboard'));}
+function showPage(p){if(p==='nursery')p='pro';page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});document.getElementById('nv-add')?.classList.remove('active');_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
 function _updateNavbarForProfile(){
   const pType=(getProfile().profileType)||'collectionneur';
   const isPepin=pType==='pepinieriste';
@@ -13530,6 +13562,7 @@ function openAddEvent(pid){
   <div class="ff"><label>Date</label><input id="ev-dt" type="date" value="${todayStr()}" oninput="_checkDARInForm()"/></div>
   <div class="ff"><label>Type</label><select id="ev-tp" onchange="onEvTypeChange()">${typeOpts}</select></div>
 </div>
+<div id="ev-details-header" style="display:none;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'JetBrains Mono',monospace;margin:10px 0 6px;padding-top:10px;border-top:1px solid var(--cream3)">Détails</div>
 <div class="fert-sel-wrap" id="fert-sel-wrap">
   <div class="fert-sel-title">🌱 Profil d'engrais utilisé</div>
   <select id="ev-fert" onchange="onFertSelect()" style="width:100%;padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;margin-bottom:8px">${fertOpts}</select>
@@ -13758,7 +13791,8 @@ function openAddEvent(pid){
     </div>
   </div>
 </div>
-<div class="ff"><label>Description / observations *</label><textarea id="ev-ds" placeholder="Observations, conditions, résultats attendus…" style="min-height:80px"></textarea></div>
+<div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-family:'JetBrains Mono',monospace;margin:10px 0 6px;padding-top:10px;border-top:1px solid var(--cream3)">Notes et observations *</div>
+<div class="ff"><textarea id="ev-ds" placeholder="Observations, conditions, résultats attendus…" style="min-height:80px"></textarea></div>
 <div class="fact">
   <button class="btn" style="background:var(--cream3);color:var(--text)" onclick="closeModal()">Annuler</button>
   <button class="btn btn-a" onclick="submitEV('${pid}')">${T('misc.evConsign')}</button>
@@ -13777,6 +13811,9 @@ function openEventForm(pid, defaultType){
 
 function onEvTypeChange(){
   const type=document.getElementById('ev-tp')?.value;
+  const detailsHdr=document.getElementById('ev-details-header');
+  const hasDetails=['fertilisation','taille','rempotage','récolte','traitement','greffage'].includes(type);
+  if(detailsHdr)detailsHdr.style.display=hasDetails?'block':'none';
   document.getElementById('fert-sel-wrap')?.classList.toggle('show',type==='fertilisation');
   const tw=document.getElementById('taille-wrap'),rw=document.getElementById('rempotage-wrap'),rcw=document.getElementById('recolte-wrap');
   if(tw)tw.style.display=type==='taille'?'block':'none';

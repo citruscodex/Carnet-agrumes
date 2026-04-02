@@ -1,0 +1,45 @@
+{
+  "name": "Carnet de Collection Agrumes",
+  "short_name": "Agrumes",
+  "description": "Gérez votre collection d'agrumes : soins, événements, diagnostic phytosanitaire.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf5eb",
+  "theme_color": "#162d1f",
+  "lang": "fr",
+  "dir": "ltr",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Ma collection",
+      "short_name": "Collection",
+      "description": "Accéder directement à la liste des agrumes",
+      "url": "./?page=collection",
+      "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    },
+    {
+      "name": "Ajouter un agrume",
+      "short_name": "Ajouter",
+      "description": "Enregistrer un nouvel agrume",
+      "url": "./?action=add",
+      "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]
+    }
+  ]
+}
