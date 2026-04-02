@@ -8822,10 +8822,8 @@ function launchApp(){
   requestAnimationFrame(()=>showPage('dashboard'));}
 function showPage(p){if(p==='nursery')p='pro';page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});document.getElementById('nv-add')?.classList.remove('active');_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
 function _updateNavbarForProfile(){
-  const pType=(getProfile().profileType)||'collectionneur';
-  const isPepin=pType==='pepinieriste';
   const addEl=document.getElementById('nv-add');
-  if(addEl) addEl.style.display=isPepin?'none':'';
+  if(addEl) addEl.style.display=(page==='collection')?'':'none';
   const settingsEl=document.getElementById('nv-settings');
   if(settingsEl) settingsEl.style.display='';
 }
