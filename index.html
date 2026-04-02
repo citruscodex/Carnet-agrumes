@@ -122,12 +122,12 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 #tb-logo:active{transform:scale(.88)}
 #tb-act{display:flex;gap:7px;align-items:center}
 #main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-#navbar{background:var(--white);border-top:1px solid var(--cream3);display:flex;flex-shrink:0;box-shadow:0 -1px 5px rgba(0,0,0,.05);overflow:visible;position:relative}
+#navbar{background:var(--white);border-top:1px solid var(--cream3);display:flex;flex-shrink:0;box-shadow:0 -1px 5px rgba(0,0,0,.05);overflow:visible;position:relative;padding-top:12px}
 .navi{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 6px 8px;gap:2px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;transition:color .15s;border-top:2px solid transparent;background:none;border-bottom:none;border-left:none;border-right:none;cursor:pointer;min-width:44px;min-height:44px}
 .navi.active{color:var(--text-accent);border-top-color:var(--amber)}
 .navi .ni{font-size:1.15rem}
 #nv-add{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:64px;flex:none;display:flex;flex-direction:column;align-items:center;padding-bottom:5px;border-top:none;z-index:10}
-#nv-add .ni{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--amber);color:#fff;font-size:1.4rem;margin-top:-22px;box-shadow:0 4px 14px rgba(232,148,26,.55);transition:transform .15s,box-shadow .15s;line-height:1}
+#nv-add .ni{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--amber);color:#fff;font-size:1.4rem;margin-top:-34px;box-shadow:0 4px 14px rgba(232,148,26,.55);transition:transform .15s,box-shadow .15s;line-height:1}
 #nv-add:active .ni{transform:scale(.88);box-shadow:0 1px 5px rgba(232,148,26,.3)}
 #nv-add .navi-lbl{color:var(--amber);font-weight:700;font-size:.75rem;margin-top:2px}
 
@@ -1083,7 +1083,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 .seas-ev-am{font-size:.75rem;padding:1px 5px;border-radius:8px;background:rgba(139,69,19,.1);color:var(--terra);font-family:'JetBrains Mono',monospace;flex-shrink:0}
 
 .amend-badge{font-size:.75rem;padding:2px 6px;border-radius:10px;background:rgba(139,69,19,.1);color:var(--terra);font-family:'JetBrains Mono',monospace;font-weight:600;display:inline-block}
-#toast{position:fixed;bottom:130px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g1);color:var(--white);padding:8px 16px;border-radius:26px;font-size:.78rem;opacity:0;pointer-events:none;transition:all .27s;z-index:470;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.28)}
+#toast{position:fixed;bottom:142px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g1);color:var(--white);padding:8px 16px;border-radius:26px;font-size:.78rem;opacity:0;pointer-events:none;transition:all .27s;z-index:470;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.28)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.err{background:var(--red)}
 
@@ -1221,6 +1221,13 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 .role-moderator{background:rgba(21,101,192,.12);color:#1565c0}
 .role-editor{background:rgba(45,90,61,.12);color:var(--text-accent)}
 .role-member{background:var(--cream2);color:var(--muted)}
+@media(min-width:768px){
+  #app{max-width:480px;margin:0 auto;box-shadow:0 0 40px rgba(0,0,0,.12)}
+  #topbar{max-width:480px;left:50%;transform:translateX(-50%);position:fixed;top:0;width:100%;z-index:20}
+  #main{margin-top:52px;margin-bottom:72px}
+  #navbar{max-width:480px;left:50%;transform:translateX(-50%);position:fixed;bottom:0;width:100%}
+  #toast{bottom:154px}
+}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -1809,7 +1816,7 @@ fr:{
     profWaterPh:'ex : eau de pluie',
     wxLoading:'🌍 Localisation en cours…',wxDenied:'Autorisez la localisation ou entrez une ville.',
     wxCityPh:'ex : Lyon, Bordeaux…',wxError:'⚠ Impossible de charger les prévisions.',
-    wxRetry:'Réessayer',wxRefresh:'↺ Actualiser',wxChange:'📍 Changer',
+    wxRetry:'Réessayer',wxRefresh:'↺ Actualiser',wxChange:'📍 Changer',wxLocate:'📍 Localiser pour la météo',commOfflineTitle:'Communauté hors ligne',commOfflineSub:'Le serveur communautaire n\'est pas joignable. Vérifiez votre connexion ou réessayez plus tard.',commRetry:'↺ Réessayer',calEmptyAdd:'+ Ajouter un événement',calEmptyPrev:'← Mois précédent',calEmptyNext:'Mois suivant →',
     wxSunrise:'Lever',wxSunset:'Coucher',wxDayLen:'Durée du jour',
     wxHumLabel:'Humidité relative · heure actuelle',wxHumNext:'Prochaines heures',
     wxWindFrom:'Rafales jusqu\'à',wxWindDom:'Direction dominante :',
@@ -2594,7 +2601,7 @@ en:{
     wxDenied:"Allow location or enter a city.",
     wxCityPh:"e.g. London, Madrid…",
     wxError:"⚠ Unable to load forecast.",
-    wxRetry:"Retry",
+    wxRetry:"Retry",wxLocate:"📍 Locate for weather",commOfflineTitle:"Community offline",commOfflineSub:"The community server is unreachable. Check your connection or try again later.",commRetry:"↺ Retry",calEmptyAdd:"+ Add an event",calEmptyPrev:"← Previous month",calEmptyNext:"Next month →",
     wxRefresh:"↺ Refresh",
     wxChange:"📍 Change",
     wxSunrise:"Sunrise",
@@ -3475,7 +3482,7 @@ it:{
     wxDenied:"Autorizza la posizione o inserisci una città.",
     wxCityPh:"es: Roma, Milano…",
     wxError:"⚠ Impossibile caricare le previsioni.",
-    wxRetry:"Riprova",
+    wxRetry:"Riprova",wxLocate:"📍 Localizza per il meteo",commOfflineTitle:"Comunità offline",commOfflineSub:"Il server della comunità non è raggiungibile. Controlla la connessione o riprova più tardi.",commRetry:"↺ Riprova",calEmptyAdd:"+ Aggiungi un evento",calEmptyPrev:"← Mese precedente",calEmptyNext:"Mese successivo →",
     wxRefresh:"↺ Aggiorna",
     wxChange:"📍 Cambia",
     wxSunrise:"Alba",
@@ -4291,7 +4298,7 @@ es:{
     wxDenied:"Permite la ubicación o escribe una ciudad.",
     wxCityPh:"ej: Madrid, Barcelona…",
     wxError:"⚠ No se pueden cargar las previsiones.",
-    wxRetry:"Reintentar",
+    wxRetry:"Reintentar",wxLocate:"📍 Localizar para el tiempo",commOfflineTitle:"Comunidad sin conexión",commOfflineSub:"El servidor de la comunidad no está disponible. Comprueba tu conexión o inténtalo más tarde.",commRetry:"↺ Reintentar",calEmptyAdd:"+ Añadir un evento",calEmptyPrev:"← Mes anterior",calEmptyNext:"Mes siguiente →",
     wxRefresh:"↺ Actualizar",
     wxChange:"📍 Cambiar",
     wxSunrise:"Salida sol",
@@ -5167,7 +5174,7 @@ pt:{
     wxDenied:"Permita a localização ou escreva uma cidade.",
     wxCityPh:"ex: Lisboa, Porto…",
     wxError:"⚠ Impossível carregar as previsões.",
-    wxRetry:"Tentar de novo",
+    wxRetry:"Tentar de novo",wxLocate:"📍 Localizar para o tempo",commOfflineTitle:"Comunidade offline",commOfflineSub:"O servidor da comunidade não está acessível. Verifique a sua ligação ou tente mais tarde.",commRetry:"↺ Tentar novamente",calEmptyAdd:"+ Adicionar um evento",calEmptyPrev:"← Mês anterior",calEmptyNext:"Mês seguinte →",
     wxRefresh:"↺ Atualizar",
     wxChange:"📍 Mudar",
     wxSunrise:"Nascer do sol",
@@ -7493,19 +7500,21 @@ function initWeather(){
     const coordsCached=sessionStorage.getItem('wx_coords');
     if(coordsCached){WX.coords=JSON.parse(coordsCached);WX.city=sessionStorage.getItem('wx_city')||'';fetchWeather();return}
   }catch{}
-  if(navigator.geolocation){
-    WX.loading=true;updateWxWidget();
-    navigator.geolocation.getCurrentPosition(
-      pos=>{
-        WX.coords={lat:pos.coords.latitude,lon:pos.coords.longitude};
-        sessionStorage.setItem('wx_coords',JSON.stringify(WX.coords));
-        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${WX.coords.lat}&lon=${WX.coords.lon}&format=json&accept-language=fr`)
-          .then(r=>r.json()).then(d=>{WX.city=d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||'';sessionStorage.setItem('wx_city',WX.city);updateWxWidget()}).catch(()=>{});
-        fetchWeather();
-      },
-      ()=>{WX.loading=false;WX.err='denied';updateWxWidget();}
-    );
-  }else{WX.err='denied';updateWxWidget();}
+  WX.err='no_location';updateWxWidget();
+}
+function _wxRequestGeo(){
+  if(!navigator.geolocation){WX.err='denied';updateWxWidget();return;}
+  WX.loading=true;WX.err=null;updateWxWidget();
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      WX.coords={lat:pos.coords.latitude,lon:pos.coords.longitude};
+      sessionStorage.setItem('wx_coords',JSON.stringify(WX.coords));
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${WX.coords.lat}&lon=${WX.coords.lon}&format=json&accept-language=fr`)
+        .then(r=>r.json()).then(d=>{WX.city=d.address?.city||d.address?.town||d.address?.village||d.address?.municipality||'';sessionStorage.setItem('wx_city',WX.city);updateWxWidget()}).catch(()=>{});
+      fetchWeather();
+    },
+    ()=>{WX.loading=false;WX.err='denied';updateWxWidget();}
+  );
 }
 
 async function fetchWeather(){
@@ -7697,6 +7706,7 @@ function setGelThreshold(v){const g=getGelAlert();setGelAlert(g.enabled,parseFlo
 function updateWxWidget(){const el=document.getElementById('wx-inner');if(el)el.innerHTML=renderWxInner()}
 
 function renderWxInner(){
+  if(WX.err==='no_location')return`<div class="wx-perm"><button class="btn btn-p btn-sm" style="width:100%;margin-bottom:8px" onclick="_wxRequestGeo()">${T('misc.wxLocate')}</button><div class="wx-city-row"><input id="wx-city-inp" class="wx-city-inp" placeholder="${T('misc.wxCityPh')}" onkeydown="if(event.key==='Enter')searchCity()"/><button class="btn btn-p btn-sm" onclick="searchCity()">OK</button></div></div>`;
   if(WX.loading)return`<div class="wx-loading">${T('misc.wxLoading')}</div>`;
   if(WX.err==='denied')return`<div class="wx-perm"><p>${T('misc.wxPermMsg')}</p><div class="wx-city-row"><input id="wx-city-inp" class="wx-city-inp" placeholder="${T('misc.wxCityPh')}" onkeydown="if(event.key==='Enter')searchCity()"/><button class="btn btn-p btn-sm" onclick="searchCity()">OK</button></div></div>`;
   if(WX.err==='fetch')return`<div class="wx-err">${T('misc.wxErrFetch')} <button onclick="fetchWeather()" style="color:var(--blue);text-decoration:underline">${T('misc.wxRetry')}</button></div>`;
@@ -8881,7 +8891,7 @@ function render(){
   else if(page==='nursery'){showPage('pro');}
   else if(page==='pro'){bk.style.display='none';sb.textContent='🌿 Espace Pro';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="showPage('settings')">⚙</button>`;try{m.innerHTML=renderProPage();}catch(e){console.error('renderPro:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='settings'){bk.style.display='none';sb.textContent='Réglages';ac.innerHTML='';try{m.innerHTML=renderSettings();}catch(e){console.error('renderSettings ERROR:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'<br><pre>'+esc((e.stack||'').slice(0,400))+'</pre></div>';}}
-  else if(page==='community'){bk.style.display='none';sb.textContent='🌍 Communauté';ac.innerHTML=_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<button class="btn btn-g btn-sm" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</button>`:'';try{m.innerHTML='<div id="community-root"></div>';renderCommunityPage();}catch(e){console.error('community:',e);m.innerHTML='<div style="padding:20px;color:#c62828">⚠ '+esc(e.message)+'</div>';}}
+  else if(page==='community'){bk.style.display='none';sb.textContent='🌍 Communauté';ac.innerHTML=_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<button class="btn btn-g btn-sm" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</button>`:'';try{m.innerHTML='<div id="community-root"></div>';renderCommunityPage();}catch(e){m.innerHTML='<div id="community-root"></div>';document.getElementById('community-root').innerHTML=_wikiErrHtml(e);}}
   else if(page==='nursery'){bk.style.display='none';sb.textContent='🌱 Pépinière';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="showPage('settings')">⚙</button>`;try{m.innerHTML=renderNurseryPage();}catch(e){console.error('renderNursery:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else{bk.style.display='none';sb.textContent=`${plants.length} sujets`;if(!selMode)ac.innerHTML=`<button class="btn btn-sec btn-sm" onclick="enterSelMode()">☑</button><button class="btn btn-g btn-sm" onclick="openAddPlant()">＋</button>`;
   if(collView!=='verger')empCadastreMode=false;
@@ -14360,8 +14370,22 @@ ${plantGroups.map(group=>{
 ${filterBar}
 ${fertLegend?`<div class="cal-legend" style="margin-top:4px;padding-top:5px;border-top:1px dashed var(--cream3);font-style:italic">${fertLegend}</div>`:''}
 <div class="cal-grid">${cells}</div>
-<div style="font-size:.75rem;color:var(--muted);text-align:center;font-style:italic;margin-top:6px;margin-bottom:${dayPanel?'12px':'4px'}">${total} événement${total!==1?'s':''} visible${total!==1?'s':''}${hiddenCount>0?` · <span style="color:var(--amber3)">${hiddenCount} masqué${hiddenCount>1?'s':''}</span>`:''} ce mois · Toucher un jour = détails</div>
-${dayPanel}`}
+<div style="font-size:.75rem;color:var(--muted);text-align:center;font-style:italic;margin-top:6px;margin-bottom:4px">${total} événement${total!==1?'s':''} visible${total!==1?'s':''}${hiddenCount>0?` · <span style="color:var(--amber3)">${hiddenCount} masqué${hiddenCount>1?'s':''}</span>`:''} ce mois · Toucher un jour = détails</div>
+${total===0?(()=>{
+  const prevM=calMonth===0?11:calMonth-1;const prevY=calMonth===0?calYear-1:calYear;
+  const nextM=calMonth===11?0:calMonth+1;const nextY=calMonth===11?calYear+1:calYear;
+  const prevPfx=`${prevY}-${String(prevM+1).padStart(2,'0')}`;
+  const nextPfx=`${nextY}-${String(nextM+1).padStart(2,'0')}`;
+  const prevHas=allCalEvs.some(e=>e.date&&e.date.startsWith(prevPfx));
+  const nextHas=allCalEvs.some(e=>e.date&&e.date.startsWith(nextPfx));
+  if(!prevHas&&!nextHas&&allCalEvs.length===0)return'';
+  return`<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0 4px">
+    ${prevHas?`<button class="btn btn-o btn-sm" onclick="calMonth--;if(calMonth<0){calMonth=11;calYear--}window._calSelDay=null;render()">${T('misc.calEmptyPrev')}</button>`:''}
+    ${nextHas?`<button class="btn btn-o btn-sm" onclick="calMonth++;if(calMonth>11){calMonth=0;calYear++}window._calSelDay=null;render()">${T('misc.calEmptyNext')}</button>`:''}
+    <button class="btn btn-pri btn-sm" onclick="const fp=plants[0];if(fp)openAddEvent(fp.id)">${T('misc.calEmptyAdd')}</button>
+  </div>`;
+})():''}
+${dayPanel?`<div style="margin-top:12px">${dayPanel}</div>`:''}`}
 function renderFertProfiles(){
   return`<div style="font-size:.8rem;color:var(--muted);margin-bottom:14px;line-height:1.5">Vos profils d'engrais sont sélectionnables lors de chaque événement "fertilisation". Modifiez-les librement selon votre pratique.</div>
 ${fertilizers.map(f=>renderFertCard(f)).join('')}
@@ -15421,6 +15445,16 @@ async function _wikiLoad(url){
   return r.json();
 }
 
+function _wikiErrHtml(e){
+  const isApiUnavailable=e instanceof SyntaxError||/DOCTYPE|404|JSON|fetch/i.test(e.message||'');
+  if(!isApiUnavailable)console.warn('[community]',e);
+  return`<div style="padding:48px 24px;text-align:center">
+    <div style="font-size:2.5rem;margin-bottom:12px">🌍</div>
+    <div style="font-weight:700;color:var(--text-strong);margin-bottom:8px">${T('misc.commOfflineTitle')}</div>
+    <div style="font-size:.88rem;color:var(--muted);line-height:1.6;max-width:260px;margin:0 auto">${T('misc.commOfflineSub')}</div>
+    <button class="btn btn-o" style="margin-top:16px" onclick="renderCommunityPage()">${T('misc.commRetry')}</button>
+  </div>`;
+}
 function renderCommunityPage(){
   const root=document.getElementById('community-root');
   if(!root)return;
@@ -15476,7 +15510,7 @@ async function _renderWikiHome(c){
       <div class="wiki-cats">${catCards}</div>
       <div class="wiki-section-title">Articles récents</div>
       <div class="wiki-page-list">${recent}</div>`;
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 async function _renderWikiCategory(c,slug){
@@ -15495,7 +15529,7 @@ async function _renderWikiCategory(c,slug){
         <button class="btn btn-sm" style="font-size:.75rem" onclick="wikiView='editor';wikiCurrentSlug=null;wikiCurrentArticle=null;renderCommunityPage()">+ Nouvelle page</button>
       </div>
       <div class="wiki-page-list">${rows}</div>`;
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 async function _renderWikiArticle(c,slug){
@@ -15557,7 +15591,7 @@ async function _renderWikiArticle(c,slug){
       ${isGenealogy?`<div class="wiki-tree-container" id="wiki-tree-root"></div>`:''}`;
 
     if(isGenealogy)setTimeout(()=>_renderGenealogyTree(document.getElementById('wiki-tree-root')),100);
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 async function _renderWikiSearch(c,q){
@@ -15577,7 +15611,7 @@ async function _renderWikiSearch(c,q){
       </div>
       <div class="wiki-section-title">${results.length} résultat(s) pour "${esc(q)}"</div>
       <div class="wiki-search-results">${rows}</div>`;
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 async function _renderWikiHistory(c,slug){
@@ -15599,7 +15633,7 @@ async function _renderWikiHistory(c,slug){
       </div>
       <div style="padding:8px 16px;font-size:.75rem;color:var(--muted)">Langue : ${wikiCurrentLang.toUpperCase()}</div>
       ${rows}`;
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 function _renderWikiEditor(c){
@@ -15886,7 +15920,7 @@ async function _renderAdminPanel(c){
         <div class="admin-section-title">👥 Membres (${users.length})</div>
         ${userRows}
       </div>`;
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 async function adminSetRole(userId,role){
@@ -15971,7 +16005,7 @@ async function _renderObservatoire(c){
         }).bindPopup(`${ico} <b>${esc(pt.event_type)}</b><br>${esc(pt.region||'—')}<br>${pt.count} obs.`).addTo(obsMap);
       });
     },200);
-  }catch(e){c.innerHTML=`<div style="padding:20px;color:#c62828">⚠ ${esc(e.message)}</div>`;}
+  }catch(e){c.innerHTML=_wikiErrHtml(e);}
 }
 
 function wikiOpenObsForm(){
