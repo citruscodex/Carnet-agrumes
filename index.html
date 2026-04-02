@@ -122,14 +122,10 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 #tb-logo:active{transform:scale(.88)}
 #tb-act{display:flex;gap:7px;align-items:center}
 #main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
-#navbar{background:var(--white);border-top:1px solid var(--cream3);display:flex;flex-shrink:0;box-shadow:0 -1px 5px rgba(0,0,0,.05);overflow:visible;position:relative;padding-top:12px}
+#navbar{background:var(--white);border-top:1px solid var(--cream3);display:flex;flex-shrink:0;box-shadow:0 -1px 5px rgba(0,0,0,.05);overflow:visible;position:relative}
 .navi{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 6px 8px;gap:2px;color:var(--muted);font-size:.75rem;font-family:'JetBrains Mono',monospace;transition:color .15s;border-top:2px solid transparent;background:none;border-bottom:none;border-left:none;border-right:none;cursor:pointer;min-width:44px;min-height:44px}
 .navi.active{color:var(--text-accent);border-top-color:var(--amber)}
 .navi .ni{font-size:1.15rem}
-#nv-add{position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:64px;flex:none;display:flex;flex-direction:column;align-items:center;padding-bottom:5px;border-top:none;z-index:10}
-#nv-add .ni{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--amber);color:#fff;font-size:1.4rem;margin-top:-34px;box-shadow:0 4px 14px rgba(232,148,26,.55);transition:transform .15s,box-shadow .15s;line-height:1}
-#nv-add:active .ni{transform:scale(.88);box-shadow:0 1px 5px rgba(232,148,26,.3)}
-#nv-add .navi-lbl{color:var(--amber);font-weight:700;font-size:.75rem;margin-top:2px}
 
 /* ── Composant tab canonique ── */
 .tab-bar,.prof-tabs,.pro-tab-bar,.eco-tabs,.fert-tabs,.nurs-tabs,.comm-tabs{display:flex;gap:0;border-bottom:2px solid var(--cream3);background:var(--white);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;flex-shrink:0}
@@ -1083,7 +1079,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 .seas-ev-am{font-size:.75rem;padding:1px 5px;border-radius:8px;background:rgba(139,69,19,.1);color:var(--terra);font-family:'JetBrains Mono',monospace;flex-shrink:0}
 
 .amend-badge{font-size:.75rem;padding:2px 6px;border-radius:10px;background:rgba(139,69,19,.1);color:var(--terra);font-family:'JetBrains Mono',monospace;font-weight:600;display:inline-block}
-#toast{position:fixed;bottom:142px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g1);color:var(--white);padding:8px 16px;border-radius:26px;font-size:.78rem;opacity:0;pointer-events:none;transition:all .27s;z-index:470;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.28)}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--g1);color:var(--white);padding:8px 16px;border-radius:26px;font-size:.78rem;opacity:0;pointer-events:none;transition:all .27s;z-index:470;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.28)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.err{background:var(--red)}
 
@@ -1226,7 +1222,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
   #topbar{max-width:480px;left:50%;transform:translateX(-50%);position:fixed;top:0;width:100%;z-index:20}
   #main{margin-top:52px;margin-bottom:72px}
   #navbar{max-width:480px;left:50%;transform:translateX(-50%);position:fixed;bottom:0;width:100%}
-  #toast{bottom:154px}
+  #toast{bottom:90px}
 }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -1281,7 +1277,6 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
     <button class="navi" id="nv-fert" role="tab" aria-selected="false" onclick="showPage('fert')"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></button>
     <button class="navi" id="nv-community" role="tab" aria-selected="false" onclick="showPage('community')"><span class="ni">🌍</span><span class="navi-lbl" data-t="nav.community">Communauté</span></button>
     <button class="navi" id="nv-settings" role="tab" aria-selected="false" onclick="showPage('settings')"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></button>
-    <button id="nv-add" aria-label="Ajouter une plante" onclick="openAddPlant()"><span class="ni">＋</span><span class="navi-lbl" data-t="nav.add">Ajouter</span></button>
   </nav>
 </div>
 <div id="toast"></div>
@@ -8830,10 +8825,8 @@ function launchApp(){
   document.getElementById('main').innerHTML=_skeletonDash();
   loadFerts();loadAmendments();loadEpandage();loadSaisonniers();loadEco();loadStocks();loadLots();loadNursery();loadClients();loadDevis();loadEau();loadExchanges();loadWishlist();loadSortis();loadLight();loadCertifs();loadYield();loadSuppliers();vergerData=getVergerData();initPushNotifications();startIoTPolling();_updateNavbarForProfile();
   requestAnimationFrame(()=>showPage('dashboard'));}
-function showPage(p){if(p==='nursery')p='pro';page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});document.getElementById('nv-add')?.classList.remove('active');_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
+function showPage(p){if(p==='nursery')p='pro';page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
 function _updateNavbarForProfile(){
-  const addEl=document.getElementById('nv-add');
-  if(addEl) addEl.style.display=(page==='collection')?'':'none';
   const settingsEl=document.getElementById('nv-settings');
   if(settingsEl) settingsEl.style.display='';
 }
@@ -9234,6 +9227,7 @@ function renderColl(){
     <span style="font-size:.75rem;color:var(--muted)">▾</span>
   </div>
   <button class="btn btn-sm" style="border-radius:20px;font-size:.7rem;padding:4px 10px;background:rgba(45,90,61,.08);color:var(--text-strong);border:1.5px solid rgba(45,90,61,.15)" onclick="openNewCollectionModal()">＋ Nouvelle</button>
+  <button class="btn btn-pri btn-sm" style="border-radius:20px;margin-left:auto;padding:6px 14px;font-size:.82rem;font-weight:700" onclick="openAddPlant()" aria-label="${T('misc.collAddBtn')||'Ajouter un sujet'}">＋ ${T('misc.collAddBtn')||'Ajouter'}</button>
 </div>`;
 
   const statChips=`<div style="display:flex;gap:7px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px;align-items:center">
