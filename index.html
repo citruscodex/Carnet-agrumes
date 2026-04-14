@@ -1238,6 +1238,43 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
     <div class="afield"><label>Email</label><input type="email" id="sl-email" placeholder="votre@email.fr" autocomplete="email"/></div>
     <div class="afield"><label>Mot de passe</label><div class="pwd-wrap"><input type="password" id="sl-pwd" placeholder="••••••••" autocomplete="current-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('sl-pwd')" title="Afficher/masquer">👁</button></div></div>
     <button class="abtn" id="sl-btn" onclick="submitServerLogin()">Accéder à la bêta</button>
+    <div style="display:flex;justify-content:space-between;margin-top:10px"><button onclick="showServerForgot()" style="color:var(--bark);font-size:.75rem;text-decoration:underline;background:none;border:none;cursor:pointer">Mot de passe oublié ?</button><button onclick="showServerRegister()" style="color:var(--bark);font-size:.75rem;text-decoration:underline;background:none;border:none;cursor:pointer">Créer un compte</button></div>
+  </div>
+</div></div>
+<div id="sc-server-register" style="display:none"><div class="asc">
+  <div class="alo"><span class="ali" style="background:none;border:none;box-shadow:none"><svg viewBox="0 0 100 100" width="56" height="56" xmlns="http://www.w3.org/2000/svg"><text y=".9em" font-size="90">🍊</text></svg></span><h1>CitrusCodex</h1><p>Bêta — Inscription</p></div>
+  <div class="acard">
+    <h2>Inscription</h2>
+    <p class="acsub">Réservé aux bêta-testeurs invités.</p>
+    <div id="sr-err" class="aerr" style="display:none"></div>
+    <div class="afield"><label>Email</label><input type="email" id="sr-email" placeholder="votre@email.fr" autocomplete="email"/></div>
+    <div class="afield"><label>Nom affiché</label><input type="text" id="sr-name" placeholder="ex : Jean Dupont"/></div>
+    <div class="afield"><label>Mot de passe (8 car. min.)</label><div class="pwd-wrap"><input type="password" id="sr-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('sr-pwd')" title="Afficher/masquer">👁</button></div></div>
+    <button class="abtn" id="sr-btn" onclick="submitServerRegister()">S'inscrire</button>
+    <div style="margin-top:10px;text-align:center"><button onclick="showServerLogin()" style="color:var(--bark);font-size:.75rem;text-decoration:underline;background:none;border:none;cursor:pointer">← Retour à la connexion</button></div>
+  </div>
+</div></div>
+<div id="sc-server-forgot" style="display:none"><div class="asc">
+  <div class="alo"><span class="ali" style="background:none;border:none;box-shadow:none"><svg viewBox="0 0 100 100" width="56" height="56" xmlns="http://www.w3.org/2000/svg"><text y=".9em" font-size="90">🍊</text></svg></span><h1>CitrusCodex</h1><p>Réinitialisation</p></div>
+  <div class="acard">
+    <h2>Mot de passe oublié</h2>
+    <p class="acsub">Entrez votre email pour recevoir un lien de réinitialisation.</p>
+    <div id="sf-err" class="aerr" style="display:none"></div>
+    <div id="sf-ok" style="display:none;background:rgba(45,90,61,.12);border-radius:8px;padding:10px 12px;font-size:.82rem;color:var(--g2);margin-bottom:12px"></div>
+    <div class="afield"><label>Email</label><input type="email" id="sf-email" placeholder="votre@email.fr" autocomplete="email"/></div>
+    <button class="abtn" id="sf-btn" onclick="submitServerForgot()">Envoyer le lien</button>
+    <div style="margin-top:10px;text-align:center"><button onclick="showServerLogin()" style="color:var(--bark);font-size:.75rem;text-decoration:underline;background:none;border:none;cursor:pointer">← Retour à la connexion</button></div>
+  </div>
+</div></div>
+<div id="sc-server-reset" style="display:none"><div class="asc">
+  <div class="alo"><span class="ali" style="background:none;border:none;box-shadow:none"><svg viewBox="0 0 100 100" width="56" height="56" xmlns="http://www.w3.org/2000/svg"><text y=".9em" font-size="90">🍊</text></svg></span><h1>CitrusCodex</h1><p>Nouveau mot de passe</p></div>
+  <div class="acard">
+    <h2>Définir un nouveau mot de passe</h2>
+    <p class="acsub">Choisissez un mot de passe d'au moins 8 caractères.</p>
+    <div id="sx-err" class="aerr" style="display:none"></div>
+    <div class="afield"><label>Nouveau mot de passe</label><div class="pwd-wrap"><input type="password" id="sx-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('sx-pwd')" title="Afficher/masquer">👁</button></div></div>
+    <div class="afield"><label>Confirmer</label><div class="pwd-wrap"><input type="password" id="sx-pwd2" placeholder="••••••••" autocomplete="new-password"/></div></div>
+    <button class="abtn" id="sx-btn" onclick="submitServerReset()">Valider</button>
   </div>
 </div></div>
 <div id="sc-setup" style="display:none"><div class="asc">
@@ -24295,9 +24332,99 @@ window.fetch=async function(url,...args){
   return r;
 };
 
+function _hideAllServerScreens(){
+  ['sc-server-login','sc-server-register','sc-server-forgot','sc-server-reset'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+}
+
 function showServerLogin(){
+  _hideAllServerScreens();
   document.getElementById('sc-server-login').style.display='block';
   setTimeout(()=>document.getElementById('sl-email')?.focus(),100);
+}
+
+function showServerRegister(){
+  _hideAllServerScreens();
+  document.getElementById('sc-server-register').style.display='block';
+  setTimeout(()=>document.getElementById('sr-email')?.focus(),100);
+}
+
+function showServerForgot(){
+  _hideAllServerScreens();
+  document.getElementById('sc-server-forgot').style.display='block';
+  setTimeout(()=>document.getElementById('sf-email')?.focus(),100);
+}
+
+function showServerReset(token){
+  _hideAllServerScreens();
+  window._resetToken=token;
+  document.getElementById('sc-server-reset').style.display='block';
+  setTimeout(()=>document.getElementById('sx-pwd')?.focus(),100);
+}
+
+async function submitServerRegister(){
+  const email=document.getElementById('sr-email')?.value?.trim();
+  const pwd=document.getElementById('sr-pwd')?.value;
+  const name=document.getElementById('sr-name')?.value?.trim();
+  const err=document.getElementById('sr-err');
+  const btn=document.getElementById('sr-btn');
+  err.style.display='none';
+  if(!email||!pwd){err.textContent='Email et mot de passe requis.';err.style.display='block';return;}
+  if(pwd.length<8){err.textContent='Mot de passe : 8 caractères minimum.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Inscription…';
+  try{
+    const r=await fetch(CCA_API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd,display_name:name||''})});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Erreur lors de l\'inscription.';err.style.display='block';btn.disabled=false;btn.textContent='S\'inscrire';return;}
+    _hideAllServerScreens();
+    document.getElementById('sc-server-login').style.display='block';
+    document.getElementById('sl-err').style.display='none';
+    const ok=document.createElement('div');ok.style.cssText='background:rgba(45,90,61,.12);border-radius:8px;padding:10px 12px;font-size:.82rem;color:#2d5a3d;margin-bottom:12px';
+    ok.textContent='Compte créé ! Vérifiez votre email pour activer votre accès.';
+    document.getElementById('sl-err').parentNode.insertBefore(ok,document.getElementById('sl-err'));
+    setTimeout(()=>ok.remove(),10000);
+  }catch(e){err.textContent='Erreur réseau.';err.style.display='block';}
+  btn.disabled=false;btn.textContent='S\'inscrire';
+}
+
+async function submitServerForgot(){
+  const email=document.getElementById('sf-email')?.value?.trim();
+  const err=document.getElementById('sf-err');
+  const ok=document.getElementById('sf-ok');
+  const btn=document.getElementById('sf-btn');
+  err.style.display='none';ok.style.display='none';
+  if(!email){err.textContent='Email requis.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Envoi…';
+  try{
+    await fetch(CCA_API+'/api/auth/forgot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
+    ok.textContent='Si ce compte existe, un email de réinitialisation a été envoyé. Vérifiez votre boîte mail (et les spams).';
+    ok.style.display='block';
+  }catch(e){err.textContent='Erreur réseau.';err.style.display='block';}
+  btn.disabled=false;btn.textContent='Envoyer le lien';
+}
+
+async function submitServerReset(){
+  const pwd=document.getElementById('sx-pwd')?.value;
+  const pwd2=document.getElementById('sx-pwd2')?.value;
+  const err=document.getElementById('sx-err');
+  const btn=document.getElementById('sx-btn');
+  err.style.display='none';
+  if(!pwd||pwd.length<8){err.textContent='Mot de passe : 8 caractères minimum.';err.style.display='block';return;}
+  if(pwd!==pwd2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Validation…';
+  try{
+    const r=await fetch(CCA_API+'/api/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:window._resetToken,password:pwd})});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Erreur.';err.style.display='block';btn.disabled=false;btn.textContent='Valider';return;}
+    _hideAllServerScreens();
+    document.getElementById('sc-server-login').style.display='block';
+    const ok2=document.createElement('div');ok2.style.cssText='background:rgba(45,90,61,.12);border-radius:8px;padding:10px 12px;font-size:.82rem;color:#2d5a3d;margin-bottom:12px';
+    ok2.textContent='Mot de passe mis à jour ! Connectez-vous avec votre nouveau mot de passe.';
+    document.getElementById('sl-err').parentNode.insertBefore(ok2,document.getElementById('sl-err'));
+    setTimeout(()=>ok2.remove(),10000);
+    window._resetToken=null;
+    history.replaceState(null,'',location.pathname);
+  }catch(e){err.textContent='Erreur réseau.';err.style.display='block';}
+  btn.disabled=false;btn.textContent='Valider';
 }
 
 async function submitServerLogin(){
@@ -24340,7 +24467,17 @@ function _srvTokenValid(){
       else if(document.getElementById('sc-login')?.style.display!=='none')submitLogin();
     }
   });
-  if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
+  const _urlParams=new URLSearchParams(location.search);
+  if(_urlParams.get('reset_token')){
+    showServerReset(_urlParams.get('reset_token'));
+  } else if(_urlParams.get('verified')){
+    showServerLogin();
+    const ok3=document.createElement('div');ok3.style.cssText='background:rgba(45,90,61,.12);border-radius:8px;padding:10px 12px;font-size:.82rem;color:#2d5a3d;margin-bottom:12px';
+    ok3.textContent='Email vérifié avec succès ! Connectez-vous pour accéder à votre carnet.';
+    setTimeout(()=>{const sl=document.getElementById('sl-err');if(sl)sl.parentNode.insertBefore(ok3,sl);},200);
+    setTimeout(()=>ok3.remove(),10000);
+    history.replaceState(null,'',location.pathname);
+  } else if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
 })();
 
 // ── Feedback flottant ────────────────────────────────────────────────────────
