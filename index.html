@@ -9227,7 +9227,7 @@ function renderColl(){
     <span style="font-size:.75rem;color:var(--muted)">▾</span>
   </div>
   <button class="btn btn-sm" style="border-radius:20px;font-size:.7rem;padding:4px 10px;background:rgba(45,90,61,.08);color:var(--text-strong);border:1.5px solid rgba(45,90,61,.15)" onclick="openNewCollectionModal()">＋ Nouvelle</button>
-  <button class="btn btn-pri btn-sm" style="border-radius:20px;margin-left:auto;padding:6px 14px;font-size:.82rem;font-weight:700" onclick="openAddPlant()" aria-label="${T('misc.collAddBtn')||'Ajouter un sujet'}">＋ ${T('misc.collAddBtn')||'Ajouter'}</button>
+  <button class="btn btn-pri btn-sm" style="border-radius:20px;margin-left:auto;padding:6px 14px;font-size:.82rem;font-weight:700" onclick="openAddPlant()" aria-label="${T('misc.collAddSubjectBtn')||'Ajouter un sujet'}">＋ ${T('misc.collAddSubjectBtn')||'Ajouter'}</button>
 </div>`;
 
   const statChips=`<div style="display:flex;gap:7px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px;align-items:center">
@@ -10045,7 +10045,13 @@ function _empPlanBottomBar(placed,assigned,ap){
 function empOpenAssignModal(parcelleId){
   const p=vergerData.parcelles?.find(x=>x.id===parcelleId);if(!p)return;
   if(!p.plantIds)p.plantIds=[];
-  const eligible=plants.filter(pl=>!isPot(pl)||(isPot(pl)&&['extérieur','jardin','terrasse','pied de mur exposé S','pied de mur exposé SE','pied de mur exposé SO','plein champ'].includes(pl.location)));
+  const otherParcellePlantIds=new Set();
+  (vergerData.parcelles||[]).forEach(pp=>{if(pp.id!==parcelleId)(pp.plantIds||[]).forEach(id=>otherParcellePlantIds.add(id));});
+  const eligible=plants.filter(pl=>{
+    if(isPot(pl)&&!['extérieur','jardin','terrasse','pied de mur exposé S','pied de mur exposé SE','pied de mur exposé SO','plein champ'].includes(pl.location))return false;
+    if(!isPot(pl)&&otherParcellePlantIds.has(pl.id)&&!p.plantIds.includes(pl.id))return false;
+    return true;
+  });
   if(!eligible.length){
     showModal(`<h3>Assigner des sujets</h3><p style="color:var(--muted);font-size:.83rem">Aucun sujet éligible (pleine terre ou pot en extérieur).</p><div class="fact"><button class="btn" onclick="closeModal()">Fermer</button></div>`);
     return;
@@ -14026,6 +14032,21 @@ function submitEV(pid){
   if(qtyRecolte)ev.qtyRecolte=qtyRecolte;
   if(stadeRecolte)ev.stadeRecolte=stadeRecolte;
   if(brixVal&&aciditeVal){ev.brixRatio=Math.round(brixVal/aciditeVal*100)/100;}
+  const graftMethode=type==='greffage'?(document.getElementById('ev-graft-meth')?.value||'écusson'):null;
+  const graftStade=type==='greffage'?(document.getElementById('ev-graft-stade')?.value||''):null;
+  const graftGreffon=type==='greffage'?(document.getElementById('ev-graft-greffon')?.value?.trim()||''):null;
+  const graftPG=type==='greffage'?(document.getElementById('ev-graft-pg')?.value?.trim()||''):null;
+  const graftLotId=type==='greffage'?(document.getElementById('ev-graft-lot')?.value?.trim()||''):null;
+  const graftLotQty=type==='greffage'?(parseInt(document.getElementById('ev-lot-qty')?.value)||null):null;
+  const graftSrc=type==='greffage'?(document.querySelector('input[name="ev-graft-src"]:checked')?.value||'collection'):null;
+  const graftReprisePct=type==='greffage'?(parseFloat(document.getElementById('ev-reprise-pct')?.value)||null):null;
+  const graftRepriseDate=type==='greffage'?(document.getElementById('ev-reprise-date')?.value||null):null;
+  const graftElev=type==='greffage'?(parseInt(document.getElementById('ev-elev')?.value)||null):null;
+  const graftDispo=type==='greffage'&&graftElev?(()=>{
+    const d=new Date(document.getElementById('ev-dt')?.value||todayStr());
+    d.setDate(d.getDate()+graftElev*7);
+    return d.toISOString().slice(0,10);
+  })():null;
   if(graftMethode)ev.methode=graftMethode;
   if(graftStade)ev.stade=graftStade;
   if(graftGreffon)ev.greffon=graftGreffon;
@@ -14059,21 +14080,6 @@ function submitEV(pid){
   }
   if(ecoPrice)ev.ecoPrice=ecoPrice;
   if(ecoBuyer)ev.ecoBuyer=ecoBuyer;
-  const graftMethode=type==='greffage'?(document.getElementById('ev-graft-meth')?.value||'écusson'):null;
-  const graftStade=type==='greffage'?(document.getElementById('ev-graft-stade')?.value||''):null;
-  const graftGreffon=type==='greffage'?(document.getElementById('ev-graft-greffon')?.value?.trim()||''):null;
-  const graftPG=type==='greffage'?(document.getElementById('ev-graft-pg')?.value?.trim()||''):null;
-  const graftLotId=type==='greffage'?(document.getElementById('ev-graft-lot')?.value?.trim()||''):null;
-  const graftLotQty=type==='greffage'?(parseInt(document.getElementById('ev-lot-qty')?.value)||null):null;
-  const graftSrc=type==='greffage'?(document.querySelector('input[name="ev-graft-src"]:checked')?.value||'collection'):null;
-  const graftReprisePct=type==='greffage'?(parseFloat(document.getElementById('ev-reprise-pct')?.value)||null):null;
-  const graftRepriseDate=type==='greffage'?(document.getElementById('ev-reprise-date')?.value||null):null;
-  const graftElev=type==='greffage'?(parseInt(document.getElementById('ev-elev')?.value)||null):null;
-  const graftDispo=type==='greffage'&&graftElev?(()=>{
-    const d=new Date(document.getElementById('ev-dt')?.value||todayStr());
-    d.setDate(d.getDate()+graftElev*7);
-    return d.toISOString().slice(0,10);
-  })():null;
   if(type==='récolte'&&(brixVal||aciditeVal)){
     const parts=[];
     if(qtyRecolte)parts.push(`${qtyRecolte} kg`);
@@ -15420,6 +15426,7 @@ function _galSaveCaption(){if(!_galState)return;const caption=document.getElemen
 // ── Communauté & Wiki ─────────────────────────────────────────────────────────
 
 let wikiView='home'; // home | category | article | editor | history | search | admin | observatoire
+let obsFilterType='all'; // all | floraison | recolte | gel | maladie | ravageur | autre
 let wikiCurrentSlug=null;
 let wikiCurrentLang='fr';
 let wikiCategories=[];
@@ -15585,7 +15592,21 @@ async function _renderWikiArticle(c,slug){
       ${isGenealogy?`<div class="wiki-tree-container" id="wiki-tree-root"></div>`:''}`;
 
     if(isGenealogy)setTimeout(()=>_renderGenealogyTree(document.getElementById('wiki-tree-root')),100);
-  }catch(e){c.innerHTML=_wikiErrHtml(e);}
+  }catch(e){
+    if(e.message&&e.message.includes('404')){
+      c.innerHTML=`<div style="padding:48px 24px;text-align:center">
+        <div style="font-size:2.5rem;margin-bottom:12px">📝</div>
+        <div style="font-weight:700;color:var(--text-strong);margin-bottom:8px">Article « ${esc(slug)} » non trouvé</div>
+        <div style="font-size:.88rem;color:var(--muted);line-height:1.6;max-width:300px;margin:0 auto">Cet article n'existe pas encore dans le wiki.</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px">
+          <button class="btn btn-o" onclick="wikiView='home';wikiCurrentSlug=null;renderCommunityPage()">← Accueil Wiki</button>
+          ${_srvToken?`<button class="btn btn-p" onclick="wikiView='editor';wikiCurrentSlug='${esc(slug)}';wikiCurrentArticle=null;renderCommunityPage()">＋ Créer cet article</button>`:''}
+        </div>
+      </div>`;
+    } else {
+      c.innerHTML=_wikiErrHtml(e);
+    }
+  }
 }
 
 async function _renderWikiSearch(c,q){
@@ -15973,15 +15994,33 @@ async function _renderObservatoire(c){
       </div>`).join(''):`<div style="padding:20px;text-align:center;color:var(--muted)">Aucune observation publiée.</div>`;
 
     // Carte Leaflet
+    const filterTypes=Object.keys(eventIcons);
+    const filterBar=`<div style="padding:6px 16px 2px;display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;border-radius:12px;background:${obsFilterType==='all'?'var(--g2)':'var(--cream3)'};color:${obsFilterType==='all'?'white':'var(--text)'}" onclick="obsFilterType='all';_renderObservatoire(document.getElementById('community-root').querySelector('.comm-tab')?.parentElement?.parentElement||document.getElementById('community-root'))">Tous</button>
+      ${filterTypes.map(t=>`<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;border-radius:12px;background:${obsFilterType===t?eventColors[t]:'var(--cream3)'};color:${obsFilterType===t?'white':'var(--text)'}" onclick="obsFilterType='${t}';_renderObservatoire(document.getElementById('community-root').querySelector('.comm-tab')?.parentElement?.parentElement||document.getElementById('community-root'))">${eventIcons[t]} ${t}</button>`).join('')}
+    </div>`;
+    const filteredMap=obsFilterType==='all'?mapData:mapData.filter(pt=>pt.event_type===obsFilterType);
+    const filteredJournal=obsFilterType==='all'?journal:journal.filter(o=>o.event_type===obsFilterType);
+    const journalRowsFiltered=filteredJournal.length?filteredJournal.map(o=>`
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid var(--cream3)">
+        <div style="font-size:1.1rem;flex-shrink:0">${eventIcons[o.event_type]||'📌'}</div>
+        <div>
+          <div style="font-size:.78rem;font-weight:600">${esc(o.species||o.event_type)}</div>
+          <div style="font-size:.75rem;color:var(--muted)">${esc(o.region||'—')} · ${new Date(o.observed_at).toLocaleDateString('fr-FR')}</div>
+          ${o.note?`<div style="font-size:.75rem;color:var(--text);margin-top:2px">${esc(o.note)}</div>`:''}
+        </div>
+        <div style="flex-shrink:0;padding:2px 7px;border-radius:10px;font-size:.75rem;font-weight:600;color:white;background:${eventColors[o.event_type]||'#546e7a'}">${esc(o.event_type)}</div>
+      </div>`).join(''):`<div style="padding:20px;text-align:center;color:var(--muted)">Aucune observation pour ce filtre.</div>`;
     c.innerHTML=`
       <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:.75rem;color:var(--muted)">${mapData.length} point(s) sur la carte</div>
+        <div style="font-size:.75rem;color:var(--muted)">${filteredMap.length} point(s) sur la carte</div>
         <button class="btn btn-sm btn-p" style="font-size:.75rem" onclick="wikiOpenObsForm()">+ Signaler</button>
       </div>
+      ${filterBar}
       <div id="obs-map" style="height:220px;border-radius:10px;margin:0 16px;overflow:hidden;border:1.5px solid var(--cream3)"></div>
       ${barChart}
       <div style="padding:8px 16px 4px;font-size:.75rem;color:var(--muted);font-family:'JetBrains Mono',monospace">JOURNAL DES OBSERVATIONS</div>
-      ${journalRows}`;
+      ${journalRowsFiltered}`;
 
     // Init Leaflet map
     setTimeout(()=>{
@@ -15989,7 +16028,7 @@ async function _renderObservatoire(c){
       const obsMap=L.map('obs-map',{zoomControl:true,attributionControl:false});
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(obsMap);
       obsMap.setView([46,2],5);
-      mapData.forEach(pt=>{
+      filteredMap.forEach(pt=>{
         if(!pt.lat_approx||!pt.lng_approx)return;
         const col=eventColors[pt.event_type]||'#546e7a';
         const ico=eventIcons[pt.event_type]||'📌';
