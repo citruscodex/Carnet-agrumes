@@ -1,6 +1,6 @@
 {
-  "name": "Carnet de Collection Agrumes",
-  "short_name": "Agrumes",
+  "name": "CitrusCodex — Carnet de Collection Agrumes",
+  "short_name": "CitrusCodex",
   "description": "Gérez votre collection d'agrumes : soins, événements, diagnostic phytosanitaire.",
   "start_url": "./",
   "scope": "./",
@@ -12,34 +12,13 @@
   "orientation": "portrait-primary",
   "categories": ["lifestyle", "productivity"],
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
-    }
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ],
-  "screenshots": [],
   "shortcuts": [
-    {
-      "name": "Ma collection",
-      "short_name": "Collection",
-      "description": "Accéder directement à la liste des agrumes",
-      "url": "./?page=collection",
-      "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]
-    },
-    {
-      "name": "Ajouter un agrume",
-      "short_name": "Ajouter",
-      "description": "Enregistrer un nouvel agrume",
-      "url": "./?action=add",
-      "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml"}]
-    }
+    {"name": "Ma collection", "short_name": "Collection", "url": "./?page=collection", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}]},
+    {"name": "Ajouter un agrume", "short_name": "Ajouter", "url": "./?action=add", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}]}
   ]
 }
