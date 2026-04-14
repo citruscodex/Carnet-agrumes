@@ -16180,13 +16180,9 @@ function renderSettings(){
 <div class="prof-section">
 <div class="prof-section-title">Type de profil</div>
 <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:8px">
-<div style="font-size:.75rem;color:var(--muted);line-height:1.5">Choisissez le type d'utilisation pour afficher les champs et fonctionnalités adaptés. L'enregistrement recharge l'interface.</div>
-<select id="pf-ptype" style="width:100%;padding:10px 12px;border:1.5px solid var(--cream3);border-radius:8px;background:var(--white);font-size:.88rem;color:var(--text);font-family:'EmojiFirst','EB Garamond',serif">
-  <option value="collectionneur" ${pType==='collectionneur'?'selected':''}>🍋 Collectionneur — Passion &amp; culture privée</option>
-  <option value="pepinieriste"   ${pType==='pepinieriste'  ?'selected':''}>🌱 Pépiniériste — Production &amp; vente de plants</option>
-  <option value="arboriculteur"  ${pType==='arboriculteur' ?'selected':''}>🌳 Arboriculteur — Exploitation professionnelle</option>
-  <option value="conservatoire"  ${pType==='conservatoire' ?'selected':''}>🏛 Conservatoire — Institution &amp; collection publique</option>
-</select>
+<div style="padding:10px 14px;background:var(--cream2);border-radius:8px;font-size:.88rem;width:100%">${{collectionneur:'🍋 Collectionneur',pepinieriste:'🌱 Pépiniériste',arboriculteur:'🌳 Arboriculteur',conservatoire:'🏛 Conservatoire'}[pType]||'🍋 Collectionneur'}</div>
+<div style="font-size:.75rem;color:var(--muted);line-height:1.5">Le type de profil est défini par l'administrateur.</div>
+<input type="hidden" id="pf-ptype" value="${pType}"/>
 </div>
 </div>
 <div class="prof-section"><div class="prof-section-title">${T('misc.profPersonal')}</div>
@@ -24345,6 +24341,44 @@ function _srvTokenValid(){
     }
   });
   if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
+})();
+
+// ── Feedback flottant ────────────────────────────────────────────────────────
+function openFeedbackModal(){
+  const cats=[['bug','🐛 Bug'],['feature','💡 Fonctionnalité'],['ux','🎨 Ergonomie'],['performance','⚡ Performance'],['other','📝 Autre']];
+  const catOpts=cats.map(([v,l])=>'<option value="'+v+'">'+l+'</option>').join('');
+  showModal('<h3>Signaler un retour</h3>'+
+    '<div class="ff" style="margin-bottom:10px"><label>Catégorie</label><select id="fb-cat" style="width:100%;padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem">'+catOpts+'</select></div>'+
+    '<div class="ff" style="margin-bottom:10px"><label>Titre *</label><input id="fb-title" placeholder="Résumé court du problème ou de la suggestion" style="width:100%;padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;font-size:.87rem"/></div>'+
+    '<div class="ff" style="margin-bottom:10px"><label>Description *</label><textarea id="fb-desc" placeholder="Décrivez le problème, les étapes pour le reproduire, ou votre suggestion..." style="width:100%;min-height:100px;padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;font-size:.87rem"></textarea></div>'+
+    '<div class="fact"><button class="btn" style="background:var(--cream3);color:var(--text)" onclick="closeModal()">Annuler</button><button class="btn btn-a" onclick="submitFeedback()">Envoyer</button></div>');
+}
+
+async function submitFeedback(){
+  const title=document.getElementById('fb-title')?.value?.trim();
+  const desc=document.getElementById('fb-desc')?.value?.trim();
+  const cat=document.getElementById('fb-cat')?.value||'bug';
+  if(!title||!desc){alert('Titre et description requis.');return;}
+  try{
+    const r=await fetch('/api/feedback',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+(_srvToken||'')},body:JSON.stringify({category:cat,title:title,description:desc,page:page||'',user_agent:navigator.userAgent,app_version:'2.0'})});
+    if(r.ok){closeModal();toast('Retour envoyé ✓');}
+    else{const d=await r.json().catch(()=>({}));alert(d.error||'Erreur lors de l\'envoi.');}
+  }catch(e){alert('Erreur réseau : '+e.message);}
+}
+
+(function(){
+  if(typeof _srvToken!=='undefined'){
+    const fb=document.createElement('button');
+    fb.id='feedback-fab';
+    fb.textContent='🐛';
+    fb.title='Signaler un retour';
+    fb.style.cssText='position:fixed;bottom:80px;right:16px;z-index:150;width:44px;height:44px;border-radius:50%;background:var(--g2);color:white;font-size:1.2rem;border:none;box-shadow:0 2px 8px rgba(0,0,0,.25);cursor:pointer;display:none;align-items:center;justify-content:center';
+    fb.addEventListener('click',openFeedbackModal);
+    document.body.appendChild(fb);
+    const _checkFab=()=>{fb.style.display=_srvToken?'flex':'none';};
+    setInterval(_checkFab,2000);
+    _checkFab();
+  }
 })();
 </script>
 </body>
