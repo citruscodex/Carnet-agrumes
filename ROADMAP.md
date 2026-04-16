@@ -2,7 +2,7 @@
 
 ## Architecture actuelle
 
-- **Monolithe** : `public/index.html` ~21 181 lignes (réduit de 26 926 grâce à l'extraction i18n + CSS)
+- **Monolithe** : `public/index.html` ~21 363 lignes (réduit de 26 926 grâce à l'extraction i18n + CSS)
 - **5 modules ES** : `public/src/modules/` — drip.js, phenology.js, wiki.js, substrats.js + migrations.js dans `src/lib/`
 - **10 fichiers CSS** : `public/src/styles/` — base, dashboard, collection, calendar, pro, phenology, wiki, drip, bug, print
 - **5 fichiers i18n** : `public/src/i18n/` — fr.json, en.json, it.json, es.json, pt.json
@@ -23,6 +23,8 @@
 | Serveur nettoyé | MediaWiki/MariaDB supprimés, 2.5 GB récupérés |
 | Auth serveur | JWT, PostgreSQL users, login fonctionnel |
 | Sync multi-appareils | Pull/push via /api/sync, chiffrement AES-GCM préservé |
+| Backup PostgreSQL | pg_dump quotidien 3h00, rotation 30 fichiers, `/var/log/cca-backup.log` |
+| GitHub Actions | actions/checkout@v5 + actions/setup-node@v5 (mis à jour avant échéance juin 2026) |
 | Logo | Emoji 🍊 (tentative PNG abandonnée — SVG à faire quand graphiste disponible) |
 
 ### Features structurelles (F1-F11)
@@ -70,51 +72,49 @@
 | Notifications BBCH | Changement de stade uniquement (pas quotidien) |
 | Guide aide | ~60 helpBtn, HELP_CONTENT FR+EN, aide.html 17 sections + FAQ |
 
-### Phase 2 extraction (partiel)
+### Scaleway TEM (emails)
+| Item | Détail |
+|---|---|
+| Configuration TEM | Fonctionnel pour stages et bourse |
+| Emails bienvenue | POST /api/admin/invite → sendMail() template HTML |
+| Emails reset password | POST /api/admin/users/:id/reset-password → sendMail() mot de passe temporaire |
+
+### Phase 2 extraction — COMPLÈTE
 | Étape | Détail |
 |---|---|
-| i18n → JSON | ✅ 5 fichiers, -4 340 lignes du monolithe |
-| CSS → fichiers | ✅ 10 fichiers, -1 405 lignes du monolithe |
+| i18n → JSON | 5 fichiers, -4 340 lignes du monolithe. `var LANGS + window.LANGS` pour accès tests |
+| CSS → fichiers | 10 fichiers, -1 405 lignes du monolithe |
+| onclick → data-action | 115 handlers migrés (dashboard 56, collection 53, fiche 6). ~547 inline restants — basse priorité |
+
+### Version locale testable
+| Item | Détail |
+|---|---|
+| IS_LOCAL bypass | `const IS_LOCAL` hostname-strict. Config localStorage auto + launchApp() direct (bypass wizard + login) |
+| Mock fetch | Tous les endpoints `/api/*` mockés en localhost — jamais actif en production |
+| Bannière | "MODE LOCAL — données localStorage uniquement — backend mocké" |
+
+### Tests Playwright — 21/21 ✅
+| Suite | Tests |
+|---|---|
+| layout.spec.js | 5 tests : structure app, bannière IS_LOCAL, nav, titre, #app flex |
+| i18n.spec.js | 5 tests : 5 langues, clés fr, pas de double-wrap, cohérence fr/en, type objet |
+| navigation.spec.js | 5 tests : showPage() 5 pages, bouton actif, zéro erreur critique |
+| collection.spec.js | 3 tests : page collection, #main rempli, aller-retour dashboard |
+| phenology.spec.js | 3 tests : module chargé, page sans erreur, stades BBCH |
 
 ---
 
-## ⏳ EN COURS / À FAIRE
+## ⏳ BACKLOG (non priorisé)
 
-### Phase 2 extraction (suite)
-| Étape | Priorité | Détail | Estimation |
-|---|---|---|---|
-| onclick → addEventListener | Basse | ~750 handlers → délégation d'événements, cible <100 restants | 1-2h |
-| Tests Playwright | Basse | Layout, navigation, CRUD, phéno, i18n | 1h |
-
-### Version locale testable
-| Item | Priorité | Détail |
-|---|---|---|
-| Bypass auth localhost | Moyenne | Détecter localhost → injecter user test, mock des endpoints backend |
-
-### Améliorations UX identifiées mais non priorisées
 | Item | Détail |
 |---|---|
 | Logo SVG professionnel | Remplacer l'emoji 🍊 par un vrai logo vectoriel (nécessite graphiste) |
-| Observatoire enrichi | Données d'acclimatation réelles (floraison par région, zones gel, GJC régionaux) — dépend du volume de données utilisateurs |
+| Observatoire enrichi | Données d'acclimatation réelles — dépend du volume de données utilisateurs |
 | Notifications push serveur | BBCH changement de stade via web-push (infrastructure VAPID en place) |
-| Performance monolithe | Le fichier fait encore 21k lignes — extraction JS progressive vers modules ES |
+| Performance monolithe | 21k lignes restantes — extraction JS progressive vers modules ES |
 | Dark mode | Toggle existe mais couverture CSS incomplète sur les nouveaux modules |
-
-### Scaleway TEM (emails)
-| Item | Statut |
-|---|---|
-| Configuration TEM | ✅ Fonctionnel pour stages et bourse |
-| Emails bienvenue | ⏳ À implémenter |
-| Emails reset password | ⏳ À implémenter |
-| Emails notifications | ⏳ Dépend des notifications push |
-
-### Maintenance
-| Item | Détail |
-|---|---|
-| GitHub Actions | Upgrader actions/checkout@v5 + actions/setup-node@v5 avant juin 2026 |
-| Backup PostgreSQL | pg_dump quotidien vers Scaleway Object Storage (bucket cca-storage à créer) |
 | Photos Object Storage | Migrer le stockage photos de GitHub vers Scaleway Object Storage |
-| Volume disque | 8 Go total, 69% utilisé — prévoir upgrade si croissance utilisateurs |
+| onclick complet | Migrer les ~547 handlers inline restants (calendar, pro, settings, community, admin) |
 
 ---
 
@@ -122,14 +122,15 @@
 
 | Métrique | Valeur |
 |---|---|
-| Monolithe index.html | 21 181 lignes (était 26 926) |
+| Monolithe index.html | 21 363 lignes (était 26 926, -5 563 lignes) |
 | Modules ES extraits | 5 fichiers |
 | Fichiers CSS extraits | 10 fichiers |
 | Fichiers i18n | 5 fichiers JSON |
-| Routes backend | ~25 endpoints |
+| Tests Playwright | 21/21 passés |
+| Routes backend | ~30 endpoints |
 | Tables PostgreSQL | users, sync_stores, bug_reports, training_sessions, training_registrations, graft_exchange, graft_messages, group_orders, group_order_participants, group_order_messages, wiki_*, observations |
 | Utilisateurs en base | 5 |
-| Build size | 1 644 KB HTML + 79 KB JS |
+| Build size | 1 655 KB HTML + 79 KB JS |
 | Langues supportées | FR, EN, IT, ES, PT |
 | Profils | Collectionneur, Pépiniériste, Arboriculteur, Conservatoire |
 
