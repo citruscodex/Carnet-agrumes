@@ -310,10 +310,10 @@ module.exports = async function trainingPlugin(fastify) {
       [req.params.token]
     );
     if (!rows.length) {
-      return reply.redirect(302, `${BASE}/training.html?error=token_invalid`);
+      return reply.redirect(`${BASE}/training.html?error=token_invalid`);
     }
     const { public_url_slug } = rows[0];
-    reply.redirect(302, `${BASE}/training.html?slug=${encodeURIComponent(public_url_slug)}&confirmed=1`);
+    reply.redirect(`${BASE}/training.html?slug=${encodeURIComponent(public_url_slug)}&confirmed=1`);
   });
 
   // ── GET /api/training/cancel/:token — Annulation via lien email (redirect) ───
@@ -328,14 +328,14 @@ module.exports = async function trainingPlugin(fastify) {
       [req.params.token]
     );
     if (!rows.length) {
-      return reply.redirect(302, `${BASE}/training.html?error=token_invalid`);
+      return reply.redirect(`${BASE}/training.html?error=token_invalid`);
     }
     await fastify.pg.query(
       `UPDATE training_sessions SET status='open'
        WHERE id=$1 AND status='full' AND end_datetime > NOW()`,
       [rows[0].session_id]
     );
-    reply.redirect(302, `${BASE}/training.html?slug=${encodeURIComponent(rows[0].public_url_slug)}&cancelled=1`);
+    reply.redirect(`${BASE}/training.html?slug=${encodeURIComponent(rows[0].public_url_slug)}&cancelled=1`);
   });
 
   // ── POST /api/training/cancel/:token — Annulation via JS (JSON) ──────────────
