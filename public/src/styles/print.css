@@ -1,0 +1,12 @@
+/* === Print: museum labels (cca-label-*), @media print === */
+/* ── Module Étiquettes muséales cca-label-* ─────────────────────────────── */
+.cca-label-sheet{display:grid;grid-template-columns:1fr 1fr;gap:4mm;max-width:210mm;margin:0 auto;padding:2mm}
+.cca-label-card{width:85mm;min-height:55mm;border:1.5px dashed #aaa;border-radius:2px;padding:6px 8px;background:#fff;display:flex;flex-direction:column;font-size:7pt;page-break-inside:avoid;box-sizing:border-box}
+.cca-label-qr{width:64px;height:64px;flex-shrink:0}
+.cca-label-qr img,.cca-label-qr canvas{width:64px!important;height:64px!important;display:block}
+.cca-label-acc{font-family:'Courier New',monospace;font-size:8.5pt;font-weight:700;color:#1a3a5c;letter-spacing:.05em}
+.cca-label-sp{font-size:8pt;font-weight:700;color:#1a1a1a;font-style:italic}
+.cca-label-meta{font-size:6.5pt;color:#555}
+.cca-label-iucn{font-size:6pt;font-weight:700;color:white;border-radius:2px;padding:1px 4px}
+.cca-label-brand{font-size:6pt;color:#aaa;font-style:italic}
+@media print{.cca-label-sheet{margin:0;padding:0}.cca-label-card{border-color:#bbb}}

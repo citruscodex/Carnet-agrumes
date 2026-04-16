@@ -1,0 +1,31 @@
+/* === Drip: irrigation module (cca-drip-*) === */
+/* ── Module Drip cca-drip-* ──────────────────────────────────────────────── */
+.cca-drip-card{background:var(--white);border:1px solid var(--cream3);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:box-shadow .12s;user-select:none}
+.cca-drip-card:active{box-shadow:0 2px 8px rgba(22,45,31,.1)}
+.cca-drip-card-header{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.cca-drip-card-ico{font-size:.9rem;flex-shrink:0}
+.cca-drip-card-name{font-weight:600;font-size:.88rem;flex:1;color:var(--text-strong)}
+.cca-drip-card-count{font-size:.74rem;color:var(--muted)}
+.cca-drip-card-body{font-size:.75rem;color:var(--text)}
+.cca-drip-over-tag{font-size:.72rem;color:#e65100;margin-top:4px;background:rgba(230,81,0,.07);border-radius:5px;padding:2px 8px;display:inline-block}
+.cca-drip-detail-topbar{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.cca-drip-del-btn{background:rgba(198,40,40,.08)!important;color:var(--red)!important}
+.cca-drip-detail-header{display:grid;grid-template-columns:1fr 55px 55px 60px 70px 24px;gap:4px;padding:5px 0;font-size:.68rem;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.04em;border-bottom:2px solid var(--cream3);margin-bottom:4px}
+.cca-drip-detail-row{display:grid;grid-template-columns:1fr 55px 55px 60px 70px 24px;gap:4px;align-items:center;padding:5px 0;border-bottom:1px solid var(--cream3);font-size:.78rem}
+.cca-drip-detail-row:last-child{border-bottom:none}
+.cca-drip-detail-max{background:rgba(21,101,192,.06);border-radius:4px;font-weight:600;color:var(--blue,#1565c0)}
+.cca-drip-det-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.cca-drip-det-val{font-family:'JetBrains Mono',monospace;font-size:.72rem;text-align:right}
+.cca-drip-det-rm{background:none;border:none;cursor:pointer;font-size:.75rem;color:var(--muted);padding:2px 4px;border-radius:4px;line-height:1}
+.cca-drip-det-rm:hover{background:rgba(198,40,40,.1);color:var(--red)}
+.cca-drip-over-badge{font-size:.68rem;background:rgba(230,81,0,.1);color:#e65100;border-radius:4px;padding:1px 5px;white-space:nowrap}
+.cca-drip-summary{display:flex;align-items:center;flex-wrap:wrap;padding:10px 12px;background:rgba(21,101,192,.06);border:1px solid rgba(21,101,192,.15);border-radius:8px;font-size:.82rem;margin-top:10px}
+.cca-drip-warn-block{background:rgba(230,81,0,.05);border:1px solid rgba(230,81,0,.2);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:.78rem}
+.cca-drip-warn-row{color:#e65100;margin-bottom:4px;line-height:1.4}
+.cca-drip-sep-hint{color:var(--muted);font-size:.72rem;margin-top:6px;font-style:italic}
+.cca-drip-input{width:100%;padding:7px 9px;border:1px solid var(--cream3);border-radius:8px;font-size:.83rem;background:var(--white);color:var(--text);box-sizing:border-box}
+.cca-drip-link{display:inline-flex;align-items:center;gap:5px;font-size:.78rem;color:var(--blue,#1565c0);background:rgba(21,101,192,.06);border:1px solid rgba(21,101,192,.2);border-radius:7px;padding:3px 9px;cursor:pointer;margin-top:4px}
+.cca-drip-link:hover{background:rgba(21,101,192,.12)}
+@media(max-width:400px){
+  .cca-drip-detail-header,.cca-drip-detail-row{grid-template-columns:1fr 45px 48px 52px 58px 20px}
+}
