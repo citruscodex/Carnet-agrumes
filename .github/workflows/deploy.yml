@@ -41,12 +41,30 @@ jobs:
           ls assets/ | head -5
 
       - name: Deploy via SSH
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: 62.210.237.49
-          username: root
-          key: ${{ secrets.DEPLOY_KEY }}
-          source: "index.html,manifest.json,sw.js,404.html,assets"
-          target: /var/www/cca/
-          rm: true
-          debug: true
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          # Écrire la clé SSH dans un fichier temporaire
+          echo "$DEPLOY_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+          SSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes"
+          SCP="scp -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes"
+          HOST=root@62.210.237.49
+          TARGET=/var/www/cca
+
+          # Vérifier que le répertoire cible existe (sinon le créer)
+          $SSH $HOST "mkdir -p $TARGET/assets"
+
+          # Copier les fichiers un par un (évite les problèmes de tar côté serveur)
+          $SCP index.html     $HOST:$TARGET/index.html
+          $SCP manifest.json  $HOST:$TARGET/manifest.json
+          $SCP sw.js          $HOST:$TARGET/sw.js
+          $SCP 404.html       $HOST:$TARGET/404.html
+          $SCP -r assets/     $HOST:$TARGET/assets/
+
+          echo "✅ Déploiement terminé"
+          $SSH $HOST "ls -la $TARGET/ | head -10"
+
+          # Nettoyage
+          rm /tmp/deploy_key
