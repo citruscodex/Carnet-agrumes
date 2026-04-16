@@ -11,47 +11,20 @@
   "dir": "ltr",
   "orientation": "portrait-primary",
   "categories": ["lifestyle", "productivity"],
-  "icons": [
-    {
-      "src": "assets/logo/citruscodex-logo-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/logo/citruscodex-logo-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/logo/citruscodex-logo-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "assets/logo/citruscodex-logo-192.png",
-      "sizes": "any",
-      "type": "image/png",
-      "purpose": "any"
-    }
-  ],
+  "icons": [],
   "screenshots": [],
   "shortcuts": [
     {
       "name": "Ma collection",
       "short_name": "Collection",
       "description": "Accéder directement à la liste des agrumes",
-      "url": "./?page=collection",
-      "icons": [{"src": "assets/logo/citruscodex-logo-192.png", "sizes": "192x192", "type": "image/png"}]
+      "url": "./?page=collection"
     },
     {
       "name": "Ajouter un agrume",
       "short_name": "Ajouter",
       "description": "Enregistrer un nouvel agrume",
-      "url": "./?action=add",
-      "icons": [{"src": "assets/logo/citruscodex-logo-192.png", "sizes": "192x192", "type": "image/png"}]
+      "url": "./?action=add"
     }
   ]
 }
