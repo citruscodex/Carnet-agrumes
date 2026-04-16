@@ -9723,6 +9723,18 @@ ${['open','acknowledged','in_progress','resolved','closed','wont_fix'].map(s=>`<
 }
 
 function launchApp(){
+  // ── Diagnostic post-login ─────────────────────────────────────────────────
+  const _diagKey = currentDataKey();
+  const _diagRaw = localStorage.getItem(_diagKey);
+  const _diagCount = _diagRaw ? (() => { try { return JSON.parse(_diagRaw).length; } catch { return '⚠PARSE_ERR'; } })() : '⚠ABSENT';
+  const _diagCfg = getCfg();
+  const _diagMode = _diagCfg?.isDemoMode ? '🟠 DEMO MODE' : '🟢 NORMAL';
+  const _diagMsg = 'launchApp() — ' + _diagMode + '\nclé: ' + _diagKey + ' → ' + _diagCount + ' plante(s)\npwdHash: ' + (_diagCfg?.pwdHash ? 'présent' : '⚠ABSENT') + ' | profil: ' + (_diagCfg?.profile?.profileType || '?');
+  console.log('[CCA App]', _diagMsg);
+  if (typeof _syncShowBanner === 'function') {
+    _syncShowBanner(_diagMsg, _diagCfg?.isDemoMode ? '#e65100' : '#1a5276', 8000);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
   const cfg=getCfg();
   if(!cfg.lang){
     const nav=(navigator.language||navigator.languages?.[0]||'fr').slice(0,2).toLowerCase();
@@ -25799,53 +25811,73 @@ async function _syncPush(key, value) {
   } catch(e) { /* offline — localStorage reste la source de vérité */ }
 }
 
+function _syncShowBanner(text, color, ttl) {
+  let b = document.getElementById('cca-sync-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'cca-sync-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;color:#fff;font-size:.75rem;text-align:center;padding:8px 10px;font-family:monospace;line-height:1.4;white-space:pre-wrap;cursor:pointer';
+    b.title = 'Cliquer pour fermer';
+    b.onclick = () => b.remove();
+    document.body?.appendChild(b);
+  }
+  b.style.background = color;
+  b.textContent = text;
+  clearTimeout(b._t);
+  if (ttl) b._t = setTimeout(() => b.remove(), ttl);
+}
+
 async function _syncPull() {
   if (!_srvToken) { console.log('[CCA Sync] Pull ignoré — pas de token'); return; }
-  // Indicateur visuel temporaire (disparaît dès que l'app se lance)
-  const _syncBanner = document.createElement('div');
-  _syncBanner.id = 'cca-sync-banner';
-  _syncBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a4028;color:#fff;font-size:.78rem;text-align:center;padding:7px;font-family:monospace';
-  _syncBanner.textContent = '⟳ Synchronisation en cours…';
-  document.body?.appendChild(_syncBanner);
-  const _rmBanner = () => document.getElementById('cca-sync-banner')?.remove();
+  _syncShowBanner('⟳ Synchronisation en cours avec le serveur…', '#1a4028', 0);
   try {
     console.log('[CCA Sync] Pull démarré vers /api/sync …');
     const r = await fetch('/api/sync', {
       headers: { 'Authorization': 'Bearer ' + _srvToken },
-      cache: 'no-store'   // bypass tout cache HTTP/SW
+      cache: 'no-store'
     });
     console.log('[CCA Sync] Réponse /api/sync →', r.status, r.statusText);
     if (!r.ok) {
+      const msg = '⚠ SYNC ÉCHOUÉ — HTTP ' + r.status + '\nDonnées locales utilisées.';
       console.warn('[CCA Sync] Pull échoué HTTP', r.status);
-      _syncBanner.style.background = '#c62828';
-      _syncBanner.textContent = '⚠ Sync échoué (' + r.status + ') — données locales utilisées';
-      setTimeout(_rmBanner, 4000);
+      _syncShowBanner(msg, '#c62828', 10000);
       return;
     }
     const d = await r.json();
-    console.log('[CCA Sync] Payload brut reçu :', JSON.stringify(d).slice(0, 500));
-    let pulled = 0;
-    const missingPayload = [];
-    for (const { store_key, payload } of (d.keys || [])) {
+    const allKeys = d.keys || [];
+    let pulled = 0, noPayload = [];
+    for (const { store_key, payload } of allKeys) {
       if (payload !== null && payload !== undefined) {
         _origSetItem(store_key, payload);
-        console.log('[CCA Sync] Clé restaurée :', store_key, '— aperçu :', String(payload).slice(0, 120));
+        // Vérification immédiate : lire ce qu'on vient d'écrire
+        const check = localStorage.getItem(store_key);
+        if (check !== payload) console.error('[CCA Sync] WRITE FAILED pour', store_key);
         pulled++;
-      } else {
-        missingPayload.push(store_key);
-      }
+      } else { noPayload.push(store_key); }
     }
-    console.log('[CCA Sync]', pulled, 'clé(s) restaurée(s) depuis le serveur');
-    if (missingPayload.length) console.warn('[CCA Sync] Clés sans payload (format incorrect ?) :', missingPayload);
-    if (!pulled && !missingPayload.length) console.warn('[CCA Sync] Aucune donnée sur le serveur pour cet utilisateur');
-    _syncBanner.textContent = pulled ? '✓ ' + pulled + ' clés synchronisées depuis le serveur' : '⚠ Aucune donnée trouvée sur le serveur';
-    _syncBanner.style.background = pulled ? '#2e7d32' : '#e65100';
-    setTimeout(_rmBanner, 2500);
+    console.log('[CCA Sync]', pulled, 'clé(s) restaurée(s)');
+    // Résumé détaillé post-pull
+    const cfgAfter   = localStorage.getItem('agrumes_cfg');
+    const v5After    = localStorage.getItem('agrumes_v5');
+    const cfgObj     = cfgAfter ? JSON.parse(cfgAfter) : null;
+    const v5Len      = v5After ? JSON.parse(v5After).length : 0;
+    const cfgStatus  = cfgObj ? (cfgObj.pwdHash ? 'pwdHash:OUI' : 'pwdHash:ABSENT') + (cfgObj.isDemoMode ? ' isDemoMode:OUI⚠' : '') : 'ABSENT⚠';
+    const dataKey    = currentDataKey();
+    const dataKeyVal = localStorage.getItem(dataKey);
+    const dataLen    = dataKeyVal ? (() => { try { return JSON.parse(dataKeyVal).length } catch { return '?'; } })() : 0;
+    const lines = [
+      pulled ? '✓ ' + pulled + ' clé(s) restaurées depuis le serveur' : '⚠ 0 CLÉ RESTAURÉE',
+      'agrumes_cfg → ' + cfgStatus,
+      'agrumes_v5  → ' + (v5After ? v5Len + ' plante(s)' : 'ABSENT⚠'),
+      'currentDataKey() = ' + dataKey + ' → ' + dataLen + ' entrée(s)',
+      noPayload.length ? '⚠ Clés sans payload: ' + noPayload.join(', ') : ''
+    ].filter(Boolean);
+    console.log('[CCA Sync] Résumé post-pull :\n' + lines.join('\n'));
+    _syncShowBanner(lines.join('\n'), pulled ? '#2e7d32' : '#e65100', 10000);
+    if (noPayload.length) console.warn('[CCA Sync] Clés sans payload:', noPayload);
   } catch(e) {
-    console.warn('[CCA Sync] Pull échoué (exception), données locales utilisées :', e);
-    _syncBanner.style.background = '#c62828';
-    _syncBanner.textContent = '⚠ Sync échoué (' + e.message + ')';
-    setTimeout(_rmBanner, 4000);
+    console.warn('[CCA Sync] Exception:', e);
+    _syncShowBanner('⚠ SYNC EXCEPTION\n' + e.message, '#c62828', 10000);
   }
 }
 
