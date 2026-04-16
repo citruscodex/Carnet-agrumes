@@ -1,9 +1,10 @@
 -- Migration 003 — Inscription stages pépinière (Chantier 9)
 -- À exécuter sur le serveur PostgreSQL citruscodex.fr
+-- users.id est INTEGER (SERIAL), donc on utilise INTEGER pour les FK
 
 CREATE TABLE IF NOT EXISTS training_sessions (
-  id               UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-  organizer_id     UUID         REFERENCES users(id) ON DELETE CASCADE NOT NULL,
+  id               SERIAL       PRIMARY KEY,
+  organizer_id     INTEGER      REFERENCES users(id) ON DELETE CASCADE NOT NULL,
   title            VARCHAR(200) NOT NULL,
   description      TEXT,
   type             VARCHAR(50)  CHECK (type IN ('greffe','bouture','taille','soins','initiation','autre')),
@@ -20,8 +21,8 @@ CREATE TABLE IF NOT EXISTS training_sessions (
 );
 
 CREATE TABLE IF NOT EXISTS training_registrations (
-  id                  UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-  session_id          UUID         REFERENCES training_sessions(id) ON DELETE CASCADE NOT NULL,
+  id                  SERIAL       PRIMARY KEY,
+  session_id          INTEGER      REFERENCES training_sessions(id) ON DELETE CASCADE NOT NULL,
   email               VARCHAR(200) NOT NULL,
   first_name          VARCHAR(100) NOT NULL,
   last_name           VARCHAR(100) NOT NULL,
@@ -43,11 +44,16 @@ CREATE INDEX IF NOT EXISTS idx_reg_session         ON training_registrations(ses
 CREATE INDEX IF NOT EXISTS idx_reg_email           ON training_registrations(email);
 CREATE INDEX IF NOT EXISTS idx_reg_token           ON training_registrations(confirmation_token);
 
--- Trigger updated_at sur training_sessions
-DROP TRIGGER IF EXISTS trg_training_updated_at ON training_sessions;
-CREATE TRIGGER trg_training_updated_at
-  BEFORE UPDATE ON training_sessions
-  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+-- Trigger updated_at sur training_sessions (utilise la fonction set_updated_at existante si disponible)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'set_updated_at') THEN
+    DROP TRIGGER IF EXISTS trg_training_updated_at ON training_sessions;
+    CREATE TRIGGER trg_training_updated_at
+      BEFORE UPDATE ON training_sessions
+      FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+  END IF;
+END $$;
 
 -- Marquer comme passés automatiquement (à appeler par cron quotidien) :
 -- UPDATE training_sessions SET status='past' WHERE status='open' AND end_datetime < NOW();
