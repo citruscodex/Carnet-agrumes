@@ -369,6 +369,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 .v-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(0,0,0,.2)}
 
 #verger-map .leaflet-top{top:46px!important}
+#obs-map .leaflet-marker-pane,#obs-map .leaflet-overlay-pane,#obs-map .leaflet-shadow-pane{z-index:600!important;opacity:1!important;visibility:visible!important}
 #verger-map .leaflet-right.leaflet-top .leaflet-control-zoom{margin-right:8px!important;margin-top:0!important;border-radius:10px!important;overflow:hidden!important;box-shadow:0 2px 8px rgba(0,0,0,.35)!important}
 #verger-map .leaflet-control-zoom-in,#verger-map .leaflet-control-zoom-out{width:32px!important;height:32px!important;line-height:32px!important;font-size:1.1rem!important}
 
@@ -17191,7 +17192,7 @@ async function _renderObservatoire(c){
       </div>`).join(''):`<div style="padding:12px;text-align:center;color:var(--muted);font-size:.78rem">Aucune observation publiée.</div>`;
     c.innerHTML=`
       <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:.75rem;color:var(--muted)">${isDemo?'Données de démonstration':mapData.length+' point'+(mapData.length!==1?'s':'')+' sur la carte'}</div>
+        <div style="font-size:.75rem;color:var(--muted)">${isDemo?'Données de démonstration':(()=>{const v=mapData.filter(p=>{const la=parseFloat(p.lat_approx??p.lat),lo=parseFloat(p.lng_approx??p.lng);return isFinite(la)&&isFinite(lo);});return v.length?v.length+' point'+(v.length!==1?'s':'')+' sur la carte':'Carte de démonstration';})()}</div>
         <button class="btn btn-sm btn-p" style="font-size:.75rem" id="obs-signaler-btn">+ Signaler</button>
       </div>
       <div style="margin:0 16px;border-radius:10px;overflow:hidden;border:1.5px solid var(--cream3)">
@@ -17207,7 +17208,10 @@ async function _renderObservatoire(c){
       <div class="cca-obs-journal">${journalRows}</div>`;
     document.getElementById('obs-signaler-btn')?.addEventListener('click',wikiOpenObsForm);
     // ── Init Leaflet map — double rAF + vérification hauteur ────────────
-    const displayData=mapData.length?mapData:DEMO_OBS;
+    // Filtrer les points avec coordonnées valides
+    const validReal=mapData.filter(pt=>{const la=parseFloat(pt.lat_approx??pt.lat),lo=parseFloat(pt.lng_approx??pt.lng);return isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180;});
+    const displayData=validReal.length?validReal:DEMO_OBS;
+    const isRealData=validReal.length>0;
     function _initMap(){
       if(!window.L){setTimeout(_initMap,300);return;}
       const mapEl=document.getElementById('obs-map');
@@ -17216,25 +17220,31 @@ async function _renderObservatoire(c){
       const rect=mapEl.getBoundingClientRect();
       if(rect.height<10){setTimeout(_initMap,300);return;}
       const obsMap=L.map('obs-map',{zoomControl:true,attributionControl:false});
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(obsMap);
-      obsMap.setView([46,2],5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,crossOrigin:true}).addTo(obsMap);
+      obsMap.setView([46.5,2.5],5);
+      console.log('[Obs] Creating markers, count=',displayData.length,'(real='+isRealData+')');
       const markers=[];
-      displayData.forEach(pt=>{
+      displayData.forEach((pt,i)=>{
         const lat=parseFloat(pt.lat_approx??pt.lat);
         const lng=parseFloat(pt.lng_approx??pt.lng);
-        if(!isFinite(lat)||!isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180)return;
-        const col=eventColors[pt.event_type]||'#546e7a';
+        if(!isFinite(lat)||!isFinite(lng)){console.warn('[Obs] Skip invalid coords:',pt);return;}
+        const col=eventColors[pt.event_type]||'#c75b2a';
         const ico=eventIcons[pt.event_type]||'📌';
         const cnt=parseInt(pt.count)||1;
-        const m=L.circleMarker([lat,lng],{radius:8+Math.min(cnt,6),color:col,fillColor:col,fillOpacity:.7,weight:2})
-          .bindPopup(`${ico} <b>${esc(pt.event_type)}</b><br>${esc(pt.species||pt.region||'—')}<br>${esc(pt.region||'—')}<br>${cnt} obs.`);
+        const m=L.circleMarker([lat,lng],{radius:12,fillColor:col,color:'#000',weight:2,fillOpacity:1.0,pane:'markerPane'})
+          .bindPopup(`${ico} <b>${esc(pt.event_type)}</b><br>${esc(pt.species||'—')}<br>${esc(pt.region||'—')}<br>${cnt} obs.`);
         m.addTo(obsMap);
         markers.push(m);
+        console.log('[Obs] Marker',i,lat,lng,pt.event_type);
       });
       if(markers.length){
-        try{obsMap.fitBounds(L.featureGroup(markers).getBounds().pad(.2));}catch{}
+        const group=L.featureGroup(markers);
+        const bounds=group.getBounds();
+        if(bounds.isValid()){obsMap.fitBounds(bounds.pad(0.3));}else{obsMap.setView([46.5,2.5],5);}
+      }else{
+        obsMap.setView([46.5,2.5],5);
       }
-      setTimeout(()=>obsMap.invalidateSize(),100);
+      setTimeout(()=>obsMap.invalidateSize(),200);
     }
     requestAnimationFrame(()=>requestAnimationFrame(_initMap));
   }
@@ -17410,12 +17420,20 @@ ${_srvUserRole()==='admin'?`<div style="background:rgba(198,40,40,.05);border-ra
 <div class="prof-section">
 <div class="prof-section-title">Type de profil</div>
 <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px">
-<div class="cca-profile-badge">
+${(sessionStorage.getItem('cca_srv_email')||_srvEmail)==='tristan.peyrotty@gmail.com'
+  ? `<div class="cca-profile-badge" style="gap:8px">
+  <span class="cca-profile-icon">${{collectionneur:'🍋',pepinieriste:'🌱',arboriculteur:'🌳',conservatoire:'🏛'}[pType]||'🍋'}</span>
+  <select onchange="switchProfileType(this.value)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:.85rem;cursor:pointer">
+    ${['collectionneur','pepinieriste','arboriculteur','conservatoire'].map(t=>`<option value="${t}"${t===pType?' selected':''}>${{collectionneur:'🍋 Collectionneur',pepinieriste:'🌱 Pépiniériste',arboriculteur:'🌳 Arboriculteur',conservatoire:'🏛 Conservatoire'}[t]}</option>`).join('')}
+  </select>
+</div>
+<div class="cca-profile-hint">⚙ Compte de test — switch local uniquement (ne modifie pas la BDD)</div>`
+  : `<div class="cca-profile-badge">
   <span class="cca-profile-icon">${{collectionneur:'🍋',pepinieriste:'🌱',arboriculteur:'🌳',conservatoire:'🏛'}[pType]||'🍋'}</span>
   <span style="font-weight:600;font-size:.88rem">${esc({collectionneur:'Collectionneur',pepinieriste:'Pépiniériste',arboriculteur:'Arboriculteur',conservatoire:'Conservatoire'}[pType]||pType)}</span>
   <span class="cca-profile-locked">🔒 ${esc(T('profile.locked')||'Verrouillé')}</span>
 </div>
-<div class="cca-profile-hint">${esc(T('profile.lockedHint')||'Type de profil géré par l\'administrateur')}</div>
+<div class="cca-profile-hint">${esc(T('profile.lockedHint')||'Type de profil géré par l\'administrateur')}</div>`}
 </div>
 </div>
 <div class="prof-section"><div class="prof-section-title">${T('misc.profPersonal')}</div>
@@ -25886,11 +25904,23 @@ async function _syncPull() {
   }
 }
 
+// ── Switch de profil (compte tristan uniquement) ───────────────────────────
+function switchProfileType(pt){
+  const VALID=['collectionneur','pepinieriste','arboriculteur','conservatoire'];
+  if(!VALID.includes(pt))return;
+  const cfg=getCfg();if(!cfg?.profile)return;
+  cfg.profile.profileType=pt;
+  setCfg(cfg);
+  _syncPush('agrumes_cfg',JSON.stringify(cfg));
+  location.reload();
+}
+
 // ── Auth serveur CitrusCodex bêta ──────────────────────────────────────────
 const CCA_API='';  // même origine, pas besoin de préfixe absolu
 let _srvToken=sessionStorage.getItem('cca_srv_token')||null;
 let _srvProfile=sessionStorage.getItem('cca_srv_profile')||null;
 let _srvRefreshToken=sessionStorage.getItem('cca_srv_refresh')||null;
+let _srvEmail=sessionStorage.getItem('cca_srv_email')||null;
 let _refreshInProgress=null;
 
 async function _refreshAccessToken(){
@@ -25951,14 +25981,16 @@ async function submitServerLogin(){
     const r=await fetch(CCA_API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd}),cache:'no-store'});
     const d=await r.json();
     if(!r.ok){err.textContent=d.error||'Identifiants invalides.';err.style.display='block';btn.disabled=false;btn.textContent='Accéder à la bêta';return;}
-    _srvToken=d.token;_srvProfile=d.profile;_srvRefreshToken=d.refreshToken||null;
+    _srvToken=d.token;_srvProfile=d.profile;_srvRefreshToken=d.refreshToken||null;_srvEmail=d.email||null;
     sessionStorage.setItem('cca_srv_token',d.token);
     sessionStorage.setItem('cca_srv_profile',d.profile);
     if(d.refreshToken)sessionStorage.setItem('cca_srv_refresh',d.refreshToken);
-    // Stocker le profile_type serveur pour application post-pull
-    if(d.profile_type)sessionStorage.setItem('cca_srv_profile_type',d.profile_type);
+    if(d.email)sessionStorage.setItem('cca_srv_email',d.email);
+    // Stocker le profile_type serveur pour application post-pull (d.profile = profile_type dans la réponse login)
+    const _srvPT=d.profile||d.profile_type;
+    if(_srvPT)sessionStorage.setItem('cca_srv_profile_type',_srvPT);
     // 1A — Le profileType est autoritatif côté serveur : l'écraser localement si cfg existe déjà
-    if(d.profile_type){const _cfg=getCfg();if(_cfg?.profile){_cfg.profile.profileType=d.profile_type;setCfg(_cfg);}}
+    if(_srvPT){const _cfg=getCfg();if(_cfg?.profile){_cfg.profile.profileType=_srvPT;setCfg(_cfg);}}
     document.getElementById('sc-server-login').style.display='none';
     _startLocalFlow();
   }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Accéder à la bêta';}
