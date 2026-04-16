@@ -30,8 +30,15 @@ server/
     002_profile_type.sql
 ```
 
-### Repo de déploiement (`citruscodex-repo/`)
-Poussé vers GitHub → GitHub Actions → SCP → `/var/www/cca/` (Scaleway DEV1-S)
+### Workflow de déploiement
+```
+git push origin main
+  → GitHub Actions (ubuntu-latest)
+  → npm ci + npm run build
+  → .github/fix-manifest.js  (fixe href manifest hashé → /manifest.json)
+  → tar + scp + tar -x sur /var/www/cca/
+  → citruscodex.fr (Scaleway DEV1-S, Caddy)
+```
 
 ## Commandes essentielles
 ```
