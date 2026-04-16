@@ -26,6 +26,10 @@ audit-screenshots/
 *.zip
 *.bak
 
+# Playwright
+test-results/
+playwright-report/
+
 # OS
 .DS_Store
 Thumbs.db

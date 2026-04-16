@@ -187,7 +187,23 @@ module.exports = async function adminPlugin(fastify) {
       [hash, req.params.id]
     );
     if (!rows.length) return reply.code(404).send({ error: 'Not found' });
-    // TODO: envoyer le nouveau mot de passe par email (Scaleway TEM)
+    // Email de réinitialisation (Scaleway TEM)
+    if (fastify.sendMail) {
+      const BASE = fastify.baseUrl || 'https://citruscodex.fr';
+      fastify.sendMail(
+        rows[0].email,
+        '🔑 CitrusCodex — Nouveau mot de passe temporaire',
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+          <h1 style="color:#c75b2a">🍊 CitrusCodex</h1>
+          <p>Votre mot de passe a été réinitialisé par un administrateur.</p>
+          <p>Nouveau mot de passe temporaire :<br>
+            <strong style="font-size:1.3em;font-family:monospace;letter-spacing:2px">${newPwd}</strong>
+          </p>
+          <p><a href="${BASE}" style="display:inline-block;padding:12px 24px;background:#c75b2a;color:white;text-decoration:none;border-radius:8px">Se connecter</a></p>
+          <p style="color:#666;font-size:12px">Changez ce mot de passe dès votre prochaine connexion.</p>
+        </div>`
+      ).catch(err => fastify.log.warn('[mail] reset-pwd email failed:', err.message));
+    }
     reply.send({ ok: true, email: rows[0].email, temp_password: newPwd });
   });
 
@@ -250,8 +266,24 @@ module.exports = async function adminPlugin(fastify) {
     );
 
     // Email de bienvenue optionnel (Scaleway TEM)
-    if (fastify.mailer) {
-      fastify.mailer.sendWelcome(email, password).catch(() => {});
+    if (fastify.sendMail) {
+      const BASE = fastify.baseUrl || 'https://citruscodex.fr';
+      fastify.sendMail(
+        email,
+        '🍊 Bienvenue sur CitrusCodex — Votre accès bêta',
+        `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+          <h1 style="color:#c75b2a">🍊 CitrusCodex</h1>
+          <p>Bonjour,</p>
+          <p>Votre compte bêta-testeur a été créé :</p>
+          <ul>
+            <li><strong>Email :</strong> ${email}</li>
+            <li><strong>Mot de passe :</strong> ${password}</li>
+            <li><strong>Profil :</strong> ${profile_type}</li>
+          </ul>
+          <p><a href="${BASE}" style="display:inline-block;padding:12px 24px;background:#c75b2a;color:white;text-decoration:none;border-radius:8px">Accéder à CitrusCodex</a></p>
+          <p style="color:#666;font-size:12px">Changez votre mot de passe dès votre première connexion.</p>
+        </div>`
+      ).catch(err => fastify.log.warn('[mail] welcome email failed:', err.message));
     }
 
     reply.code(201).send(rows[0]);

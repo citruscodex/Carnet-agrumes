@@ -21120,6 +21120,10 @@ async function _startLocalFlow(){
   if(!c||!c.pwdHash){
     console.log('[CCA Auth] → startSetup() (pas de config locale après pull)');
     startSetup();
+  }else if(IS_LOCAL){
+    // Mode dev local : bypass du mot de passe → dashboard direct
+    console.log('[CCA Auth] IS_LOCAL → launchApp() direct (bypass login)');
+    loadData(); launchApp();
   }else{
     console.log('[CCA Auth] → showLogin()');
     showLogin();
@@ -21156,6 +21160,10 @@ function _srvTokenValid(){
     sessionStorage.setItem('cca_srv_role','admin');
     sessionStorage.setItem('cca_srv_profile_type','collectionneur');
     _srvToken='local-dev-token'; // mise à jour de la variable live
+    // Config locale minimale si localStorage vide (évite le wizard en mode dev)
+    if(!getCfg().pwdHash){
+      setCfg({pwdHash:'local-dev-bypass',profile:{name:'Dev Local',loc:'',bio:'',profileType:'collectionneur',since:''},createdAt:'2026-01-01'});
+    }
     // Bannière MODE LOCAL
     const banner=document.createElement('div');
     banner.id='cca-local-banner';

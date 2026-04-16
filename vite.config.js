@@ -18,7 +18,7 @@ function inlineLangsPlugin() {
           const filePath = path.join(I18N_DIR, `${code}.json`);
           LANGS[code] = JSON.parse(fs.readFileSync(filePath, 'utf8'));
         }
-        const script = `<script>const LANGS=${JSON.stringify(LANGS)};</script>`;
+        const script = `<script>var LANGS=${JSON.stringify(LANGS)};window.LANGS=LANGS;</script>`;
         // Inject right before </head>
         return html.replace('</head>', `${script}\n</head>`);
       },
