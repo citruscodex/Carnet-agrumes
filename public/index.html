@@ -3399,6 +3399,7 @@ ${results.map(({p,u})=>{
 
 function buildAudit(oldP,nb,date){const entries=[];for(const[key,cfg]of Object.entries(AUDIT_FIELDS)){const ov=String(oldP[key]||''),nv=String(nb[key]||'');if(ov!==nv)entries.push({id:gid(),date,type:'modification',description:`${cfg.label} : ${cfg.fmt(ov)||'—'} → ${cfg.fmt(nv)||'—'}`,audit:true,bulk:false})}if((oldP.notes||'')!==(nb.notes||''))entries.push({id:gid(),date,type:'modification',description:'Notes de culture mises à jour.',audit:true,bulk:false});return entries}
 
+const IS_LOCAL=(()=>{const h=window.location.hostname;return h==='localhost'||h==='127.0.0.1';})();
 let page='dashboard',selId=null,fSt='all',fLo='all',fCt='all',srch='',profView='profil',proView='hub',collView='list',nursView='dashboard';
 let advFilters=[];  // F5 — filtres composables
 let _detHistOpen=false; // F4 — panneau historique déterminations
@@ -21132,6 +21133,39 @@ function _srvTokenValid(){
 }
 
 (function(){
+  // ── CHANTIER 3 — Bypass auth + mock fetch en local ──────────────────────────
+  if(IS_LOCAL){
+    // Mock fetch : intercepte tous les endpoints backend
+    const _orig=window.fetch;
+    window.fetch=async(url,opts)=>{
+      const u=typeof url==='string'?url:(url.url||String(url));
+      if(u.includes('/api/auth'))  return new Response(JSON.stringify({token:'local-dev-token',email:'dev@localhost',profile:'collectionneur',role:'admin'}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/sync')&&opts?.method==='POST') return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/sync'))  return new Response(JSON.stringify({keys:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/bugs'))  return opts?.method==='POST'?new Response(JSON.stringify({id:Date.now(),status:'open'}),{status:201,headers:{'Content-Type':'application/json'}}):new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/training')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/bourse'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/orders'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin'))    return new Response(JSON.stringify({users:[],total:0,active_7d:0,new_30d:0,disabled:0,bugs:0,wiki_pages:0,observations:0,revisions:0}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/observatoire')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      return _orig(url,opts);
+    };
+    // Injecter session dev
+    sessionStorage.setItem('cca_srv_token','local-dev-token');
+    sessionStorage.setItem('cca_srv_email','dev@localhost');
+    sessionStorage.setItem('cca_srv_role','admin');
+    sessionStorage.setItem('cca_srv_profile_type','collectionneur');
+    _srvToken='local-dev-token'; // mise à jour de la variable live
+    // Bannière MODE LOCAL
+    const banner=document.createElement('div');
+    banner.id='cca-local-banner';
+    banner.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#e94560;font-size:11px;text-align:center;padding:2px 0;z-index:9999;font-family:monospace;pointer-events:none';
+    banner.textContent='🔧 MODE LOCAL — données localStorage uniquement — backend mocké';
+    document.body.appendChild(banner);
+    _startLocalFlow();
+    return;
+  }
+  // ── Flux normal (production) ─────────────────────────────────────────────
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
       if(document.getElementById('sc-server-login')?.style.display!=='none')submitServerLogin();
