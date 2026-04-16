@@ -10,15 +10,34 @@
   "lang": "fr",
   "dir": "ltr",
   "orientation": "portrait-primary",
-  "categories": ["lifestyle", "productivity"],
-  "icons": [
-    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
-    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable"},
-    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  "categories": [
+    "lifestyle",
+    "productivity"
   ],
-  "shortcuts": [
-    {"name": "Ma collection", "short_name": "Collection", "url": "./?page=collection", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}]},
-    {"name": "Ajouter un agrume", "short_name": "Ajouter", "url": "./?action=add", "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"}]}
+  "icons": [
+    {
+      "src": "/assets/citruscodex-logo-192-BqbKaR41.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/citruscodex-logo-512-vFNTq7nO.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/citruscodex-logo-192-BqbKaR41.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/assets/citruscodex-logo-512-vFNTq7nO.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
