@@ -44,27 +44,29 @@ jobs:
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          # Écrire la clé SSH dans un fichier temporaire
           echo "$DEPLOY_KEY" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
-          SSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes"
-          SCP="scp -i /tmp/deploy_key -o StrictHostKeyChecking=no -o BatchMode=yes"
+          SSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no"
           HOST=root@62.210.237.49
           TARGET=/var/www/cca
 
-          # Vérifier que le répertoire cible existe (sinon le créer)
-          $SSH $HOST "mkdir -p $TARGET/assets"
+          # Créer l'archive localement (scp de fichier unique fonctionne)
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html assets
+          echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
-          # Copier les fichiers un par un (évite les problèmes de tar côté serveur)
-          $SCP index.html     $HOST:$TARGET/index.html
-          $SCP manifest.json  $HOST:$TARGET/manifest.json
-          $SCP sw.js          $HOST:$TARGET/sw.js
-          $SCP 404.html       $HOST:$TARGET/404.html
-          $SCP -r assets/     $HOST:$TARGET/assets/
+          # Copier l'archive sur le serveur
+          scp -i /tmp/deploy_key -o StrictHostKeyChecking=no \
+              /tmp/deploy.tar.gz $HOST:/tmp/deploy.tar.gz
 
-          echo "✅ Déploiement terminé"
-          $SSH $HOST "ls -la $TARGET/ | head -10"
+          # Extraire sur le serveur et vérifier
+          $SSH $HOST "
+            set -e
+            mkdir -p $TARGET
+            tar -xzf /tmp/deploy.tar.gz -C $TARGET/
+            rm /tmp/deploy.tar.gz
+            echo '✅ Extraction OK'
+            ls -la $TARGET/ | head -12
+          "
 
-          # Nettoyage
-          rm /tmp/deploy_key
+          rm /tmp/deploy_key /tmp/deploy.tar.gz
