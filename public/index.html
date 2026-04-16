@@ -7418,7 +7418,7 @@ function getGH(){const c=getCfg();return c.ghUser&&c.ghRepo?{user:c.ghUser,repo:
 function getProfile(){return getCfg().profile||{}}
 
 let plants=[];
-function loadData(){try{const r=localStorage.getItem(currentDataKey());if(r){plants=JSON.parse(r).map(p=>({...p,photos:p.photos||[],cultureType:p.cultureType||'pot'}));return}}catch{}plants=JSON.parse(JSON.stringify(INIT));saveData()}
+function loadData(){try{const r=localStorage.getItem(currentDataKey());if(r){plants=JSON.parse(r).map(p=>({...p,photos:p.photos||[],cultureType:p.cultureType||'pot'}));return}}catch{}plants=JSON.parse(JSON.stringify(INIT));if(!_srvToken)saveData();/* Ne pas pousser les données INIT sur le serveur — évite d'écraser les vraies données */}
 function saveData(){try{localStorage.setItem(currentDataKey(),JSON.stringify(plants))}catch{}}
 
 // ── F1 — Accession ID normalisé ───────────────────────────────────────────────
@@ -9522,7 +9522,7 @@ function _bugInitFAB(){
   fab.setAttribute('aria-label',T('bug.title')||'Signaler un problème');
   fab.textContent='🐛';
   // Restaurer position
-  try{const p=JSON.parse(localStorage.getItem(_BUG_FAB_POS)||'{}');if(p.right!=null)fab.style.right=p.right+'px';if(p.bottom!=null)fab.style.bottom=p.bottom+'px';}catch{}
+  try{const p=JSON.parse(localStorage.getItem(_BUG_FAB_POS)||'{}');if(p.right!=null)fab.style.right=Math.max(8,Math.min(p.right,window.innerWidth-52))+'px';if(p.bottom!=null)fab.style.bottom=Math.max(8,Math.min(p.bottom,window.innerHeight-52))+'px';}catch{}
   document.body.appendChild(fab);
   // Drag logic
   let _dx=0,_dy=0,_sr=0,_sb=0,_moving=false;
@@ -17804,7 +17804,7 @@ function renderProPage() {
     {id:'phyto',     icon:'🌿', label:'Phyto'},
     {id:'lots',      icon:'📦', label:'Lots'},
     {id:'iot',       icon:'📡', label:'Capteurs'},
-    ...(isPepin ? [{id:'pepiniere', icon:'🌱', label:'Pépinière'},{id:'gantt', icon:'📅', label:'Planning'}] : []),
+    ...(isPepin ? [{id:'pepiniere', icon:'🌱', label:'Pépinière'},{id:'stages', icon:'🎓', label:'Stages'},{id:'gantt', icon:'📅', label:'Planning'}] : []),
     ...(isArbo  ? [{id:'certif', icon:'🏅', label:'Certifs'},{id:'recolte', icon:'🍊', label:'Récolte'},{id:'gantt', icon:'📅', label:'Planning'}] : []),
   ];
   const tabBar = `<div class="pro-tab-bar">${tabs.map(t=>`<div class="pro-tab-pill${proView===t.id?' active':''}" onclick="proView='${t.id}';render()"><span class="pt-icon">${t.icon}</span>${t.label}</div>`).join('')}</div>`;
@@ -17813,11 +17813,182 @@ function renderProPage() {
   if(proView==='lots')     return tabBar+renderProfLots();
   if(proView==='iot')      return tabBar+renderProfIoT();
   if(proView==='pepiniere')return tabBar+renderProfNursery();
+  if(proView==='stages')   return tabBar+renderPepinStages();
   if(proView==='certif')   return tabBar+renderArboCertif();
   if(proView==='recolte')  return tabBar+renderArboRecolte();
   if(proView==='gantt')    return tabBar+renderProGantt();
   proView='eco';
   return tabBar+renderEcoPage();
+}
+
+// ── Chantier 9 — Stages pépinière ─────────────────────────────────────────────
+let _stagesCache = null;
+function renderPepinStages() {
+  const html = `
+<div style="padding:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <h3 style="margin:0;font-size:1rem">🎓 Mes stages</h3>
+    <button class="btn btn-a btn-sm" onclick="_stagesOpenForm()">+ Créer un stage</button>
+  </div>
+  <div id="cca-stages-list" style="display:flex;flex-direction:column;gap:8px">
+    <div style="text-align:center;padding:20px;color:var(--muted);font-size:.85rem">Chargement…</div>
+  </div>
+</div>
+<div id="cca-stages-modal" class="cca-bug-overlay" style="display:none">
+  <div class="cca-bug-modal" role="dialog" aria-modal="true" style="max-width:480px">
+    <div class="cca-bug-header">
+      <span class="cca-bug-header-title">🎓 <span id="cca-stages-modal-title">Créer un stage</span></span>
+      <button class="cca-bug-close" onclick="document.getElementById('cca-stages-modal').style.display='none'">✕</button>
+    </div>
+    <label class="cca-bug-label">Titre *</label>
+    <input id="cca-st-title" class="cca-bug-input" type="text" maxlength="200" placeholder="Ex : Taille et greffe des agrumes"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="cca-bug-label">Début *</label><input id="cca-st-start" class="cca-bug-input" type="datetime-local"/></div>
+      <div><label class="cca-bug-label">Fin *</label><input id="cca-st-end" class="cca-bug-input" type="datetime-local"/></div>
+    </div>
+    <label class="cca-bug-label">Lieu *</label>
+    <input id="cca-st-loc" class="cca-bug-input" type="text" maxlength="200" placeholder="Ex : Pépinière Citrus, Montpellier"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="cca-bug-label">Places *</label><input id="cca-st-cap" class="cca-bug-input" type="number" min="1" max="200" placeholder="12"/></div>
+      <div><label class="cca-bug-label">Prix (€)</label><input id="cca-st-price" class="cca-bug-input" type="number" min="0" step="0.01" placeholder="0 = gratuit"/></div>
+    </div>
+    <label class="cca-bug-label">Description</label>
+    <textarea id="cca-st-desc" class="cca-bug-textarea" placeholder="Programme, prérequis, matériel fourni…" style="min-height:80px"></textarea>
+    <div id="cca-st-err" class="aerr" style="display:none;margin-bottom:8px"></div>
+    <button class="cca-bug-submit" onclick="_stagesSubmit()">Enregistrer</button>
+  </div>
+</div>`;
+  // Charger la liste depuis le serveur après render
+  setTimeout(_stagesLoad, 50);
+  return html;
+}
+
+function _stagesOpenForm(editData) {
+  document.getElementById('cca-stages-modal-title').textContent = editData ? 'Modifier le stage' : 'Créer un stage';
+  document.getElementById('cca-st-title').value = editData?.title || '';
+  document.getElementById('cca-st-start').value = editData?.start_datetime?.slice(0,16) || '';
+  document.getElementById('cca-st-end').value = editData?.end_datetime?.slice(0,16) || '';
+  document.getElementById('cca-st-loc').value = editData?.location || '';
+  document.getElementById('cca-st-cap').value = editData?.capacity || '';
+  document.getElementById('cca-st-price').value = editData?.price_eur || '';
+  document.getElementById('cca-st-desc').value = editData?.description || '';
+  document.getElementById('cca-st-err').style.display = 'none';
+  document.getElementById('cca-stages-modal')._editId = editData?.id || null;
+  document.getElementById('cca-stages-modal').style.display = 'flex';
+}
+
+async function _stagesSubmit() {
+  const title = document.getElementById('cca-st-title').value.trim();
+  const start = document.getElementById('cca-st-start').value;
+  const end   = document.getElementById('cca-st-end').value;
+  const loc   = document.getElementById('cca-st-loc').value.trim();
+  const cap   = parseInt(document.getElementById('cca-st-cap').value);
+  const price = parseFloat(document.getElementById('cca-st-price').value) || 0;
+  const desc  = document.getElementById('cca-st-desc').value.trim();
+  const errEl = document.getElementById('cca-st-err');
+  errEl.style.display = 'none';
+  if (!title || !start || !end || !loc || !cap) {
+    errEl.textContent = 'Titre, dates, lieu et nombre de places sont requis.';
+    errEl.style.display = 'block'; return;
+  }
+  if (new Date(end) <= new Date(start)) {
+    errEl.textContent = 'La date de fin doit être après le début.';
+    errEl.style.display = 'block'; return;
+  }
+  const modal = document.getElementById('cca-stages-modal');
+  const editId = modal._editId;
+  const btn = modal.querySelector('.cca-bug-submit');
+  btn.disabled = true; btn.textContent = '⏳…';
+  try {
+    const url = editId ? `/api/training/sessions/${editId}` : '/api/training/sessions';
+    const method = editId ? 'PATCH' : 'POST';
+    const r = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _srvToken },
+      body: JSON.stringify({ title, start_datetime: start, end_datetime: end, location: loc, capacity: cap, price_eur: price, description: desc })
+    });
+    if (!r.ok) { const d = await r.json(); errEl.textContent = d.error || 'Erreur serveur'; errEl.style.display = 'block'; return; }
+    modal.style.display = 'none';
+    _stagesCache = null;
+    toast(editId ? 'Stage mis à jour ✓' : 'Stage créé ✓');
+    _stagesLoad();
+  } catch(e) { errEl.textContent = 'Erreur réseau : ' + e.message; errEl.style.display = 'block'; }
+  finally { btn.disabled = false; btn.textContent = 'Enregistrer'; }
+}
+
+async function _stagesLoad() {
+  const listEl = document.getElementById('cca-stages-list');
+  if (!listEl) return;
+  if (!_srvToken) { listEl.innerHTML = '<div style="padding:16px;color:var(--muted);font-size:.85rem">Connexion serveur requise.</div>'; return; }
+  try {
+    const r = await fetch('/api/training/sessions/mine', { headers: { 'Authorization': 'Bearer ' + _srvToken } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const sessions = await r.json();
+    _stagesCache = sessions;
+    if (!sessions.length) {
+      listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-size:.85rem">Aucun stage créé pour l\'instant.<br><br><button class="btn btn-a btn-sm" onclick="_stagesOpenForm()">+ Créer votre premier stage</button></div>';
+      return;
+    }
+    const STATUS_LABEL = { open:'🟢 Ouvert', full:'🔴 Complet', cancelled:'⚫ Annulé', closed:'🔒 Fermé' };
+    listEl.innerHTML = sessions.map(s => {
+      const dStart = new Date(s.start_datetime);
+      const nInscrits = parseInt(s.confirmed_count) || 0;
+      const pct = Math.round(nInscrits / s.capacity * 100);
+      return `<div style="background:var(--white);border:1px solid var(--cream3);border-radius:10px;padding:12px 14px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:600;font-size:.9rem;margin-bottom:2px">${esc(s.title)}</div>
+            <div style="font-size:.75rem;color:var(--muted)">📍 ${esc(s.location)}</div>
+            <div style="font-size:.75rem;color:var(--muted)">📅 ${dStart.toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'})} — ${s.price_eur>0?s.price_eur+'€':'Gratuit'}</div>
+          </div>
+          <span style="font-size:.72rem;padding:2px 8px;border-radius:10px;background:var(--cream2);flex-shrink:0">${STATUS_LABEL[s.status]||s.status}</span>
+        </div>
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-bottom:3px"><span>Inscriptions confirmées</span><span>${nInscrits} / ${s.capacity}</span></div>
+          <div style="height:4px;background:var(--cream3);border-radius:2px"><div style="height:4px;background:var(--g2);border-radius:2px;width:${pct}%"></div></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:10px">
+          <button class="btn btn-g btn-sm" style="flex:1" onclick="_stagesViewRegistrations('${esc(s.id)}','${esc(s.title)}')">👥 Inscrits</button>
+          <button class="btn btn-g btn-sm" onclick="_stagesEditById('${esc(s.id)}')">✏️</button>
+          ${s.status!=='cancelled'?`<button class="btn btn-sm" style="background:var(--red);color:white" onclick="_stagesCancel('${esc(s.id)}')">✕</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    listEl.innerHTML = `<div style="padding:16px;color:var(--red);font-size:.82rem">Impossible de charger les stages : ${esc(e.message)}</div>`;
+  }
+}
+
+function _stagesEditById(id) {
+  const s = (_stagesCache||[]).find(x=>x.id===id);
+  if (s) _stagesOpenForm(s);
+}
+
+async function _stagesCancel(id) {
+  if (!confirm('Annuler ce stage ? Cette action est irréversible.')) return;
+  try {
+    const r = await fetch(`/api/training/sessions/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + _srvToken } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    toast('Stage annulé');
+    _stagesCache = null; _stagesLoad();
+  } catch(e) { toast('Erreur : ' + e.message, true); }
+}
+
+async function _stagesViewRegistrations(id, title) {
+  try {
+    const r = await fetch(`/api/training/sessions/${id}/registrations`, { headers: { 'Authorization': 'Bearer ' + _srvToken } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const regs = await r.json();
+    const rows = regs.length ? regs.map(reg =>
+      `<tr><td style="padding:4px 6px">${esc(reg.first_name)} ${esc(reg.last_name)}</td><td style="padding:4px 6px;font-size:.75rem;color:var(--muted)">${esc(reg.email)}</td><td style="padding:4px 6px;text-align:center">${reg.confirmed?'✅':'⏳'}</td><td style="padding:4px 6px;font-size:.75rem;color:var(--muted)">${reg.phone?esc(reg.phone):''}</td></tr>`
+    ).join('') : '<tr><td colspan="4" style="padding:12px;text-align:center;color:var(--muted)">Aucun inscrit</td></tr>';
+    showModal(`<h3>👥 Inscrits — ${esc(title)}</h3>
+    <div style="overflow-x:auto;max-height:300px;overflow-y:auto">
+    <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <thead><tr style="border-bottom:1px solid var(--cream3)"><th style="padding:4px 6px;text-align:left">Nom</th><th style="padding:4px 6px;text-align:left">Email</th><th style="padding:4px 6px">Confirmé</th><th style="padding:4px 6px;text-align:left">Tél.</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <div style="margin-top:12px;text-align:right"><button class="btn" onclick="closeModal()">Fermer</button></div>`);
+  } catch(e) { toast('Erreur : ' + e.message, true); }
 }
 
 let supplierData = { suppliers: [] };
@@ -25629,23 +25800,28 @@ async function _syncPush(key, value) {
 }
 
 async function _syncPull() {
-  if (!_srvToken) return;
+  if (!_srvToken) { console.log('[CCA Sync] Pull ignoré — pas de token'); return; }
   try {
+    console.log('[CCA Sync] Pull démarré vers /api/sync …');
     const r = await fetch('/api/sync', {
       headers: { 'Authorization': 'Bearer ' + _srvToken }
     });
-    if (!r.ok) return;
+    console.log('[CCA Sync] Réponse /api/sync →', r.status, r.statusText);
+    if (!r.ok) { console.warn('[CCA Sync] Pull échoué HTTP', r.status); return; }
     const d = await r.json();
+    console.log('[CCA Sync] Payload brut reçu :', JSON.stringify(d).slice(0, 500));
     let pulled = 0;
     for (const { store_key, payload } of (d.keys || [])) {
       if (payload !== null && payload !== undefined) {
         _origSetItem(store_key, payload);
+        console.log('[CCA Sync] Clé restaurée :', store_key, '— aperçu :', String(payload).slice(0, 120));
         pulled++;
       }
     }
-    console.log('[CCA Sync] ' + pulled + ' clés restaurées depuis le serveur');
+    console.log('[CCA Sync]', pulled, 'clé(s) restaurée(s) depuis le serveur');
+    if (!pulled) console.warn('[CCA Sync] Aucune donnée sur le serveur pour cet utilisateur — le serveur a-t-il reçu les données du mobile ?');
   } catch(e) {
-    console.warn('[CCA Sync] Pull échoué, données locales utilisées', e);
+    console.warn('[CCA Sync] Pull échoué (exception), données locales utilisées :', e);
   }
 }
 
@@ -25728,12 +25904,21 @@ async function submitServerLogin(){
 }
 
 async function _startLocalFlow(){
+  console.log('[CCA Auth] _startLocalFlow() — démarrage');
   await _syncPull();
   // 1B — Après le pull, appliquer le profileType serveur (cas premier login sur nouvel appareil)
   const srvPT=sessionStorage.getItem('cca_srv_profile_type');
   if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&_cfg.profile.profileType!==srvPT){_cfg.profile.profileType=srvPT;setCfg(_cfg);}}
   const c=getCfg();
-  if(!c||!c.pwdHash){startSetup();}else{showLogin();}
+  console.log('[CCA Auth] getCfg() après sync pull →', c ? (c.pwdHash?'config trouvée (pwdHash présent)':'config sans pwdHash'):'null/vide', '— isDemoMode:', c?.isDemoMode||false);
+  console.log('[CCA Auth] currentDataKey() =', currentDataKey(), '— données locales :', localStorage.getItem(currentDataKey())?'présentes':'ABSENTES');
+  if(!c||!c.pwdHash){
+    console.log('[CCA Auth] → startSetup() (pas de config locale après pull)');
+    startSetup();
+  }else{
+    console.log('[CCA Auth] → showLogin()');
+    showLogin();
+  }
 }
 
 // Vérification token serveur (expiry côté client : 14 min)
