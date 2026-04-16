@@ -142,6 +142,74 @@ module.exports = async function adminPlugin(fastify) {
   });
 
 
+  // ── GET /api/admin/stats — Statistiques globales (Chantier 8) ──────────────
+  fastify.get('/admin/stats', {
+    config: { rateLimit: rateLimitAdmin },
+    preHandler: [fastify.authenticate, requireAdmin]
+  }, async (_req, reply) => {
+    const { rows } = await fastify.pg.query(`
+      SELECT
+        COUNT(*)::int                                                         AS total,
+        COUNT(*) FILTER (WHERE last_login_at > NOW() - INTERVAL '7 days')::int  AS active_7d,
+        COUNT(*) FILTER (WHERE created_at    > NOW() - INTERVAL '30 days')::int AS new_30d,
+        COUNT(*) FILTER (WHERE disabled_at IS NOT NULL)::int                  AS disabled
+      FROM users
+    `);
+    reply.send(rows[0]);
+  });
+
+
+  // ── PATCH /api/admin/users/:id/notes — Notes admin (Chantier 8) ─────────────
+  fastify.patch('/admin/users/:id/notes', {
+    config: { rateLimit: rateLimitAdmin },
+    preHandler: [fastify.authenticate, requireAdmin],
+    schema: { body: { type: 'object', required: ['notes'], properties: { notes: { type: 'string', maxLength: 2000 } } } }
+  }, async (req, reply) => {
+    const { rows } = await fastify.pg.query(
+      'UPDATE users SET admin_notes=$1 WHERE id=$2 RETURNING id,email',
+      [sanitize(req.body.notes, 2000), req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Not found' });
+    reply.send(rows[0]);
+  });
+
+
+  // ── POST /api/admin/users/:id/reset-password — Réinitialiser mdp (Chantier 8)
+  fastify.post('/admin/users/:id/reset-password', {
+    config: { rateLimit: rateLimitAdmin },
+    preHandler: [fastify.authenticate, requireAdmin]
+  }, async (req, reply) => {
+    const bcrypt = require('bcrypt');
+    const newPwd = generatePassword();
+    const hash = await bcrypt.hash(newPwd, 12);
+    const { rows } = await fastify.pg.query(
+      'UPDATE users SET password_hash=$1 WHERE id=$2 RETURNING id,email',
+      [hash, req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Not found' });
+    // TODO: envoyer le nouveau mot de passe par email (Scaleway TEM)
+    reply.send({ ok: true, email: rows[0].email, temp_password: newPwd });
+  });
+
+
+  // ── PUT /api/admin/users/:id/suspend — Suspendre un compte (Chantier 8) ──────
+  fastify.put('/admin/users/:id/suspend', {
+    config: { rateLimit: rateLimitAdmin },
+    preHandler: [fastify.authenticate, requireAdmin],
+    schema: { body: { type: 'object', properties: { days: { type: 'integer', minimum: 1, default: 7 } } } }
+  }, async (req, reply) => {
+    if (req.params.id === req.user.id) return reply.code(403).send({ error: 'Cannot suspend yourself' });
+    const days = req.body?.days || 7;
+    const { rows } = await fastify.pg.query(
+      `UPDATE users SET suspended_until = NOW() + INTERVAL '${Math.min(days, 365)} days'
+       WHERE id=$1 RETURNING id,email,suspended_until`,
+      [req.params.id]
+    );
+    if (!rows.length) return reply.code(404).send({ error: 'Not found' });
+    reply.send(rows[0]);
+  });
+
+
   // ── POST /api/admin/invite — Inviter un beta-testeur ────────────────────────
   fastify.post('/admin/invite', {
     config: { rateLimit: rateLimitInvite },

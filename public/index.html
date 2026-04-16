@@ -1489,7 +1489,6 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
     <button class="navi" id="nv-collection" role="tab" aria-selected="false" onclick="showPage('collection')"><span class="ni">🍋</span><span class="navi-lbl" data-t="nav.collection">Collection</span></button>
     <button class="navi" id="nv-fert" role="tab" aria-selected="false" onclick="showPage('fert')"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></button>
     <button class="navi" id="nv-community" role="tab" aria-selected="false" onclick="showPage('community')"><span class="ni">🌍</span><span class="navi-lbl" data-t="nav.community">Communauté</span></button>
-    <button class="navi" id="nv-wiki" role="tab" aria-selected="false" onclick="showPage('wiki')"><span class="ni">📖</span><span class="navi-lbl" data-t="nav.wiki">Wiki</span></button>
     <button class="navi" id="nv-settings" role="tab" aria-selected="false" onclick="showPage('settings')"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></button>
     <button class="navi" id="nv-admin" role="tab" aria-selected="false" onclick="showPage('admin-users')" style="display:none"><span class="ni">👥</span><span class="navi-lbl">Admin</span></button>
   </nav>
@@ -2047,7 +2046,7 @@ fr:{
     profEntries:'Entrées',profEspeces:'Espèces',
     profEmailLabel:'E-mail de récupération',profEmailPh:'email de récupération du mot de passe',
     profSave:'Enregistrer le profil',profExport:'⬇ Exporter JSON',profImport:'⬆ Importer JSON',
-    profLock:'🔒 Verrouiller',profGuide:'📖 Guide — jauges & indicateurs',
+    profLock:'🔒 Verrouiller',profGuide:'📖 Guide d\'utilisation complet',
     profSince:'Collection depuis',profSincePh:'ex : 2015',
     profOverWinterPh:'ex : orangerie non chauffée',profSubstPh:'ex : terreau + pouzzolane',
     profWaterPh:'ex : eau de pluie',
@@ -7257,7 +7256,7 @@ function renderProfNotifs() {
     { key:'gel',      label:T('misc.notifGel'),      desc:'Alerte gel envoyée par le serveur à 20h si T° min ≤ seuil',    val:cfg.gel,      local:false },
     { key:'fert',     label:T('misc.notifFert'),     desc:T('misc.notifFertDesc'),     val:cfg.fert,     local:true },
     { key:'graft',    label:T('misc.notifGraft'),    desc:T('misc.notifGraftDesc'),    val:cfg.graft,    local:true },
-    { key:'bbch',     label:T('misc.notifBBCH'),     desc:'Rappel stade phénologique envoyé par le serveur chaque matin', val:cfg.bbch,     local:false },
+    { key:'bbch',     label:T('misc.notifBBCH'),     desc:'Notification envoyée lors d\'un changement de stade BBCH', val:cfg.bbch,     local:false },
   ];
 
   const togglesHtml = isOn ? `
@@ -9333,9 +9332,13 @@ async function renderAdminUsers(){
     if(filterProfile)qs.push('profile_type='+filterProfile);
     if(filterRole)qs.push('role='+filterRole);
     if(filterStatus)qs.push('status='+filterStatus);
-    const r=await fetch('/api/admin/users'+(qs.length?'?'+qs.join('&'):''),{headers:_authHeader()});
+    const [r,statsR]=await Promise.all([
+      fetch('/api/admin/users'+(qs.length?'?'+qs.join('&'):''),{headers:_authHeader()}),
+      fetch('/api/admin/stats',{headers:_authHeader()})
+    ]);
     if(!r.ok)throw new Error('HTTP '+r.status);
     const users=await r.json();
+    const stats=statsR.ok?await statsR.json():null;
 
     const filters=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
 <select id="cca-adm-fp" style="font-size:.78rem;padding:5px 8px;border:1px solid var(--cream3);border-radius:7px;background:var(--cream2)">
@@ -9378,9 +9381,13 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}"${u.profile_
 ${['member','editor','moderator','admin'].map(ro=>`<option value="${ro}"${u.role===ro?' selected':''}>${ro}</option>`).join('')}
 </select>
 </div>
-<div style="display:flex;gap:4px">
+<div style="display:flex;gap:4px;flex-wrap:wrap">
 <button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:#162d1f;color:white" data-adusr-save="${esc(u.id)}">${esc(T('bug.save')||'Enregistrer')}</button>
-${!u.disabled_at?`<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(198,40,40,.1);color:#c62828" data-adusr-disable="${esc(u.id)}">${esc(T('admin.disable')||'Désactiver')}</button>`:''}
+<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(21,101,192,.1);color:#1565c0" data-adusr-resetpwd="${esc(u.id)}">🔑 Réinit. mdp</button>
+${!u.disabled_at?`<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(198,40,40,.08);color:#c62828" data-adusr-disable="${esc(u.id)}">${esc(T('admin.disable')||'Désactiver')}</button>`:''}
+</div>
+<div style="margin-top:6px">
+<input type="text" class="cca-bug-input" style="font-size:.72rem;padding:3px 8px;width:100%;box-sizing:border-box" placeholder="Notes admin (internes, invisibles du membre)" data-adusr-notes-input="${esc(u.id)}" value="${esc(u.admin_notes||'')}"/>
 </div>
 </div>
 </div>`;
@@ -9401,7 +9408,10 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
 <div id="cca-admin-inv-list" style="margin-top:10px;font-size:.78rem;color:var(--muted)"></div>
 </div>`;
 
-    root.innerHTML=filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock;
+    const statsBlock=stats?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
+${[['👥','Total',stats.total],['✅','Actifs 7j',stats.active_7d],['🆕','Nvx 30j',stats.new_30d],['🔒','Désactivés',stats.disabled]].map(([i,l,v])=>`<div style="background:var(--white);border-radius:8px;padding:8px 10px;text-align:center;border:1px solid var(--cream3)"><div style="font-size:1.2rem">${i}</div><div style="font-size:1.1rem;font-weight:700;color:var(--text-strong)">${v}</div><div style="font-size:.7rem;color:var(--muted)">${l}</div></div>`).join('')}
+</div>`:'';
+    root.innerHTML=statsBlock+filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock;
 
     // Filtres
     document.getElementById('cca-adm-filter-btn')?.addEventListener('click',()=>{
@@ -9428,6 +9438,20 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
       });
     });
 
+    // Réinitialiser mot de passe
+    root.querySelectorAll('[data-adusr-resetpwd]').forEach(btn=>{
+      btn.addEventListener('click',async()=>{
+        if(!confirm('Réinitialiser le mot de passe ? Un nouveau mot de passe temporaire sera généré.'))return;
+        const id=btn.dataset.adusrResetpwd;
+        try{
+          const r=await fetch('/api/admin/users/'+id+'/reset-password',{method:'POST',headers:_authHeader()});
+          const d=await r.json();
+          if(!r.ok)throw new Error(d.error||'Erreur');
+          alert('Nouveau mot de passe temporaire pour '+d.email+' :\n\n'+d.temp_password+'\n\nCommuniquez-le à l\'utilisateur.');
+        }catch(e){toast('Erreur : '+esc(e.message),true);}
+      });
+    });
+
     // Désactiver compte
     root.querySelectorAll('[data-adusr-disable]').forEach(btn=>{
       btn.addEventListener('click',async()=>{
@@ -9438,6 +9462,16 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
           if(!r.ok)throw new Error('HTTP '+r.status);
           toast('Compte désactivé');renderAdminUsers();
         }catch(e){toast('Erreur : '+esc(e.message),true);}
+      });
+    });
+
+    // Sauvegarder notes admin (focus out)
+    root.querySelectorAll('[data-adusr-notes-input]').forEach(inp=>{
+      inp.addEventListener('change',async()=>{
+        const id=inp.dataset.adusrNotesInput;
+        try{
+          await fetch('/api/admin/users/'+id+'/notes',{method:'PATCH',headers:_authHeader(),body:JSON.stringify({notes:inp.value})});
+        }catch(e){console.warn('notes save failed',e);}
       });
     });
 
@@ -9706,7 +9740,7 @@ function launchApp(){
   _bugFlushQueue();
   _loadLogoB64();
   requestAnimationFrame(()=>showPage('dashboard'));}
-function showPage(p){if(p==='nursery')p='pro';if(p==='wiki'&&window.__CCA_wiki)window.__CCA_wiki.resetView();page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community','wiki'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
+function showPage(p){if(p==='nursery')p='pro';if(p==='wiki'){p='community';wikiView='new-wiki';}page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
 function _updateNavbarForProfile(){
   const settingsEl=document.getElementById('nv-settings');
   if(settingsEl) settingsEl.style.display='';
@@ -16547,6 +16581,8 @@ let wikiSearchQuery='';
 function _srvUserRole(){
   try{const t=_srvToken;if(!t)return'member';const p=JSON.parse(atob(t.split('.')[1]));return p.role||'member';}catch{return'member';}
 }
+// Exposé pour le module wiki.js (vérification canDelete)
+window._srvUserRole=_srvUserRole;
 
 function _authHeader(){return{Authorization:'Bearer '+(_srvToken||''),'Content-Type':'application/json'};}
 
@@ -16569,21 +16605,23 @@ function _wikiErrHtml(e){
 function renderCommunityPage(){
   const root=document.getElementById('community-root');
   if(!root)return;
+  // 'new-wiki' et toutes les vues wiki utilisent le nouveau module
+  const isWikiView=!wikiView||wikiView==='new-wiki'||wikiView==='home'||wikiView==='article'||wikiView==='editor'||wikiView==='history'||wikiView==='search'||wikiView==='cat';
   const tabs=`<div class="comm-tabs">
-    <div class="comm-tab${wikiView!=='observatoire'?' active':''}" onclick="wikiView='home';wikiCurrentSlug=null;renderCommunityPage()">📖 Citrus Wiki</div>
+    <div class="comm-tab${isWikiView?' active':''}" onclick="wikiView='new-wiki';renderCommunityPage()">📖 Citrus Wiki</div>
     <div class="comm-tab${wikiView==='observatoire'?' active':''}" onclick="wikiView='observatoire';renderCommunityPage()">🗺 Observatoire</div>
     ${_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<div class="comm-tab${wikiView==='admin'?' active':''}" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</div>`:''}
   </div>`;
-  root.innerHTML=tabs+'<div id="comm-content"><div style="padding:30px;text-align:center;color:var(--muted)">⏳ Chargement…</div></div>';
+  root.innerHTML=tabs+'<div id="comm-content"></div>';
   const c=document.getElementById('comm-content');
   if(wikiView==='observatoire'){_renderObservatoire(c);return;}
   if(wikiView==='admin'){_renderAdminPanel(c);return;}
-  if(wikiView==='article'&&wikiCurrentSlug){_renderWikiArticle(c,wikiCurrentSlug);return;}
-  if(wikiView==='category'&&wikiCurrentSlug){_renderWikiCategory(c,wikiCurrentSlug);return;}
-  if(wikiView==='search'){_renderWikiSearch(c,wikiSearchQuery);return;}
-  if(wikiView==='editor'){_renderWikiEditor(c);return;}
-  if(wikiView==='history'){_renderWikiHistory(c,wikiCurrentSlug);return;}
-  _renderWikiHome(c);
+  // Nouveau wiki ES module (offline-first)
+  if(isWikiView&&window.__CCA_wiki){
+    window.__CCA_wiki.mount(c,T);
+    return;
+  }
+  c.innerHTML='<div style="padding:30px;text-align:center;color:var(--muted)">⏳ Chargement du wiki…</div>';
 }
 
 async function _renderWikiHome(c){
@@ -17068,12 +17106,19 @@ async function _renderObservatoire(c){
     </div>`;
     document.getElementById('obs-retry-btn')?.addEventListener('click',()=>{wikiView='observatoire';renderCommunityPage();});
   };
-  try{
-    const[mapData,journal]=await Promise.all([
-      _wikiLoad('/api/observatoire/map'),
-      _wikiLoad('/api/observatoire/journal')
-    ]);
-    // ── Statistiques saison ──────────────────────────────────────────────
+  // ── Données de démo (utilisées si backend vide ou indisponible) ──────────────
+  const DEMO_OBS=[
+    {lat_approx:43.6,lng_approx:3.9,event_type:'floraison',species:'Citrus sinensis',region:'Occitanie',count:3,observed_at:yr+'-04-01'},
+    {lat_approx:48.8,lng_approx:2.4,event_type:'gel',species:'Citrus limon',region:'Île-de-France',count:1,observed_at:yr+'-03-15'},
+    {lat_approx:45.7,lng_approx:4.8,event_type:'recolte',species:'Citrus reticulata',region:'Auvergne-Rhône-Alpes',count:2,observed_at:yr+'-02-20'},
+    {lat_approx:43.3,lng_approx:5.4,event_type:'floraison',species:'Citrus paradisi',region:'PACA',count:4,observed_at:yr+'-04-10'},
+    {lat_approx:47.2,lng_approx:-1.6,event_type:'maladie',species:'Citrus sinensis',region:'Pays de la Loire',count:1,observed_at:yr+'-03-28'},
+    {lat_approx:44.8,lng_approx:-0.6,event_type:'traitement',species:'Fortunella japonica',region:'Nouvelle-Aquitaine',count:2,observed_at:yr+'-03-05'}
+  ];
+
+  // ── Rendu HTML + carte à partir des données (réelles ou démo) ────────────────
+  function _renderObsDOM(mapData,journal,isDemo){
+    const _obsRow=(ico,label,val)=>`<div class="cca-obs-stat-row"><span class="cca-obs-stat-ico">${ico}</span><span class="cca-obs-stat-lbl">${esc(label)}</span><span class="cca-obs-stat-val">${val}</span></div>`;
     const szObs=journal.filter(o=>szMonths.includes(_obsMonth(o.observed_at)));
     const szBlooms=szObs.filter(o=>o.event_type==='floraison').length;
     const szHarvests=szObs.filter(o=>o.event_type==='recolte').length;
@@ -17081,7 +17126,6 @@ async function _renderObservatoire(c){
     const szPhyto=szObs.filter(o=>o.event_type==='maladie'||o.event_type==='ravageur').length;
     const szRegions=new Set(szObs.map(o=>o.region).filter(Boolean)).size;
     const szContrib=new Set(szObs.map(o=>o.member_name||o.user_id).filter(Boolean)).size;
-    const _obsRow=(ico,label,val)=>`<div class="cca-obs-stat-row"><span class="cca-obs-stat-ico">${ico}</span><span class="cca-obs-stat-lbl">${esc(label)}</span><span class="cca-obs-stat-val">${val}</span></div>`;
     const bloc1=`<div class="cca-obs-bloc">
       <div class="cca-obs-bloc-title">📊 ${T('obs.season')} (${esc(szName)} ${yr})</div>
       ${_obsRow('🌸',T('obs.blooms'),szBlooms)}
@@ -17091,31 +17135,35 @@ async function _renderObservatoire(c){
       ${_obsRow('📍',T('obs.activeRegions'),szRegions)}
       ${_obsRow('👥',T('obs.contributors'),szContrib||'—')}
     </div>`;
-    // ── Statistiques année ────────────────────────────────────────────────
     const yrObs=journal.filter(o=>_obsYear(o.observed_at)===yr);
-    const totalObs=yrObs.length;
-    // espèce la plus fréquente
     const spCount={};yrObs.forEach(o=>{if(o.species){spCount[o.species]=(spCount[o.species]||0)+1;}});
     const topSp=Object.entries(spCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
-    // région la plus active
     const regCount={};yrObs.forEach(o=>{if(o.region){regCount[o.region]=(regCount[o.region]||0)+1;}});
     const topReg=Object.entries(regCount).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—';
-    // pic floraison : mois avec le plus de 'floraison'
     const bloomByMonth={};yrObs.filter(o=>o.event_type==='floraison').forEach(o=>{const m=_obsMonth(o.observed_at);bloomByMonth[m]=(bloomByMonth[m]||0)+1;});
     const peakBloomMo=Object.entries(bloomByMonth).sort((a,b)=>b[1]-a[1])[0]?.[0];
     const peakBloomStr=peakBloomMo?monthFr[parseInt(peakBloomMo)]||'—':'—';
-    // GJC moyen depuis mapData si dispo, sinon '—'
     const gjcVals=mapData.map(p=>parseFloat(p.gjc_cumul||p.gjc||0)).filter(v=>v>0);
     const avgGjc=gjcVals.length?Math.round(gjcVals.reduce((a,b)=>a+b,0)/gjcVals.length):'—';
+    // ── Informations d'acclimatation ─────────────────────────────────────
+    const floraisonByReg={};yrObs.filter(o=>o.event_type==='floraison').forEach(o=>{if(o.region){if(!floraisonByReg[o.region])floraisonByReg[o.region]=[];floraisonByReg[o.region].push(_obsMonth(o.observed_at));}});
+    const gelByReg={};yrObs.filter(o=>o.event_type==='gel').forEach(o=>{if(o.region){gelByReg[o.region]=(gelByReg[o.region]||0)+1;}});
+    const topGelRegions=Object.entries(gelByReg).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([r,n])=>`${esc(r)} (${n})`).join(', ')||'—';
+    const avgBloomByReg=Object.entries(floraisonByReg).map(([r,months])=>`${esc(r)} : ${monthFr[Math.round(months.reduce((a,b)=>a+b,0)/months.length)]||'—'}`).slice(0,3).join(' · ')||'—';
+    const acclimBloc=`<div class="cca-obs-bloc" style="grid-column:1/-1">
+      <div class="cca-obs-bloc-title">🌡 Informations d'acclimatation${isDemo?' (données de démonstration)':''}</div>
+      ${_obsRow('🌸','Floraison moy. par région',avgBloomByReg)}
+      ${_obsRow('❄️','Zones à risque gel',topGelRegions)}
+      ${_obsRow('🌸','Pic de floraison',peakBloomStr)}
+      ${gjcVals.length?_obsRow('🌡','GJC moyen (actif)',avgGjc):''}
+    </div>`;
     const bloc2=`<div class="cca-obs-bloc">
       <div class="cca-obs-bloc-title">📊 ${T('obs.year').replace('{year}',yr)}</div>
-      ${_obsRow('📋',T('obs.totalObs'),totalObs)}
+      ${_obsRow('📋',T('obs.totalObs'),yrObs.length)}
       ${_obsRow('🍋',T('obs.topSpecies'),esc(topSp))}
       ${_obsRow('📍',T('obs.topRegion'),esc(topReg))}
       ${_obsRow('🌸',T('obs.peakBloom'),peakBloomStr)}
-      ${gjcVals.length?_obsRow('🌡',T('obs.avgGjc'),avgGjc):''}
     </div>`;
-    // ── Journal condensé (10 dernières obs) ──────────────────────────────
     const last10=journal.slice(0,10);
     const journalRows=last10.length?last10.map(o=>`
       <div class="cca-obs-journal-row">
@@ -17124,61 +17172,67 @@ async function _renderObservatoire(c){
         <span class="cca-obs-j-reg">${esc(o.region||'—')}</span>
         <span class="cca-obs-j-date">${_obsYear(o.observed_at)===yr?monthFr[_obsMonth(o.observed_at)]||'':new Date(o.observed_at).toLocaleDateString('fr-FR')}</span>
       </div>`).join(''):`<div style="padding:12px;text-align:center;color:var(--muted);font-size:.78rem">Aucune observation publiée.</div>`;
-    // ── DOM ──────────────────────────────────────────────────────────────
     c.innerHTML=`
       <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:.75rem;color:var(--muted)">${mapData.length} point${mapData.length!==1?'s':''} sur la carte</div>
+        <div style="font-size:.75rem;color:var(--muted)">${isDemo?'Données de démonstration':mapData.length+' point'+(mapData.length!==1?'s':'')+' sur la carte'}</div>
         <button class="btn btn-sm btn-p" style="font-size:.75rem" id="obs-signaler-btn">+ Signaler</button>
       </div>
-      <div id="obs-map" style="height:220px;border-radius:10px;margin:0 16px;overflow:hidden;border:1.5px solid var(--cream3)"></div>
+      <div style="margin:0 16px;border-radius:10px;overflow:hidden;border:1.5px solid var(--cream3)">
+        <div id="obs-map" style="height:220px"></div>
+      </div>
       <div style="padding:10px 16px 0;display:grid;grid-template-columns:1fr 1fr;gap:10px">
         ${bloc1}${bloc2}
+      </div>
+      <div style="padding:10px 16px 0;display:grid;grid-template-columns:1fr;gap:10px">
+        ${acclimBloc}
       </div>
       <div class="cca-obs-journal-header">JOURNAL DES OBSERVATIONS</div>
       <div class="cca-obs-journal">${journalRows}</div>`;
     document.getElementById('obs-signaler-btn')?.addEventListener('click',wikiOpenObsForm);
-    // ── Init Leaflet map ────────────────────────────────────────────────
-    setTimeout(()=>{
-      if(!window.L)return;
+    // ── Init Leaflet map — double rAF + vérification hauteur ────────────
+    const displayData=mapData.length?mapData:DEMO_OBS;
+    function _initMap(){
+      if(!window.L){setTimeout(_initMap,300);return;}
       const mapEl=document.getElementById('obs-map');
-      if(!mapEl||mapEl._leaflet_id)return; // éviter double-init
+      if(!mapEl)return;
+      if(mapEl._leaflet_id)return; // déjà initialisé
+      const rect=mapEl.getBoundingClientRect();
+      if(rect.height<10){setTimeout(_initMap,300);return;}
       const obsMap=L.map('obs-map',{zoomControl:true,attributionControl:false});
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(obsMap);
       obsMap.setView([46,2],5);
-      obsMap.invalidateSize();
-      // Données de démo si aucune donnée réelle
-      const displayData = mapData.length ? mapData : [
-        {lat_approx:'43.6',lng_approx:'1.4',event_type:'floraison',region:'Occitanie',count:'3'},
-        {lat_approx:'47.2',lng_approx:'-1.5',event_type:'récolte',region:'Pays de Loire',count:'2'},
-        {lat_approx:'43.3',lng_approx:'5.4',event_type:'traitement',region:'PACA',count:'1'},
-        {lat_approx:'48.8',lng_approx:'2.3',event_type:'arrosage',region:'Île-de-France',count:'1'},
-        {lat_approx:'44.8',lng_approx:'-0.6',event_type:'floraison',region:'Nouvelle-Aquitaine',count:'4'}
-      ];
-      let hasMarkers=false;
+      const markers=[];
       displayData.forEach(pt=>{
-        let lat=parseFloat(pt.lat_approx);
-        let lng=parseFloat(pt.lng_approx);
-        if(!lat||!lng||isNaN(lat)||isNaN(lng))return;
-        // Dé-superposer les coordonnées entières avec un offset aléatoire ±0.3°
-        if(Number.isInteger(parseFloat(pt.lat_approx))&&Number.isInteger(parseFloat(pt.lng_approx))){
-          lat+=(Math.random()-.5)*.6;
-          lng+=(Math.random()-.5)*.6;
-        }
+        const lat=parseFloat(pt.lat_approx??pt.lat);
+        const lng=parseFloat(pt.lng_approx??pt.lng);
+        if(!isFinite(lat)||!isFinite(lng)||Math.abs(lat)>90||Math.abs(lng)>180)return;
         const col=eventColors[pt.event_type]||'#546e7a';
         const ico=eventIcons[pt.event_type]||'📌';
         const cnt=parseInt(pt.count)||1;
-        L.circleMarker([lat,lng],{
-          radius:8+Math.min(cnt,6),
-          color:col,fillColor:col,fillOpacity:.7,weight:2
-        }).bindPopup(`${ico} <b>${esc(pt.event_type)}</b><br>${esc(pt.region||'—')}<br>${cnt} obs.`).addTo(obsMap);
-        hasMarkers=true;
+        const m=L.circleMarker([lat,lng],{radius:8+Math.min(cnt,6),color:col,fillColor:col,fillOpacity:.7,weight:2})
+          .bindPopup(`${ico} <b>${esc(pt.event_type)}</b><br>${esc(pt.species||pt.region||'—')}<br>${esc(pt.region||'—')}<br>${cnt} obs.`);
+        m.addTo(obsMap);
+        markers.push(m);
       });
-      obsMap.invalidateSize();
-      if(hasMarkers){
-        try{obsMap.fitBounds(L.latLngBounds(displayData.filter(pt=>parseFloat(pt.lat_approx)&&parseFloat(pt.lng_approx)).map(pt=>[parseFloat(pt.lat_approx),parseFloat(pt.lng_approx)])).pad(.15));}catch{}
+      if(markers.length){
+        try{obsMap.fitBounds(L.featureGroup(markers).getBounds().pad(.2));}catch{}
       }
-    },500);
-  }catch(e){_obsOffline();}
+      setTimeout(()=>obsMap.invalidateSize(),100);
+    }
+    requestAnimationFrame(()=>requestAnimationFrame(_initMap));
+  }
+
+  try{
+    const[mapData,journal]=await Promise.all([
+      _wikiLoad('/api/observatoire/map'),
+      _wikiLoad('/api/observatoire/journal')
+    ]);
+    _renderObsDOM(Array.isArray(mapData)?mapData:[],Array.isArray(journal)?journal:[],false);
+  }catch(e){
+    // Backend indisponible : afficher la carte avec données de démonstration
+    console.warn('[Observatoire] Backend indisponible, données démo affichées',e);
+    _renderObsDOM(DEMO_OBS,DEMO_OBS,true);
+  }
 }
 
 function wikiOpenObsForm(){
@@ -25664,7 +25718,9 @@ async function submitServerLogin(){
     sessionStorage.setItem('cca_srv_token',d.token);
     sessionStorage.setItem('cca_srv_profile',d.profile);
     if(d.refreshToken)sessionStorage.setItem('cca_srv_refresh',d.refreshToken);
-    // 1A — Le profileType est autoritatif côté serveur : l'écraser localement
+    // Stocker le profile_type serveur pour application post-pull
+    if(d.profile_type)sessionStorage.setItem('cca_srv_profile_type',d.profile_type);
+    // 1A — Le profileType est autoritatif côté serveur : l'écraser localement si cfg existe déjà
     if(d.profile_type){const _cfg=getCfg();if(_cfg?.profile){_cfg.profile.profileType=d.profile_type;setCfg(_cfg);}}
     document.getElementById('sc-server-login').style.display='none';
     _startLocalFlow();
@@ -25673,6 +25729,9 @@ async function submitServerLogin(){
 
 async function _startLocalFlow(){
   await _syncPull();
+  // 1B — Après le pull, appliquer le profileType serveur (cas premier login sur nouvel appareil)
+  const srvPT=sessionStorage.getItem('cca_srv_profile_type');
+  if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&_cfg.profile.profileType!==srvPT){_cfg.profile.profileType=srvPT;setCfg(_cfg);}}
   const c=getCfg();
   if(!c||!c.pwdHash){startSetup();}else{showLogin();}
 }

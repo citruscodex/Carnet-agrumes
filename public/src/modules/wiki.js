@@ -57,12 +57,13 @@ export function parseMarkdown(md) {
   // 1. Escape HTML first — XSS prevention
   let s = _esc(md);
 
-  // 2. Footnote markers [^key] → <sup>[n]</sup>
+  // 2. Footnote markers [^key] → <sup><a href="#ref-key">[n]</a></sup>
   const refMap = {};
   let refN = 0;
   s = s.replace(/\[\^([^\]]+)\]/g, (_, key) => {
     if (!refMap[key]) refMap[key] = ++refN;
-    return `<sup class="cca-wiki-sup">[${refMap[key]}]</sup>`;
+    const safeKey = key.replace(/[^a-zA-Z0-9_-]/g, '_');
+    return `<sup class="cca-wiki-sup" id="refback-${safeKey}"><a href="#ref-${safeKey}" class="cca-wiki-reflink">[${refMap[key]}]</a></sup>`;
   });
 
   // 3. Headers
@@ -159,6 +160,19 @@ export function restoreRevision(slug, revId) {
   page.revisions.push({ id: _gid(), content: rev.content, author: 'local',
     createdAt: _now(),
     summary: `Restauration — ${rev.createdAt.slice(0,10)} (${_esc(rev.summary)})` });
+  _save(pages);
+  return true;
+}
+export function deletePage(slug) {
+  const pages = getAllPages().filter(p => p.slug !== slug);
+  _save(pages);
+  return true;
+}
+export function saveRefs(slug, refs) {
+  const pages = getAllPages();
+  const i = pages.findIndex(p => p.slug === slug);
+  if (i === -1) return false;
+  pages[i].refs = refs;
   _save(pages);
   return true;
 }
@@ -386,14 +400,29 @@ export function renderWikiArticle(slug, T) {
   const last = page.revisions.at(-1);
   const cat = WIKI_CATS.find(c => c.slug === page.category);
 
-  // Footnotes
-  const refEntries = Object.entries(page.refs || {});
-  const footnotes = refEntries.length ? `<div class="cca-wiki-refs">
+  // Footnotes avec backlinks
+  const refs = page.refs || {};
+  const refEntries = Object.entries(refs);
+  const footnotes = refEntries.length ? `<section class="cca-wiki-refs">
   <div class="cca-wiki-refs-title">${_esc(_wT('wiki.references', T, 'Notes et références'))}</div>
-  ${refEntries.map(([, r], i) =>
-    `<div class="cca-wiki-ref-item"><sup>[${i + 1}]</sup> ${_esc((r.authors || []).join(', '))} (${r.year || ''}). <em>${_esc(r.title || '')}</em>. ${_esc(r.journal || '')}${r.vol ? ', ' + r.vol : ''}${r.pages ? ', p.\u00a0' + r.pages : ''}.</div>`
-  ).join('')}
-</div>` : '';
+  ${refEntries.map(([id, r], i) => {
+    const safeId = id.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const citation = [
+      _esc((r.authors || []).join(', ')),
+      r.year ? `(${r.year})` : '',
+      r.title ? `<em>${_esc(r.title)}</em>` : '',
+      r.journal ? _esc(r.journal) : '',
+      r.vol ? `vol.\u00a0${_esc(r.vol)}` : '',
+      r.pages ? `p.\u00a0${_esc(r.pages)}` : '',
+      r.doi ? `DOI: <a href="https://doi.org/${_esc(r.doi)}" target="_blank" rel="noopener">${_esc(r.doi)}</a>` : ''
+    ].filter(Boolean).join('. ');
+    return `<div class="cca-wiki-ref-item" id="ref-${safeId}"><sup>[${i + 1}]</sup> ${citation} <a href="#refback-${safeId}" class="cca-wiki-backlink" title="Retour au texte">↑</a></div>`;
+  }).join('')}
+</section>` : '';
+
+  // Rôle utilisateur — editor/moderator/admin peuvent supprimer
+  const userRole = (typeof window._srvUserRole === 'function') ? window._srvUserRole() : 'member';
+  const canDelete = ['editor', 'moderator', 'admin'].includes(userRole);
 
   return `<div class="wiki-article">
 <div style="background:var(--g1);color:var(--white);padding:12px 16px">
@@ -404,6 +433,7 @@ export function renderWikiArticle(slug, T) {
   <div style="display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap">
     <button class="wiki-search-btn" data-action="edit-article" data-slug="${_esc(slug)}" style="font-size:.75rem;padding:4px 10px">${_esc(_wT('wiki.edit', T, 'Modifier'))} ✏</button>
     <button class="wiki-search-btn" data-action="go-history" data-slug="${_esc(slug)}" style="font-size:.75rem;padding:4px 10px;background:rgba(255,255,255,.15)">${_esc(_wT('wiki.history', T, 'Historique'))} 🕐</button>
+    ${canDelete ? `<button class="wiki-search-btn" data-action="delete-article" data-slug="${_esc(slug)}" style="font-size:.75rem;padding:4px 10px;background:rgba(198,40,40,.5)">🗑 ${_esc(_wT('wiki.delete', T, 'Supprimer'))}</button>` : ''}
     <span style="font-size:.72rem;color:rgba(255,255,255,.5);margin-left:auto">${page.revisions.length} rév. · ${_relTime(last?.createdAt)}</span>
   </div>
 </div>
@@ -605,6 +635,7 @@ function _attachEvents(rootEl, T) {
         _searchQuery = rootEl.querySelector('#cca-wiki-search')?.value?.trim() || '';
         _view = 'search'; _renderView(rootEl, T);
         break;
+      case 'delete-article':  _handleDelete(rootEl, T, slug); break;
       case 'save-article':    _handleSave(rootEl, T, slug); break;
       case 'preview-toggle':  _handlePreview(rootEl); break;
       case 'restore-rev':     _handleRestore(rootEl, T, slug, revId); break;
@@ -627,6 +658,16 @@ function _attachEvents(rootEl, T) {
       _view = 'search'; _renderView(rootEl, T);
     });
   }
+}
+
+function _handleDelete(rootEl, T, slug) {
+  if (!slug) return;
+  const page = getPage(slug);
+  if (!page) return;
+  if (!confirm(_wT('wiki.deleteConfirm', T, `Supprimer définitivement "${page.title}" ? Cette action est irréversible.`))) return;
+  deletePage(slug);
+  _view = 'home'; _slug = null;
+  _renderView(rootEl, T);
 }
 
 function _handleSave(rootEl, T, slug) {
