@@ -16627,12 +16627,14 @@ function renderCommunityPage(){
     <div class="comm-tab${isWikiView?' active':''}" onclick="wikiView='new-wiki';renderCommunityPage()">📖 Citrus Wiki ${helpBtn('wiki')}</div>
     <div class="comm-tab${wikiView==='observatoire'?' active':''}" onclick="wikiView='observatoire';renderCommunityPage()">🗺 Observatoire ${helpBtn('observatoire')}</div>
     <div class="comm-tab${wikiView==='bourse'?' active':''}" onclick="wikiView='bourse';renderCommunityPage()">🔄 Bourse</div>
+    <div class="comm-tab${wikiView==='orders'?' active':''}" onclick="wikiView='orders';renderCommunityPage()">🚚 Commandes</div>
     ${_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<div class="comm-tab${wikiView==='admin'?' active':''}" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</div>`:''}
   </div>`;
   root.innerHTML=tabs+'<div id="comm-content"></div>';
   const c=document.getElementById('comm-content');
   if(wikiView==='observatoire'){_renderObservatoire(c);return;}
   if(wikiView==='bourse'){_renderBourse(c);return;}
+  if(wikiView==='orders'){_renderGroupOrders(c);return;}
   if(wikiView==='admin'){_renderAdminPanel(c);return;}
   // Nouveau wiki ES module (offline-first)
   if(isWikiView&&window.__CCA_wiki){
@@ -17268,6 +17270,325 @@ function _bourseContact(id, species, author) {
       closeModal(); toast('Message envoyé ✓');
     } catch (e) { errEl.textContent = 'Erreur réseau : ' + e.message; errEl.style.display='block'; btn.disabled=false; btn.textContent='Envoyer →'; }
   });
+}
+
+// ── Commandes groupées géographiques ─────────────────────────────────────────
+let _grpOrdLat=null,_grpOrdLng=null,_grpOrdCache=null,_grpOrdCat='';
+const _GORD_CAT_LABELS={plants:'🌱 Plants',pots:'🪴 Pots',engrais:'🧪 Engrais',substrats:'🪨 Substrats',amendements:'🌿 Amendements',outils:'🔧 Outils',divers:'📦 Divers'};
+const _GORD_STATUS_LABELS={open:'🟢 Ouvert',closed:'🔴 Fermé',ordered:'📦 Commandé',delivered:'✅ Livré',cancelled:'⚫ Annulé'};
+
+async function _renderGroupOrders(c){
+  const srv=!!_srvToken;
+  const locTxt=_grpOrdLat?`📍 ${_grpOrdLat.toFixed(3)}, ${_grpOrdLng.toFixed(3)} · 50 km`:'Localisation non activée';
+  c.innerHTML=`
+<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
+  <button class="btn btn-g btn-sm" id="gord-locate-btn">📍 ${_grpOrdLat?'Re-localiser':'Ma position'}</button>
+  ${srv?'<button class="btn btn-a btn-sm" id="gord-new-btn">+ Créer</button>':''}
+  ${srv?'<button class="btn btn-g btn-sm" id="gord-mine-btn">📋 Mes commandes</button>':''}
+</div>
+<div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">${esc(locTxt)}</div>
+<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+  ${['','plants','pots','engrais','substrats','amendements','outils','divers'].map(k=>`<button class="btn btn-g btn-sm gord-cat-btn${_grpOrdCat===k?' active-cat':''}" data-cat="${k}" style="${_grpOrdCat===k?'background:var(--g2);color:#fff':''}">${k?_GORD_CAT_LABELS[k]:'Tout'}</button>`).join('')}
+</div>
+<div id="gord-list">${_grpOrdLat?'<div style="text-align:center;padding:20px;color:var(--muted)">⏳ Chargement…</div>':'<div style="text-align:center;padding:28px 16px;color:var(--muted)"><div style="font-size:1.4rem;margin-bottom:8px">📍</div>Activez la géolocalisation pour voir les commandes groupées près de chez vous.</div>'}</div>
+
+<!-- Modal création commande -->
+<div id="gord-create-modal" class="cca-bug-overlay" style="display:none">
+  <div class="cca-bug-sheet">
+    <div class="cca-bug-header">
+      <span class="cca-bug-header-title">🚚 Nouvelle commande groupée</span>
+      <button class="cca-bug-close" id="gord-modal-close">✕</button>
+    </div>
+    <div class="cca-bug-body" style="overflow-y:auto;max-height:72vh">
+      <label class="cca-bug-label">Titre *</label>
+      <input id="gord-title" class="cca-bug-input" maxlength="200" placeholder="Ex : Commande groupée terreaux agrumes"/>
+      <label class="cca-bug-label">Catégorie</label>
+      <select id="gord-cat-sel" class="cca-bug-input">${Object.entries(_GORD_CAT_LABELS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="cca-bug-label">Fournisseur</label><input id="gord-supplier" class="cca-bug-input" maxlength="200" placeholder="Nom"/></div>
+        <div><label class="cca-bug-label">Site (URL)</label><input id="gord-url" class="cca-bug-input" maxlength="500" placeholder="https://…"/></div>
+      </div>
+      <label class="cca-bug-label">Adresse de livraison *</label>
+      <input id="gord-addr" class="cca-bug-input" maxlength="500" placeholder="Ville ou adresse complète"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="cca-bug-label">Date limite *</label><input id="gord-deadline" class="cca-bug-input" type="datetime-local"/></div>
+        <div><label class="cca-bug-label">Franco de port (€)</label><input id="gord-min" class="cca-bug-input" type="number" min="0" step="0.01" placeholder="Ex : 150"/></div>
+      </div>
+      <label class="cca-bug-label">Description</label>
+      <textarea id="gord-desc" class="cca-bug-textarea" placeholder="Conditions, modalités de paiement, point de retrait…" style="min-height:80px"></textarea>
+      <div id="gord-create-err" class="aerr" style="display:none;margin-bottom:8px"></div>
+      <button class="btn btn-a" id="gord-create-submit" style="width:100%;margin-top:8px">Publier la commande →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal rejoindre -->
+<div id="gord-join-modal" class="cca-bug-overlay" style="display:none">
+  <div class="cca-bug-sheet">
+    <div class="cca-bug-header">
+      <span class="cca-bug-header-title">🛒 Rejoindre la commande</span>
+      <button class="cca-bug-close" id="gord-join-close">✕</button>
+    </div>
+    <div class="cca-bug-body" style="overflow-y:auto;max-height:72vh">
+      <div id="gord-join-title" style="font-weight:700;margin-bottom:10px;font-size:.9rem"></div>
+      <label class="cca-bug-label">Mes articles</label>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:6px;display:grid;grid-template-columns:1fr 52px 68px 24px;gap:4px"><span>Article</span><span>Qté</span><span>Prix €</span><span></span></div>
+      <div id="gord-items-list"></div>
+      <button class="btn btn-g btn-sm" id="gord-add-item" style="width:100%;margin-top:6px">+ Ajouter un article</button>
+      <div style="margin-top:10px;font-weight:700;font-size:.92rem;text-align:right" id="gord-join-total">Total : 0,00 €</div>
+      <div id="gord-join-err" class="aerr" style="display:none;margin-bottom:8px"></div>
+      <button class="btn btn-a" id="gord-join-submit" style="width:100%;margin-top:8px" data-oid="">Confirmer ma participation →</button>
+    </div>
+  </div>
+</div>`;
+
+  // Géolocalisation
+  document.getElementById('gord-locate-btn')?.addEventListener('click',()=>{
+    if(!navigator.geolocation){toast('Géolocalisation non supportée',true);return;}
+    const btn=document.getElementById('gord-locate-btn');
+    btn.disabled=true;btn.textContent='⏳…';
+    navigator.geolocation.getCurrentPosition(
+      pos=>{_grpOrdLat=pos.coords.latitude;_grpOrdLng=pos.coords.longitude;_grpOrdCache=null;_renderGroupOrders(c);},
+      err=>{btn.disabled=false;btn.textContent='📍 Ma position';toast('GPS : '+err.message,true);},
+      {timeout:12000,enableHighAccuracy:false}
+    );
+  });
+
+  // Filtres catégorie
+  document.querySelectorAll('.gord-cat-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{_grpOrdCat=btn.dataset.cat;_grpOrdCache=null;_renderGroupOrders(c);});
+  });
+
+  // Bouton créer
+  document.getElementById('gord-new-btn')?.addEventListener('click',()=>{
+    const d=new Date(Date.now()+14*86400*1000);
+    document.getElementById('gord-deadline').value=d.toISOString().slice(0,16);
+    ['gord-title','gord-supplier','gord-url','gord-addr','gord-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('gord-min').value='';
+    document.getElementById('gord-create-err').style.display='none';
+    document.getElementById('gord-create-modal').style.display='';
+  });
+  document.getElementById('gord-modal-close')?.addEventListener('click',()=>{document.getElementById('gord-create-modal').style.display='none';});
+  document.getElementById('gord-create-submit')?.addEventListener('click',()=>_gordSubmitCreate(c));
+
+  // Bouton Mes commandes
+  document.getElementById('gord-mine-btn')?.addEventListener('click',()=>_gordLoadMine());
+
+  // Rejoindre modal
+  document.getElementById('gord-join-close')?.addEventListener('click',()=>{document.getElementById('gord-join-modal').style.display='none';});
+  document.getElementById('gord-add-item')?.addEventListener('click',()=>_gordAddItemRow());
+  document.getElementById('gord-join-submit')?.addEventListener('click',()=>_gordSubmitJoin());
+
+  // Charger si GPS dispo
+  if(_grpOrdLat!==null) _gordLoad();
+}
+
+async function _gordLoad(){
+  const list=document.getElementById('gord-list');
+  if(!list||_grpOrdLat===null)return;
+  if(_grpOrdCache){_gordRenderList(list,_grpOrdCache);return;}
+  list.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted)">⏳ Chargement…</div>';
+  try{
+    const cat=_grpOrdCat?`&category=${encodeURIComponent(_grpOrdCat)}`:'';
+    const r=await fetch(`/api/orders/nearby?lat=${_grpOrdLat}&lng=${_grpOrdLng}&km=50${cat}`,{headers:{Authorization:'Bearer '+(_srvToken||'')}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    _grpOrdCache=await r.json();
+    _gordRenderList(list,_grpOrdCache);
+  }catch(e){list.innerHTML=`<div style="text-align:center;padding:20px;color:var(--red)">Erreur : ${esc(e.message)}</div>`;}
+}
+
+function _gordRenderList(list,orders){
+  const filtered=_grpOrdCat?orders.filter(o=>o.category===_grpOrdCat):orders;
+  if(!filtered.length){
+    list.innerHTML='<div style="text-align:center;padding:28px 16px;color:var(--muted)"><div style="font-size:1.4rem;margin-bottom:8px">🚚</div>Aucune commande ouverte dans un rayon de 50 km.'+(!!_srvToken?'<br><small style="color:var(--muted)">Soyez le premier à en créer une !</small>':'')+'</div>';
+    return;
+  }
+  list.innerHTML=filtered.map(o=>{
+    const pct=parseFloat(o.min_total_eur)>0?Math.min(100,Math.round(parseFloat(o.current_total_eur)/parseFloat(o.min_total_eur)*100)):null;
+    const deadline=new Date(o.deadline).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+    const dist=o.distance_km!=null?`📍 ${parseFloat(o.distance_km).toFixed(1)} km · `:'';
+    const catBg={plants:'#e8f5e9',pots:'#f3e5f5',engrais:'#fff8e1',substrats:'#e3f2fd',amendements:'#e8f5e9',outils:'#fce4ec',divers:'#f5f5f5'};
+    return `<div style="background:var(--white);border:1px solid var(--cream3);border-radius:12px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div style="font-weight:700;font-size:.93rem;line-height:1.3">${esc(o.title)}</div>
+        <span style="background:${catBg[o.category]||'#f5f5f5'};color:var(--text);padding:2px 7px;border-radius:8px;font-size:.7rem;white-space:nowrap;flex-shrink:0">${_GORD_CAT_LABELS[o.category]||o.category}</span>
+      </div>
+      <div style="font-size:.76rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+        <span>${dist}⏰ ${deadline}</span>
+        <span>👥 ${o.participant_count} participant${o.participant_count>1?'s':''}</span>
+        ${o.supplier_name?`<span>🏪 ${esc(o.supplier_name)}</span>`:''}
+        <span>par ${esc(o.organizer_name||'')}</span>
+      </div>
+      ${o.delivery_address?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:6px">📮 ${esc(o.delivery_address)}</div>`:''}
+      ${pct!==null?`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-bottom:2px"><span>Franco de port</span><span>${parseFloat(o.current_total_eur).toFixed(0)}€ / ${parseFloat(o.min_total_eur).toFixed(0)}€ (${pct}%)</span></div><div style="height:4px;background:var(--cream3);border-radius:2px"><div style="height:4px;background:${pct>=100?'var(--g2)':'var(--amber)'};border-radius:2px;width:${pct}%"></div></div></div>`:''}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-g btn-sm" style="flex:1" data-gord-detail="${esc(o.id)}">Détails →</button>
+        ${_srvToken&&o.status==='open'?`<button class="btn btn-a btn-sm" style="flex:1" data-gord-join="${esc(o.id)}" data-gord-jtitle="${esc(o.title)}">🛒 Rejoindre</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  list.querySelectorAll('[data-gord-detail]').forEach(btn=>btn.addEventListener('click',()=>_gordShowDetail(btn.dataset.gordDetail)));
+  list.querySelectorAll('[data-gord-join]').forEach(btn=>btn.addEventListener('click',()=>_gordOpenJoin(btn.dataset.gordJoin,btn.dataset.gordJtitle)));
+}
+
+async function _gordShowDetail(id){
+  try{
+    const r=await fetch('/api/orders/'+id,{headers:{Authorization:'Bearer '+(_srvToken||'')}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const o=await r.json();
+    const deadline=new Date(o.deadline).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    const pct=parseFloat(o.min_total_eur)>0?Math.min(100,Math.round(parseFloat(o.current_total_eur)/parseFloat(o.min_total_eur)*100)):null;
+    showModal(`
+      <h3 style="margin-bottom:8px">${esc(o.title)}</h3>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;font-size:.76rem;color:var(--muted);margin-bottom:10px">
+        <span>${_GORD_STATUS_LABELS[o.status]||o.status}</span>
+        <span>⏰ ${deadline}</span>
+        <span>${_GORD_CAT_LABELS[o.category]||o.category}</span>
+        ${o.supplier_name?`<span>🏪 ${esc(o.supplier_name)}</span>`:''}
+        <span>par ${esc(o.organizer_name||'')}</span>
+      </div>
+      ${o.delivery_address?`<div style="font-size:.82rem;margin-bottom:8px">📮 ${esc(o.delivery_address)}</div>`:''}
+      ${pct!==null?`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted);margin-bottom:2px"><span>Franco de port : ${parseFloat(o.current_total_eur).toFixed(2)}€ / ${parseFloat(o.min_total_eur).toFixed(2)}€</span><span>${pct}%</span></div><div style="height:6px;background:var(--cream3);border-radius:3px"><div style="height:6px;background:${pct>=100?'var(--g2)':'var(--amber)'};border-radius:3px;width:${pct}%"></div></div></div>`:''}
+      ${o.description?`<div style="font-size:.83rem;color:#444;margin-bottom:10px;white-space:pre-wrap;max-height:100px;overflow-y:auto">${esc(o.description)}</div>`:''}
+      ${o.supplier_url?`<div style="margin-bottom:10px"><a href="${esc(o.supplier_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--g2);font-size:.82rem">🔗 Voir le fournisseur</a></div>`:''}
+      <div style="font-weight:700;font-size:.82rem;margin-bottom:5px">👥 Participants (${(o.participants||[]).filter(p=>p.status!=='cancelled').length})</div>
+      <div style="max-height:130px;overflow-y:auto;margin-bottom:12px;font-size:.79rem">
+        ${(o.participants||[]).filter(p=>p.status!=='cancelled').map(p=>`<div style="display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid var(--cream3)"><span>${esc(p.member_name||'')}</span><span style="font-weight:600">${parseFloat(p.total_eur).toFixed(2)}€ <span style="color:var(--muted);font-weight:400">(${p.status})</span></span></div>`).join('')||'<div style="color:var(--muted)">Aucun participant</div>'}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        ${_srvToken&&o.status==='open'?`<button class="btn btn-a btn-sm" id="gord-detail-join" data-oid="${esc(o.id)}" data-otitle="${esc(o.title)}">🛒 Rejoindre</button>`:''}
+        <button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button>
+      </div>`);
+    document.getElementById('gord-detail-join')?.addEventListener('click',function(){closeModal();_gordOpenJoin(this.dataset.oid,this.dataset.otitle);});
+  }catch(e){toast('Erreur : '+e.message,true);}
+}
+
+function _gordOpenJoin(orderId,orderTitle){
+  if(!_srvToken){toast('Connexion serveur requise',true);return;}
+  document.getElementById('gord-join-title').textContent=orderTitle||'';
+  document.getElementById('gord-items-list').innerHTML='';
+  document.getElementById('gord-join-submit').dataset.oid=orderId;
+  document.getElementById('gord-join-total').textContent='Total : 0,00 €';
+  document.getElementById('gord-join-err').style.display='none';
+  _gordAddItemRow();
+  document.getElementById('gord-join-modal').style.display='';
+}
+
+function _gordAddItemRow(){
+  const list=document.getElementById('gord-items-list');
+  if(!list)return;
+  const row=document.createElement('div');
+  row.style.cssText='display:grid;grid-template-columns:1fr 52px 68px 24px;gap:4px;margin-bottom:4px;align-items:center';
+  row.innerHTML=`<input class="cca-bug-input gord-item-name" placeholder="Article" style="font-size:.78rem;padding:5px 7px"/><input class="cca-bug-input gord-item-qty" type="number" min="1" value="1" style="font-size:.78rem;padding:5px 7px"/><input class="cca-bug-input gord-item-price" type="number" min="0" step="0.01" placeholder="0,00" style="font-size:.78rem;padding:5px 7px"/><button style="background:none;border:none;cursor:pointer;font-size:.9rem;color:var(--muted);padding:0" class="gord-item-del">✕</button>`;
+  list.appendChild(row);
+  row.querySelector('.gord-item-del').addEventListener('click',()=>{row.remove();_gordUpdateTotal();});
+  row.querySelectorAll('.gord-item-qty,.gord-item-price').forEach(inp=>inp.addEventListener('input',_gordUpdateTotal));
+}
+
+function _gordUpdateTotal(){
+  let total=0;
+  document.querySelectorAll('#gord-items-list > div').forEach(row=>{
+    const qty=parseFloat(row.querySelector('.gord-item-qty')?.value)||0;
+    const price=parseFloat(row.querySelector('.gord-item-price')?.value)||0;
+    total+=qty*price;
+  });
+  const el=document.getElementById('gord-join-total');
+  if(el)el.textContent='Total : '+total.toFixed(2).replace('.',',')+'€';
+}
+
+async function _gordSubmitJoin(){
+  const oid=document.getElementById('gord-join-submit').dataset.oid;
+  const errEl=document.getElementById('gord-join-err');
+  errEl.style.display='none';
+  const rows=[...document.querySelectorAll('#gord-items-list > div')];
+  const items=[];let total=0;
+  for(const row of rows){
+    const name=(row.querySelector('.gord-item-name')?.value||'').trim();
+    const qty=parseFloat(row.querySelector('.gord-item-qty')?.value)||0;
+    const price=parseFloat(row.querySelector('.gord-item-price')?.value)||0;
+    if(!name)continue;
+    if(qty<=0){errEl.textContent='Quantité invalide pour "'+name+'"';errEl.style.display='block';return;}
+    items.push({name:name.slice(0,200),qty,price_eur:price});
+    total+=qty*price;
+  }
+  if(!items.length){errEl.textContent='Ajoutez au moins un article.';errEl.style.display='block';return;}
+  const btn=document.getElementById('gord-join-submit');
+  btn.disabled=true;btn.textContent='⏳…';
+  try{
+    const r=await fetch('/api/orders/'+oid+'/join',{method:'POST',headers:_authHeader(),body:JSON.stringify({items,total_eur:Math.round(total*100)/100})});
+    const d=await r.json();
+    if(!r.ok){errEl.textContent=d.error||'Erreur';errEl.style.display='block';btn.disabled=false;btn.textContent='Confirmer ma participation →';return;}
+    document.getElementById('gord-join-modal').style.display='none';
+    toast('Participation enregistrée ✓');
+    _grpOrdCache=null;
+    if(_grpOrdLat)_gordLoad();
+  }catch(e){errEl.textContent='Erreur réseau : '+e.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Confirmer ma participation →';}
+}
+
+async function _gordSubmitCreate(c){
+  const errEl=document.getElementById('gord-create-err');
+  errEl.style.display='none';
+  const title=document.getElementById('gord-title').value.trim();
+  const addr=document.getElementById('gord-addr').value.trim();
+  const deadline=document.getElementById('gord-deadline').value;
+  const url=(document.getElementById('gord-url').value||'').trim();
+  if(!title){errEl.textContent='Le titre est requis.';errEl.style.display='block';return;}
+  if(!addr){errEl.textContent="L'adresse de livraison est requise.";errEl.style.display='block';return;}
+  if(!deadline){errEl.textContent='La date limite est requise.';errEl.style.display='block';return;}
+  if(url&&!/^https?:\/\//i.test(url)){errEl.textContent="L'URL doit commencer par https://";errEl.style.display='block';return;}
+  const body={title,category:document.getElementById('gord-cat-sel').value,delivery_address:addr,deadline};
+  const supplier=(document.getElementById('gord-supplier').value||'').trim();
+  const minVal=parseFloat(document.getElementById('gord-min').value);
+  const desc=(document.getElementById('gord-desc').value||'').trim();
+  if(supplier)body.supplier_name=supplier;
+  if(url)body.supplier_url=url;
+  if(!isNaN(minVal)&&minVal>0)body.min_total_eur=minVal;
+  if(desc)body.description=desc;
+  if(_grpOrdLat){body.delivery_location_lat=_grpOrdLat;body.delivery_location_lng=_grpOrdLng;}
+  const btn=document.getElementById('gord-create-submit');
+  btn.disabled=true;btn.textContent='⏳…';
+  try{
+    const r=await fetch('/api/orders',{method:'POST',headers:_authHeader(),body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok){errEl.textContent=d.error||'Erreur';errEl.style.display='block';btn.disabled=false;btn.textContent='Publier la commande →';return;}
+    document.getElementById('gord-create-modal').style.display='none';
+    toast('Commande groupée créée ✓');
+    _grpOrdCache=null;
+    if(_grpOrdLat)_gordLoad();
+    else _renderGroupOrders(c);
+  }catch(e){errEl.textContent='Erreur réseau : '+e.message;errEl.style.display='block';btn.disabled=false;btn.textContent='Publier la commande →';}
+}
+
+async function _gordLoadMine(){
+  if(!_srvToken){toast('Connexion serveur requise',true);return;}
+  try{
+    const r=await fetch('/api/orders/mine',{headers:{Authorization:'Bearer '+_srvToken}});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const orders=await r.json();
+    if(!orders.length){showModal(`<p style="padding:16px;color:var(--muted);text-align:center">Aucune commande.<br><small>Créez ou rejoignez une commande groupée.</small></p><div style="text-align:right;padding:0 8px 8px"><button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button></div>`);return;}
+    showModal(`<h3 style="margin-bottom:12px">📋 Mes commandes (${orders.length})</h3>
+      <div style="max-height:320px;overflow-y:auto">
+        ${orders.map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--cream3);gap:8px">
+          <div><div style="font-size:.86rem;font-weight:600">${esc(o.title)}</div>
+          <div style="font-size:.73rem;color:var(--muted)">${_GORD_STATUS_LABELS[o.status]||o.status} · ${o.participant_count} part. · ${parseFloat(o.current_total_eur).toFixed(2)}€${o.my_total?` · ma part : ${parseFloat(o.my_total).toFixed(2)}€`:''}</div></div>
+          <div style="display:flex;gap:5px;flex-shrink:0">
+            <button class="btn btn-g btn-sm" onclick="_gordShowDetail('${esc(o.id)}');closeModal()">Voir</button>
+            ${o.status==='open'&&o.organizer_id===(_srvToken?JSON.parse(atob(_srvToken.split('.')[1])).id:0)?`<button class="btn btn-sm" style="background:var(--red);color:#fff" onclick="_gordCloseOrder('${esc(o.id)}')">Clore</button>`:''}
+          </div>
+        </div>`).join('')}
+      </div>
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button></div>`);
+  }catch(e){toast('Erreur : '+e.message,true);}
+}
+
+async function _gordCloseOrder(id){
+  closeModal();
+  try{
+    const r=await fetch('/api/orders/'+id,{method:'PATCH',headers:_authHeader(),body:JSON.stringify({status:'closed'})});
+    if(!r.ok)throw new Error('HTTP '+(await r.json()).error||r.status);
+    toast('Commande clôturée ✓');
+    _grpOrdCache=null;
+  }catch(e){toast('Erreur : '+e.message,true);}
 }
 
 // ── Observatoire ─────────────────────────────────────────────────────────────
