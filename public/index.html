@@ -9737,9 +9737,6 @@ function launchApp(){
   const _diagMode = _diagCfg?.isDemoMode ? '🟠 DEMO MODE' : '🟢 NORMAL';
   const _diagMsg = 'launchApp() — ' + _diagMode + '\nclé: ' + _diagKey + ' → ' + _diagCount + ' plante(s)\npwdHash: ' + (_diagCfg?.pwdHash ? 'présent' : '⚠ABSENT') + ' | profil: ' + (_diagCfg?.profile?.profileType || '?');
   console.log('[CCA App]', _diagMsg);
-  if (typeof _syncShowBanner === 'function') {
-    _syncShowBanner(_diagMsg, _diagCfg?.isDemoMode ? '#e65100' : '#1a5276', 8000);
-  }
   // ─────────────────────────────────────────────────────────────────────────
   const cfg=getCfg();
   if(!cfg.lang){
@@ -9841,7 +9838,7 @@ function render(){
   else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openAddFert()">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" onclick="showPage(\'settings\')">⚙</button>':'');m.innerHTML=renderFertPage();}
   else if(page==='eco'){bk.style.display='none';sb.textContent=T('misc.ecoTitle');const _ecoIsC=!PRO_PROFILES.includes((getProfile().profileType)||'collectionneur');ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openEcoEntry(null,'cost')">${_ecoIsC?'+ Dépense':'+ '+T('misc.ecoCosts')}</button>`;try{m.innerHTML=renderEcoPage();}catch(e){console.error('renderEco:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='nursery'){showPage('pro');}
-  else if(page==='pro'){bk.style.display='none';sb.textContent='🌿 Espace Pro';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="showPage('settings')">⚙</button>`;try{m.innerHTML=renderProPage();}catch(e){console.error('renderPro:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
+  else if(page==='pro'){bk.style.display='none';sb.textContent='🌿 Espace Pro';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="showPage('settings')">⚙</button>`;try{m.innerHTML=renderProPage();requestAnimationFrame(()=>{const active=m.querySelector('.pro-tab-bar .pro-tab-pill.active');if(active)active.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});});}catch(e){console.error('renderPro:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='settings'){bk.style.display='none';sb.textContent='Réglages';ac.innerHTML='';try{m.innerHTML=renderSettings();}catch(e){console.error('renderSettings ERROR:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'<br><pre>'+esc((e.stack||'').slice(0,400))+'</pre></div>';}}
   else if(page==='community'){bk.style.display='none';sb.textContent='🌍 Communauté';ac.innerHTML=_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<button class="btn btn-g btn-sm" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</button>`:'';try{m.innerHTML='<div id="community-root"></div>';renderCommunityPage();}catch(e){m.innerHTML='<div id="community-root"></div>';document.getElementById('community-root').innerHTML=_wikiErrHtml(e);}}
   else if(page==='wiki'){bk.style.display='none';sb.textContent=T('wiki.title');ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="if(window.__CCA_wiki){const r=document.getElementById('cca-wiki-root');if(r)window.__CCA_wiki.mount(r,T)}">↺</button>`;m.innerHTML='<div id="cca-wiki-root" class="page"></div>';try{if(window.__CCA_wiki){window.__CCA_wiki.mount(document.getElementById('cca-wiki-root'),T);}else{document.getElementById('cca-wiki-root').innerHTML='<p style="padding:20px;color:var(--muted)">Module wiki en cours de chargement…</p>';}}catch(e){console.error('wiki:',e);document.getElementById('cca-wiki-root').innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
@@ -25896,7 +25893,9 @@ async function _syncPull() {
       noPayload.length ? '⚠ Clés sans payload: ' + noPayload.join(', ') : ''
     ].filter(Boolean);
     console.log('[CCA Sync] Résumé post-pull :\n' + lines.join('\n'));
-    _syncShowBanner(lines.join('\n'), pulled ? '#2e7d32' : '#e65100', 10000);
+    // Fermer silencieusement la bannière "en cours" — n'afficher que les erreurs
+    document.getElementById('cca-sync-banner')?.remove();
+    if (!pulled) _syncShowBanner('⚠ SYNC — 0 clé restaurée. Données locales utilisées.', '#e65100', 8000);
     if (noPayload.length) console.warn('[CCA Sync] Clés sans payload:', noPayload);
   } catch(e) {
     console.warn('[CCA Sync] Exception:', e);
@@ -25911,8 +25910,10 @@ function switchProfileType(pt){
   const cfg=getCfg();if(!cfg?.profile)return;
   cfg.profile.profileType=pt;
   setCfg(cfg);
-  _syncPush('agrumes_cfg',JSON.stringify(cfg));
-  location.reload();
+  // Mettre à jour sessionStorage : évite que la correction srvPT repasse sur l'ancien profil au reload
+  sessionStorage.setItem('cca_srv_profile_type',pt);
+  // Attendre que le push soit terminé avant de recharger (évite la race condition async/reload)
+  _syncPush('agrumes_cfg',JSON.stringify(cfg)).then(()=>location.reload()).catch(()=>location.reload());
 }
 
 // ── Auth serveur CitrusCodex bêta ──────────────────────────────────────────
@@ -25999,9 +26000,10 @@ async function submitServerLogin(){
 async function _startLocalFlow(){
   console.log('[CCA Auth] _startLocalFlow() — démarrage');
   await _syncPull();
-  // 1B — Après le pull, appliquer le profileType serveur (cas premier login sur nouvel appareil)
+  // 1B — Appliquer srvPT UNIQUEMENT si le pull n'a pas restauré de profileType
+  // (évite d'écraser un profileType choisi via switchProfileType)
   const srvPT=sessionStorage.getItem('cca_srv_profile_type');
-  if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&_cfg.profile.profileType!==srvPT){_cfg.profile.profileType=srvPT;setCfg(_cfg);_syncPush('agrumes_cfg',JSON.stringify(_cfg));}}
+  if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&!_cfg.profile.profileType){_cfg.profile.profileType=srvPT;setCfg(_cfg);_syncPush('agrumes_cfg',JSON.stringify(_cfg));}}
   const c=getCfg();
   console.log('[CCA Auth] getCfg() après sync pull →', c ? (c.pwdHash?'config trouvée (pwdHash présent)':'config sans pwdHash'):'null/vide', '— isDemoMode:', c?.isDemoMode||false);
   console.log('[CCA Auth] currentDataKey() =', currentDataKey(), '— données locales :', localStorage.getItem(currentDataKey())?'présentes':'ABSENTES');
