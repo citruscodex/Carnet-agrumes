@@ -25801,27 +25801,51 @@ async function _syncPush(key, value) {
 
 async function _syncPull() {
   if (!_srvToken) { console.log('[CCA Sync] Pull ignoré — pas de token'); return; }
+  // Indicateur visuel temporaire (disparaît dès que l'app se lance)
+  const _syncBanner = document.createElement('div');
+  _syncBanner.id = 'cca-sync-banner';
+  _syncBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#1a4028;color:#fff;font-size:.78rem;text-align:center;padding:7px;font-family:monospace';
+  _syncBanner.textContent = '⟳ Synchronisation en cours…';
+  document.body?.appendChild(_syncBanner);
+  const _rmBanner = () => document.getElementById('cca-sync-banner')?.remove();
   try {
     console.log('[CCA Sync] Pull démarré vers /api/sync …');
     const r = await fetch('/api/sync', {
-      headers: { 'Authorization': 'Bearer ' + _srvToken }
+      headers: { 'Authorization': 'Bearer ' + _srvToken },
+      cache: 'no-store'   // bypass tout cache HTTP/SW
     });
     console.log('[CCA Sync] Réponse /api/sync →', r.status, r.statusText);
-    if (!r.ok) { console.warn('[CCA Sync] Pull échoué HTTP', r.status); return; }
+    if (!r.ok) {
+      console.warn('[CCA Sync] Pull échoué HTTP', r.status);
+      _syncBanner.style.background = '#c62828';
+      _syncBanner.textContent = '⚠ Sync échoué (' + r.status + ') — données locales utilisées';
+      setTimeout(_rmBanner, 4000);
+      return;
+    }
     const d = await r.json();
     console.log('[CCA Sync] Payload brut reçu :', JSON.stringify(d).slice(0, 500));
     let pulled = 0;
+    const missingPayload = [];
     for (const { store_key, payload } of (d.keys || [])) {
       if (payload !== null && payload !== undefined) {
         _origSetItem(store_key, payload);
         console.log('[CCA Sync] Clé restaurée :', store_key, '— aperçu :', String(payload).slice(0, 120));
         pulled++;
+      } else {
+        missingPayload.push(store_key);
       }
     }
     console.log('[CCA Sync]', pulled, 'clé(s) restaurée(s) depuis le serveur');
-    if (!pulled) console.warn('[CCA Sync] Aucune donnée sur le serveur pour cet utilisateur — le serveur a-t-il reçu les données du mobile ?');
+    if (missingPayload.length) console.warn('[CCA Sync] Clés sans payload (format incorrect ?) :', missingPayload);
+    if (!pulled && !missingPayload.length) console.warn('[CCA Sync] Aucune donnée sur le serveur pour cet utilisateur');
+    _syncBanner.textContent = pulled ? '✓ ' + pulled + ' clés synchronisées depuis le serveur' : '⚠ Aucune donnée trouvée sur le serveur';
+    _syncBanner.style.background = pulled ? '#2e7d32' : '#e65100';
+    setTimeout(_rmBanner, 2500);
   } catch(e) {
     console.warn('[CCA Sync] Pull échoué (exception), données locales utilisées :', e);
+    _syncBanner.style.background = '#c62828';
+    _syncBanner.textContent = '⚠ Sync échoué (' + e.message + ')';
+    setTimeout(_rmBanner, 4000);
   }
 }
 
@@ -25887,7 +25911,7 @@ async function submitServerLogin(){
   if(!email||!pwd){err.textContent='Email et mot de passe requis.';err.style.display='block';return;}
   btn.disabled=true;btn.textContent='Connexion…';
   try{
-    const r=await fetch(CCA_API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd})});
+    const r=await fetch(CCA_API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd}),cache:'no-store'});
     const d=await r.json();
     if(!r.ok){err.textContent=d.error||'Identifiants invalides.';err.style.display='block';btn.disabled=false;btn.textContent='Accéder à la bêta';return;}
     _srvToken=d.token;_srvProfile=d.profile;_srvRefreshToken=d.refreshToken||null;
