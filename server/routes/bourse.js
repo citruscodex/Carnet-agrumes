@@ -21,6 +21,9 @@ function sanitize(str, max) {
 
 module.exports = async function boursePlugin(fastify) {
 
+  const BASE = fastify.baseUrl || 'https://citruscodex.fr';
+  const sendMail = fastify.sendMail || (() => false);
+
   // ── GET /api/bourse — Liste publique ─────────────────────────────────────────
   fastify.get('/bourse', async (req, reply) => {
     const { type, q, page = 1, limit = 20 } = req.query;
@@ -179,7 +182,36 @@ module.exports = async function boursePlugin(fastify) {
       [req.params.id, req.user.id, msg]
     );
 
-    // TODO: notifier le propriétaire par email via Scaleway TEM
+    // Notifier le propriétaire par email
+    const { rows: owner } = await fastify.pg.query(
+      `SELECT u.email, COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS name
+       FROM users u WHERE u.id = $1`, [chk[0].user_id]
+    );
+    if (owner.length) {
+      const senderName = req.user.display_name || req.user.email.split('@')[0];
+      const bourseUrl = `${BASE}/?tab=bourse`;
+      await sendMail(
+        owner[0].email,
+        `Nouveau message sur votre annonce — ${chk[0].species}`,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333">
+  <h2 style="color:#e65100">🍊 Nouveau message — Bourse aux greffons</h2>
+  <p>Bonjour ${owner[0].name},</p>
+  <p><strong>${senderName}</strong> vous a envoyé un message concernant votre annonce
+     "<em>${sanitize(chk[0].species, 100)}</em>" :</p>
+  <blockquote style="border-left:4px solid #e65100;padding:12px 16px;margin:16px 0;background:#fff8f0;border-radius:0 6px 6px 0">
+    ${sanitize(msg, 2000).replace(/\n/g, '<br>')}
+  </blockquote>
+  <p><a href="${bourseUrl}" style="display:inline-block;background:#e65100;color:white;padding:12px 24px;text-decoration:none;border-radius:6px">
+    Voir la bourse aux greffons
+  </a></p>
+  <p style="color:#aaa;font-size:0.8em;margin-top:32px">
+    CitrusCodex — <a href="https://citruscodex.fr">citruscodex.fr</a>
+  </p>
+</body></html>`
+      );
+    }
+
     reply.code(201).send({ ok: true, message: 'Message envoyé ✓' });
   });
 };

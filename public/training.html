@@ -61,6 +61,14 @@
   .legal { font-size: .72rem; color: var(--muted); margin-top: 12px; line-height: 1.5; text-align: center; }
   .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--g2); font-size: .85rem; text-decoration: none; margin-bottom: 16px; }
   .back-link:hover { text-decoration: underline; }
+  .confirmed-card { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 14px; padding: 28px 20px; text-align: center; }
+  .cancelled-card { background: #fff8f0; border: 1px solid #ffcc80; border-radius: 14px; padding: 28px 20px; text-align: center; }
+  .cancel-confirm-card { background: #fff; border: 1px solid var(--cream3); border-radius: 14px; padding: 28px 20px; text-align: center; }
+  .state-icon { font-size: 3rem; margin-bottom: 12px; }
+  .state-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+  .state-msg { font-size: .87rem; color: #555; line-height: 1.5; margin-bottom: 16px; }
+  .btn-cancel-confirm { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 12px 24px; font-size: .95rem; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .btn-cancel-confirm:disabled { opacity: .5; cursor: not-allowed; }
   @media (max-width: 420px) { .row2 { grid-template-columns: 1fr; } }
 </style>
 </head>
@@ -143,16 +151,59 @@
     </div>
   </div>
 
-  <!-- Success state -->
+  <!-- Success state (form submitted) -->
   <div id="state-success" style="display:none">
     <div class="success-card">
-      <div class="success-icon">✅</div>
-      <div class="success-title">Inscription enregistrée !</div>
+      <div class="success-icon">📧</div>
+      <div class="success-title">Demande enregistrée !</div>
       <div class="success-msg">
-        Votre demande d'inscription a été transmise à l'organisateur.<br><br>
-        <strong>Prochaine étape</strong> : vous allez recevoir un email de confirmation à l'adresse indiquée. Cliquez sur le lien dans cet email pour finaliser votre inscription.<br><br>
+        Votre demande d'inscription a été transmise.<br><br>
+        <strong>Prochaine étape</strong> : un email de confirmation vous a été envoyé. Cliquez sur le lien dans cet email pour finaliser votre place.<br><br>
         En cas de question : contactez l'organisateur du stage.
       </div>
+    </div>
+  </div>
+
+  <!-- Confirmed state (after clicking confirm link in email) -->
+  <div id="state-confirmed" style="display:none">
+    <div class="confirmed-card">
+      <div class="state-icon">✅</div>
+      <div class="state-title" style="color:#2e7d32">Inscription confirmée !</div>
+      <div class="state-msg">
+        Votre place est réservée. Vous recevrez les détails pratiques de l'organisateur.<br><br>
+        <strong id="confirmed-stage-title"></strong>
+      </div>
+      <a href="/" style="color:var(--g2);font-size:.87rem">← Retour à Citrus Codex</a>
+    </div>
+  </div>
+
+  <!-- Cancelled state (after clicking cancel link) -->
+  <div id="state-cancelled-ok" style="display:none">
+    <div class="cancelled-card">
+      <div class="state-icon">❌</div>
+      <div class="state-title" style="color:#e65100">Inscription annulée</div>
+      <div class="state-msg">
+        Votre inscription a bien été annulée. Votre place a été libérée.<br><br>
+        <strong id="cancelled-stage-title"></strong>
+      </div>
+      <a href="/" style="color:var(--g2);font-size:.87rem">← Retour à Citrus Codex</a>
+    </div>
+  </div>
+
+  <!-- Cancel confirm page (from cancel_token in email) -->
+  <div id="state-cancel-confirm" style="display:none">
+    <div id="cancel-stage-info" class="card" style="margin-bottom:12px"></div>
+    <div class="cancel-confirm-card">
+      <div class="state-icon">⚠️</div>
+      <div class="state-title">Annuler mon inscription</div>
+      <div class="state-msg">
+        Voulez-vous vraiment annuler votre inscription à ce stage ?<br>
+        <small style="color:var(--muted)">Cette action est irréversible.</small>
+      </div>
+      <div id="cancel-err" class="err"></div>
+      <button class="btn-cancel-confirm" id="btn-do-cancel">Oui, annuler mon inscription</button>
+      <br><br>
+      <a href="/" style="color:var(--muted);font-size:.85rem">← Non, retourner à Citrus Codex</a>
     </div>
   </div>
 </main>
@@ -168,8 +219,13 @@
     past:      ['badge-past',     '⌛ Passé'],
   };
 
+  const ALL_STATES = [
+    'state-loading','state-error','state-loaded','state-closed','state-success',
+    'state-confirmed','state-cancelled-ok','state-cancel-confirm'
+  ];
+
   function show(id) {
-    ['state-loading','state-error','state-loaded','state-closed','state-success'].forEach(s => {
+    ALL_STATES.forEach(s => {
       const el = document.getElementById(s);
       if (el) el.style.display = s === id ? '' : 'none';
     });
@@ -186,26 +242,128 @@
     } catch { return iso; }
   }
 
-  // Get slug from URL: /training.html?slug=xxx  or  /training/?slug=xxx
-  const slug = new URLSearchParams(window.location.search).get('slug');
+  // Phone regex: FR or international
+  const PHONE_RE = /^(\+?[0-9 .\-()]{9,20}|0[1-9][0-9 .\-]{8,17})$/;
 
+  const params = new URLSearchParams(window.location.search);
+  const slug        = params.get('slug');
+  const confirmed   = params.get('confirmed');
+  const cancelledOk = params.get('cancelled');
+  const cancelToken = params.get('cancel_token');
+  const errorCode   = params.get('error');
+
+  // ── Error redirect from confirm/cancel ─────────────────────────────────────
+  if (errorCode) {
+    show('state-error');
+    document.getElementById('error-msg').textContent =
+      errorCode === 'token_invalid'
+        ? 'Lien invalide ou déjà utilisé. Votre inscription est peut-être déjà confirmée.'
+        : 'Une erreur est survenue.';
+    return;
+  }
+
+  // ── No slug at all ──────────────────────────────────────────────────────────
   if (!slug) {
     show('state-error');
     document.getElementById('error-msg').textContent = 'Aucun stage spécifié dans l\'URL.';
     return;
   }
 
-  // Fetch session details
+  // ── Confirmed via email link ────────────────────────────────────────────────
+  if (confirmed === '1') {
+    fetch('/api/training/public/' + encodeURIComponent(slug))
+      .then(r => r.ok ? r.json() : null)
+      .then(s => {
+        show('state-confirmed');
+        if (s) {
+          document.getElementById('confirmed-stage-title').textContent = s.title;
+          document.title = 'Inscription confirmée — ' + s.title;
+        }
+      })
+      .catch(() => show('state-confirmed'));
+    return;
+  }
+
+  // ── Cancelled via email link ────────────────────────────────────────────────
+  if (cancelledOk === '1') {
+    fetch('/api/training/public/' + encodeURIComponent(slug))
+      .then(r => r.ok ? r.json() : null)
+      .then(s => {
+        show('state-cancelled-ok');
+        if (s) {
+          document.getElementById('cancelled-stage-title').textContent = s.title;
+          document.title = 'Inscription annulée — ' + s.title;
+        }
+      })
+      .catch(() => show('state-cancelled-ok'));
+    return;
+  }
+
+  // ── Cancel confirm page (from email link) ───────────────────────────────────
+  if (cancelToken) {
+    fetch('/api/training/public/' + encodeURIComponent(slug))
+      .then(r => r.ok ? r.json() : null)
+      .then(s => {
+        show('state-cancel-confirm');
+        if (s) {
+          document.title = 'Annuler inscription — ' + s.title;
+          document.getElementById('cancel-stage-info').innerHTML = `
+            <div class="stage-title">${esc(s.title)}</div>
+            <div class="stage-meta" style="margin-top:8px">
+              <div class="stage-meta-item">📅 <strong>${fmtDate(s.start_datetime)}</strong></div>
+              <div class="stage-meta-item">📍 <strong>${esc(s.location)}</strong></div>
+            </div>`;
+        }
+        document.getElementById('btn-do-cancel').addEventListener('click', function () {
+          const btn = this;
+          btn.disabled = true;
+          btn.textContent = '⏳ Annulation…';
+          const errEl = document.getElementById('cancel-err');
+          errEl.style.display = 'none';
+          fetch('/api/training/cancel/' + encodeURIComponent(cancelToken), { method: 'POST' })
+            .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+            .then(({ ok, data }) => {
+              if (ok) {
+                window.location.href = '/training.html?slug=' + encodeURIComponent(slug) + '&cancelled=1';
+              } else {
+                errEl.textContent = data.error || 'Erreur lors de l\'annulation.';
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.textContent = 'Oui, annuler mon inscription';
+              }
+            })
+            .catch(e => {
+              errEl.textContent = 'Erreur réseau : ' + e.message;
+              errEl.style.display = 'block';
+              btn.disabled = false;
+              btn.textContent = 'Oui, annuler mon inscription';
+            });
+        });
+      })
+      .catch(() => {
+        show('state-cancel-confirm');
+        document.getElementById('btn-do-cancel').addEventListener('click', function () {
+          const btn = this; btn.disabled = true; btn.textContent = '⏳ Annulation…';
+          fetch('/api/training/cancel/' + encodeURIComponent(cancelToken), { method: 'POST' })
+            .then(r => r.json())
+            .then(d => {
+              if (d.ok) show('state-cancelled-ok');
+              else { btn.disabled = false; btn.textContent = 'Oui, annuler'; }
+            }).catch(() => { btn.disabled = false; btn.textContent = 'Oui, annuler'; });
+        });
+      });
+    return;
+  }
+
+  // ── Normal flow: fetch stage and show form ──────────────────────────────────
   fetch('/api/training/public/' + encodeURIComponent(slug))
     .then(r => {
       if (!r.ok) throw new Error(r.status === 404 ? 'Stage introuvable.' : 'Erreur ' + r.status);
       return r.json();
     })
     .then(s => {
-      // Update page title
       document.title = esc(s.title) + ' — Citrus Codex';
 
-      // Stage info
       document.getElementById('stage-title').textContent = s.title;
       const [badgeClass, badgeLabel] = STATUS_LABEL[s.status] || ['badge-cancelled', s.status];
       const badgeEl = document.getElementById('stage-status-badge');
@@ -222,10 +380,10 @@
         `<div class="stage-meta-item">👤 <strong>${s.capacity} places</strong> · <span class="price-badge">${s.price_eur > 0 ? s.price_eur + ' €' : 'Gratuit'}</span></div>`,
       ].join('');
 
-      const confirmed = parseInt(s.confirmed_count) || 0;
-      const pct = s.capacity > 0 ? Math.round(confirmed / s.capacity * 100) : 0;
+      const confirmedCount = parseInt(s.confirmed_count) || 0;
+      const pct = s.capacity > 0 ? Math.round(confirmedCount / s.capacity * 100) : 0;
       document.getElementById('cap-bar-wrap').innerHTML = `
-        <div class="cap-bar-labels"><span>Inscriptions confirmées</span><span>${confirmed} / ${s.capacity}</span></div>
+        <div class="cap-bar-labels"><span>Inscriptions confirmées</span><span>${confirmedCount} / ${s.capacity}</span></div>
         <div class="cap-bar"><div class="cap-bar-fill" style="width:${pct}%"></div></div>`;
 
       if (s.description) {
@@ -233,13 +391,11 @@
         document.getElementById('stage-desc-wrap').style.display = '';
       }
 
-      // Decide which state to show
       if (s.status === 'cancelled') {
         show('state-closed');
         document.getElementById('closed-icon').textContent = '⚫';
         document.getElementById('closed-title').textContent = 'Stage annulé';
         document.getElementById('closed-msg').textContent = 'Ce stage a été annulé. Veuillez contacter l\'organisateur pour plus d\'informations.';
-        // Still show stage card
         document.getElementById('state-closed').prepend(document.getElementById('stage-card').cloneNode(true));
       } else if (s.status === 'full') {
         show('state-closed');
@@ -256,7 +412,6 @@
         show('state-loaded');
       }
 
-      // Submit handler
       document.getElementById('btn-submit').addEventListener('click', function () {
         const first = document.getElementById('f-first').value.trim();
         const last  = document.getElementById('f-last').value.trim();
@@ -268,13 +423,15 @@
 
         if (!first || !last || !email) {
           errEl.textContent = 'Prénom, nom et email sont requis.';
-          errEl.style.display = 'block';
-          return;
+          errEl.style.display = 'block'; return;
         }
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           errEl.textContent = 'Adresse email invalide.';
-          errEl.style.display = 'block';
-          return;
+          errEl.style.display = 'block'; return;
+        }
+        if (phone && !PHONE_RE.test(phone)) {
+          errEl.textContent = 'Numéro de téléphone invalide (ex : 06 12 34 56 78 ou +33612345678).';
+          errEl.style.display = 'block'; return;
         }
 
         const btn = this;

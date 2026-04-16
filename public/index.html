@@ -18211,7 +18211,21 @@ async function _stagesViewRegistrations(id, title) {
     <table style="width:100%;border-collapse:collapse;font-size:.82rem">
     <thead><tr style="border-bottom:1px solid var(--cream3)"><th style="padding:4px 6px;text-align:left">Nom</th><th style="padding:4px 6px;text-align:left">Email</th><th style="padding:4px 6px">Confirmé</th><th style="padding:4px 6px;text-align:left">Tél.</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
-    <div style="margin-top:12px;text-align:right"><button class="btn" onclick="closeModal()">Fermer</button></div>`);
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+    <button class="btn btn-g btn-sm" id="btn-csv-export-${id}">⬇️ CSV</button>
+    <button class="btn btn-sm" onclick="closeModal()">Fermer</button></div>`);
+    document.getElementById('btn-csv-export-' + id)?.addEventListener('click', async () => {
+      try {
+        const rc = await fetch(`/api/training/sessions/${id}/registrations/csv`, { headers: { 'Authorization': 'Bearer ' + _srvToken } });
+        if (!rc.ok) throw new Error('HTTP ' + rc.status);
+        const blob = await rc.blob();
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url; a.download = `inscrits-stage-${id}.csv`;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+      } catch(e) { toast('Erreur export CSV : ' + e.message, true); }
+    });
   } catch(e) { toast('Erreur : ' + e.message, true); }
 }
 
