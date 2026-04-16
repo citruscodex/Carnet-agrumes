@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — CitrusCodex (CCA)
 
-> Version : 2.0 · Dernière mise à jour : 2026-04-14
+> Version : 2.1 · Dernière mise à jour : 2026-04-16
 > Auteur : Architecture senior CitrusCodex
 
 ---
@@ -31,19 +31,19 @@ develop → GitHub Pages (staging)
 
 ## 2. Architecture Frontend
 
-### 2.1. Structure actuelle (monolithe)
+### 2.1. Structure actuelle (monolithe en cours de modularisation)
 
 ```
-index.html (24 300+ lignes)
+index.html (~25 700 lignes)
 ├── <style>          L.21–2093       CSS (~2 070 lignes)
 ├── <script QRCode>  L.20            Dépendance externe CDN
 ├── HTML statique    L.1260–1283     Navbar, conteneurs
 ├── i18n             L.1767–6200     5 langues (FR/EN/IT/ES/PT)
 ├── Données démo     L.6200–6500     Variétés pré-chargées, frost data
-├── Modules JS       L.6500–24312    ~796 fonctions
+├── Modules JS       L.6500–24312    ~800 fonctions
+│   ├── Store/CRUD   L.1284–1500     localStorage, collections
 │   ├── Météo/geo    L.6500–6900
 │   ├── Push notif   L.6500–6600
-│   ├── Store/CRUD   L.1284–1500     localStorage, collections
 │   ├── Profils      L.8652–8730     PRO_PROFILES, setup, auth
 │   ├── Routing      L.8828          showPage(), render()
 │   ├── Dashboard    L.8900–9200     4 dashboards par profil
@@ -52,13 +52,18 @@ index.html (24 300+ lignes)
 │   ├── Fiche sujet  L.11400–13550   Détail, galerie, historiques
 │   ├── Événements   L.13550–14200   openAddEvent, submitEV
 │   ├── Calendrier   L.14200–15400   Vue calendrier, événements
-│   ├── Communauté   L.15400–16100   Wiki, observatoire
+│   ├── Communauté   L.15400–16100   Wiki inline, observatoire
 │   ├── Pro/Nursery  L.16100–18500   Pépinière, stocks, lots
 │   ├── PDF/Export   L.18500–21500   PDF, étiquettes, partage
 │   ├── Diagnostic   L.21500–23000   Plant.id, scoring
 │   ├── Aide/Guide   L.21700–23600   Guide contextuel
 │   └── Auth serveur L.24183–24312   JWT, sync, login
-└── sw.js, manifest.json, firebase-config.js (fichiers séparés)
+└── sw.js, manifest.json (fichiers séparés)
+
+Modules ES extraits (public/src/modules/) :
+├── drip.js          Irrigation goutte-à-goutte
+├── phenology.js     Phénologie BBCH
+└── wiki.js          Wiki offline-first
 ```
 
 ### 2.2. Patterns architecturaux
@@ -74,6 +79,8 @@ index.html (24 300+ lignes)
 **Sécurité XSS :** Fonction `esc()` obligatoire pour tout contenu dynamique injecté via innerHTML.
 
 **Modales :** `showModal(html)` / `closeModal()` — overlay avec contenu HTML arbitraire.
+
+**Modules ES extraits :** S'exposent sur `window.__CCA_<nom>` pour interop avec le monolithe. CSS préfixé `cca-<nom>-*`.
 
 ### 2.3. Conventions de nommage
 
@@ -94,7 +101,6 @@ index.html (24 300+ lignes)
 | QRCode.js     | QR codes         | Toujours           |
 | Leaflet       | Cartes           | Lazy (verger/obs)  |
 | Google Fonts  | Typographie      | Toujours           |
-| Firebase SDK  | Sync (legacy)    | Conditionnel       |
 | Plant.id API  | Diagnostic photo | À la demande       |
 | IGN Cadastre  | Parcelles        | À la demande       |
 
@@ -224,62 +230,55 @@ Pattern : **localStorage-first, sync push/pull serveur**
 | Pipeline phytosanitaire| Réglementaire, validé par des experts            |
 | Chiffrement AES-GCM sync | Sécurité cryptographique critique             |
 | `sumAppliedNPK()`      | Calcul agronomique validé                        |
-| Firebase legacy        | Rétrocompatibilité utilisateurs existants        |
-| `barcode-scanner.js`   | Module scanner stabilisé                         |
 | ServiceWorker (`sw.js`)| Cache strategy validée                           |
+| Moteur PDF / export étiquettes | Logique de rendu validée               |
 
 ---
 
 ## 6. Feuille de route
 
-### Phase 0 — Bugfixes (en cours)
+### Phase 0 — Bugfixes (complétée)
 - [x] Fix `misc.collAddBtn` → `misc.collAddSubjectBtn`
 - [x] Fix TDZ `submitEV()` (déclarations graft déplacées)
 - [x] Fix unicité parcelle/pleine terre
 - [x] Filtres observatoire par type d'événement
 - [x] Wiki : 404 gracieux avec option de création d'article
-- [ ] Audit UX onglet liste collection
-- [ ] Fix affichage encarts wiki "fiche"
+- [x] Audit UX — score 7.1/10, 5 recommandations implémentées
+- [x] Nouveau logo transparent, multi-résolutions
 
-### Phase 1 — Backend Auth & Bêta
-- [ ] Whitelist emails bêta (inscription contrôlée)
+### Phase 1 — Backend Auth & Bêta (en cours)
+- [x] Whitelist emails bêta (inscription contrôlée)
+- [x] Reset password par mail
+- [x] Admin panel gestion profils/rôles
+- [x] Système de feedback intégré
 - [ ] Validation email avant première connexion
-- [ ] Reset password par mail
-- [ ] Admin panel gestion profils/rôles
-- [ ] Système de feedback intégré
 - [ ] Vérification sync push/pull optimale
 
-### Phase 2 — Extraction modulaire
+### Phase 2 — Extraction modulaire (en cours)
+- [x] Drip irrigation → `public/src/modules/drip.js`
+- [x] Phénologie BBCH → `public/src/modules/phenology.js`
+- [x] Wiki → `public/src/modules/wiki.js`
 - [ ] i18n → fichiers JSON séparés
 - [ ] CSS → modules par composant
-- [ ] JS → modules ES via Vite
 - [ ] Remplacement inline onclick → addEventListener
 - [ ] Tests Playwright (géométrie + fonctionnel)
 
 ### Phase 3 — Nouvelles fonctionnalités
-- [ ] Module phénologie BBCH agrumes
 - [ ] Profils de substrats
-- [ ] Étiquettes QR code
-- [ ] Wiki scientifique avec notes de bas de page
 - [ ] Vue taxonomique phylogénétique
 - [ ] Bourse aux greffons
-- [ ] Gestion stocks avancée (inspirée Abelia/Mprise/Tellussia)
-- [ ] Système stages de greffe
+- [ ] Gestion stocks avancée
 - [ ] Catalogue public pépiniériste
 - [ ] Suivi acclimatation communautaire
-- [ ] Observatoire carte cliquable agrumes pleine terre
-- [ ] Archivage historiques annuels
 - [ ] Diagnostics améliorés (multi-sources)
-- [ ] Partage social amélioré
-- [ ] Guide d'utilisation complet + icônes d'aide
-- [ ] Déploiement nouveau logo
+- [ ] Archivage historiques annuels
 
 ---
 
 ## 7. Principes de développement
 
 1. **Plan-before-code** : Toute modification est planifiée et approuvée avant implémentation.
-2. **Patches ciblés** : `str_replace` sur le fichier de travail, pas de réécriture globale.
+2. **Patches ciblés** : Modifications chirurgicales, pas de réécriture globale.
 3. **i18n exhaustif** : Toute nouvelle chaîne doit exister dans les 5 langues.
 4. **XSS** : `esc()` sur tout contenu dynamique dans innerHTML.
 5. **Zero dépendances** : Préférer vanilla JS ; `addEventListener` exclusivement.
