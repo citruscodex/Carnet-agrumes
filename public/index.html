@@ -9369,9 +9369,9 @@ ${['member','editor','moderator','admin'].map(r=>`<option value="${r}"${filterRo
 <div style="flex:1;min-width:0">
 <div style="font-size:.84rem;font-weight:600">${esc(u.email)}</div>
 <div style="font-size:.74rem;color:var(--muted);margin-top:2px">${ic} ${esc(lbl)} &nbsp;·&nbsp; <span style="color:${rc};font-weight:600">${esc(u.role)}</span> &nbsp;·&nbsp; Inscrit le ${since}</div>
-<div style="font-size:.74rem;color:var(--muted);margin-top:1px">${T('admin.lastLogin')||'Dernière connexion'} : ${lastLogin} &nbsp;·&nbsp; ${u.plant_count} ${T('admin.subjects')||'sujets'}</div>
+<div style="font-size:.74rem;color:var(--muted);margin-top:1px">${T('admin.lastLogin')||'Dernière connexion'} : ${lastLogin} &nbsp;·&nbsp; ${u.plant_count!=null?u.plant_count:'—'} ${T('admin.subjects')||'sujets'}</div>
 </div>
-${u.disabled_at?`<span style="font-size:.72rem;background:rgba(198,40,40,.1);color:#c62828;border-radius:8px;padding:2px 7px">Désactivé</span>`:''}
+${!u.is_active?`<span style="font-size:.72rem;background:rgba(198,40,40,.1);color:#c62828;border-radius:8px;padding:2px 7px">Désactivé</span>`:''}
 </div>
 <div class="cca-bug-admin-row" style="margin-top:8px">
 <div style="display:flex;gap:4px;flex-wrap:wrap">
@@ -9385,7 +9385,7 @@ ${['member','editor','moderator','admin'].map(ro=>`<option value="${ro}"${u.role
 <div style="display:flex;gap:4px;flex-wrap:wrap">
 <button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:#162d1f;color:white" data-adusr-save="${esc(u.id)}">${esc(T('bug.save')||'Enregistrer')}</button>
 <button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(21,101,192,.1);color:#1565c0" data-adusr-resetpwd="${esc(u.id)}">🔑 Réinit. mdp</button>
-${!u.disabled_at?`<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(198,40,40,.08);color:#c62828" data-adusr-disable="${esc(u.id)}">${esc(T('admin.disable')||'Désactiver')}</button>`:''}
+${u.is_active?`<button class="btn btn-sm" style="font-size:.72rem;padding:3px 8px;background:rgba(198,40,40,.08);color:#c62828" data-adusr-disable="${esc(u.id)}">${esc(T('admin.disable')||'Désactiver')}</button>`:''}
 </div>
 <div style="margin-top:6px">
 <input type="text" class="cca-bug-input" style="font-size:.72rem;padding:3px 8px;width:100%;box-sizing:border-box" placeholder="Notes admin (internes, invisibles du membre)" data-adusr-notes-input="${esc(u.id)}" value="${esc(u.admin_notes||'')}"/>
@@ -9409,9 +9409,14 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
 <div id="cca-admin-inv-list" style="margin-top:10px;font-size:.78rem;color:var(--muted)"></div>
 </div>`;
 
-    const statsBlock=stats?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px">
-${[['👥','Total',stats.total],['✅','Actifs 7j',stats.active_7d],['🆕','Nvx 30j',stats.new_30d],['🔒','Désactivés',stats.disabled]].map(([i,l,v])=>`<div style="background:var(--white);border-radius:8px;padding:8px 10px;text-align:center;border:1px solid var(--cream3)"><div style="font-size:1.2rem">${i}</div><div style="font-size:1.1rem;font-weight:700;color:var(--text-strong)">${v}</div><div style="font-size:.7rem;color:var(--muted)">${l}</div></div>`).join('')}
+    const statsBlock=stats?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+${[['👥',stats.total,'Total'],['✅',stats.active_7d,'Actifs 7j'],['🆕',stats.new_30d,'Nvx 30j'],['🔒',stats.disabled,'Désactivés'],['📖',stats.pages,'Pages wiki'],['🦠',stats.bugs,'Bug reports'],['🗺',stats.observations,'Observations'],['✏️',stats.revisions,'Révisions']].map(([i,v,l])=>`<div style="background:var(--white);border-radius:8px;padding:8px 6px;text-align:center;border:1px solid var(--cream3)"><div style="font-size:1.1rem">${i}</div><div style="font-size:1rem;font-weight:700;color:var(--text-strong,#1c1c1e)">${v??'—'}</div><div style="font-size:.65rem;color:var(--muted)">${l}</div></div>`).join('')}
+</div>
+<div style="display:flex;gap:8px;margin-bottom:12px">
+  <button class="btn btn-g btn-sm" onclick="showPage('admin-bugs')">🐛 Gérer les bugs (${stats.bugs??0})</button>
+  <button class="btn btn-g btn-sm" onclick="showPage('admin-users')">👥 Utilisateurs (${stats.total??0})</button>
 </div>`:'';
+
     root.innerHTML=statsBlock+filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock;
 
     // Filtres
@@ -9432,7 +9437,7 @@ ${[['👥','Total',stats.total],['✅','Actifs 7j',stats.active_7d],['🆕','Nvx
         const profile_type=root.querySelector(`[data-adusr-profile="${id}"]`)?.value;
         const role=root.querySelector(`[data-adusr-role="${id}"]`)?.value;
         try{
-          if(profile_type){await fetch('/api/admin/users/'+id+'/profile',{method:'PUT',headers:_authHeader(),body:JSON.stringify({profile_type})});}
+          if(profile_type){await fetch('/api/admin/users/'+id+'/profile-type',{method:'PUT',headers:_authHeader(),body:JSON.stringify({profile_type})});}
           if(role){await fetch('/api/admin/users/'+id+'/role',{method:'PUT',headers:_authHeader(),body:JSON.stringify({role})});}
           toast('Mis à jour ✓');renderAdminUsers();
         }catch(e){toast('Erreur : '+esc(e.message),true);}

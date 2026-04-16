@@ -46,7 +46,7 @@ module.exports = async function boursePlugin(fastify) {
       `SELECT g.id, g.type, g.species, g.variety, g.rootstock, g.quantity,
               g.region, g.description, g.status, g.contact_method,
               g.expires_at, g.created_at,
-              u.username AS author
+              COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS author
        FROM graft_exchange g
        JOIN users u ON u.id = g.user_id
        WHERE ${where}
