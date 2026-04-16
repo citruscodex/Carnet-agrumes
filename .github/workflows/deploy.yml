@@ -2,7 +2,7 @@ name: Deploy to citruscodex.fr
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, refactor/repo-migration ]
 
 jobs:
   deploy:
@@ -11,11 +11,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Prepare deploy (structure plate pour scp)
+        run: |
+          # index.html : fixe la référence manifest (hashée → chemin stable)
+          node -e "
+            const fs = require('fs');
+            let html = fs.readFileSync('build/index.html', 'utf8');
+            html = html.replace(/href=\"\/assets\/manifest-[^\"]+\.json\"/, 'href=\"/manifest.json\"');
+            fs.writeFileSync('index.html', html);
+          "
+          # Assets Vite (logos + bundle JS, hachés)
+          cp -r build/assets assets
+          # Fichiers statiques non bundlés par Vite
+          cp public/sw.js    sw.js
+          cp public/404.html 404.html
+          cp public/manifest.json manifest.json
+
       - name: Deploy via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
           host: 62.210.237.49
           username: root
           key: ${{ secrets.DEPLOY_KEY }}
-          source: "index.html,manifest.json,sw.js,favicon.ico,icon-192.png,icon-512.png,icon-180.png,logo.png,404.html,assets"
+          source: "index.html,manifest.json,sw.js,404.html,assets"
           target: /var/www/cca/

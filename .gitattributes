@@ -1,0 +1,6 @@
+# Forcer LF pour tous les fichiers texte (CI Linux)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary

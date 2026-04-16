@@ -1,0 +1,37 @@
+# Dépendances
+node_modules/
+
+# Build Vite (généré à chaque déploiement CI)
+build/
+dist/
+
+# Variables d'environnement
+.env
+.env.*
+!.env.example
+
+# État de session local (privé)
+SESSION_STATE.md
+
+# Firebase (abandonné)
+firebase.json
+.firebase/
+.firebaserc
+
+# Claude Code (données de session locales)
+.claude/
+
+# Artefacts locaux
+audit-screenshots/
+*.zip
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
