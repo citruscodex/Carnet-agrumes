@@ -30,6 +30,10 @@ audit-screenshots/
 test-results/
 playwright-report/
 
+# Fichiers temporaires éditeur/outils
+*.tmp.*
+*.tmp
+
 # OS
 .DS_Store
 Thumbs.db
