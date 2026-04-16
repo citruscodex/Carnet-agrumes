@@ -2222,6 +2222,7 @@ fr:{
     collAll:'Tout',
     collAddFertBtn:'＋ Engrais',
     collAddSubjectBtn:'＋ Nouveau sujet',
+    collAddBtn:'Ajouter un sujet',
     evTitle:'Nouvel événement',
     evWeightLbl:'Poids apporté (g)',
     evTailleTitle:'✂️ Détails de la taille',
@@ -3130,6 +3131,7 @@ en:{
     collAll:'All',
     collAddFertBtn:'＋ Fertiliser',
     collAddSubjectBtn:'＋ New subject',
+    collAddBtn:'Add a subject',
     evTitle:'New event',
     evWeightLbl:'Applied weight (g)',
     evTailleTitle:'✂️ Pruning details',
@@ -4052,6 +4054,7 @@ it:{
   ,
     collAddFertBtn:'＋ Fertilizzante',
     collAddSubjectBtn:'＋ Nuovo soggetto',
+    collAddBtn:'Aggiungi soggetto',
     collAll:'Tutti',
     collArrosage:'irrigazione',
     collBulkTag:'collettivo',
@@ -4945,6 +4948,7 @@ es:{
   ,
     collAddFertBtn:'＋ Fertilizante',
     collAddSubjectBtn:'＋ Nuevo sujeto',
+    collAddBtn:'Añadir sujeto',
     collAll:'Todo',
     collArrosage:'riego',
     collBulkTag:'colectivo',
@@ -5840,6 +5844,7 @@ pt:{
   ,
     collAddFertBtn:'＋ Fertilizante',
     collAddSubjectBtn:'＋ Novo sujeito',
+    collAddBtn:'Adicionar sujeito',
     collAll:'Todos',
     collArrosage:'rega',
     collBulkTag:'coletivo',
@@ -25964,7 +25969,7 @@ async function _startLocalFlow(){
   await _syncPull();
   // 1B — Après le pull, appliquer le profileType serveur (cas premier login sur nouvel appareil)
   const srvPT=sessionStorage.getItem('cca_srv_profile_type');
-  if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&_cfg.profile.profileType!==srvPT){_cfg.profile.profileType=srvPT;setCfg(_cfg);}}
+  if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&_cfg.profile.profileType!==srvPT){_cfg.profile.profileType=srvPT;setCfg(_cfg);_syncPush('agrumes_cfg',JSON.stringify(_cfg));}}
   const c=getCfg();
   console.log('[CCA Auth] getCfg() après sync pull →', c ? (c.pwdHash?'config trouvée (pwdHash présent)':'config sans pwdHash'):'null/vide', '— isDemoMode:', c?.isDemoMode||false);
   console.log('[CCA Auth] currentDataKey() =', currentDataKey(), '— données locales :', localStorage.getItem(currentDataKey())?'présentes':'ABSENTES');
