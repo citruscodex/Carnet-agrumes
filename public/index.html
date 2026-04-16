@@ -16618,8 +16618,8 @@ function renderCommunityPage(){
   // 'new-wiki' et toutes les vues wiki utilisent le nouveau module
   const isWikiView=!wikiView||wikiView==='new-wiki'||wikiView==='home'||wikiView==='article'||wikiView==='editor'||wikiView==='history'||wikiView==='search'||wikiView==='cat';
   const tabs=`<div class="comm-tabs">
-    <div class="comm-tab${isWikiView?' active':''}" onclick="wikiView='new-wiki';renderCommunityPage()">📖 Citrus Wiki</div>
-    <div class="comm-tab${wikiView==='observatoire'?' active':''}" onclick="wikiView='observatoire';renderCommunityPage()">🗺 Observatoire</div>
+    <div class="comm-tab${isWikiView?' active':''}" onclick="wikiView='new-wiki';renderCommunityPage()">📖 Citrus Wiki ${helpBtn('wiki')}</div>
+    <div class="comm-tab${wikiView==='observatoire'?' active':''}" onclick="wikiView='observatoire';renderCommunityPage()">🗺 Observatoire ${helpBtn('observatoire')}</div>
     ${_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<div class="comm-tab${wikiView==='admin'?' active':''}" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</div>`:''}
   </div>`;
   root.innerHTML=tabs+'<div id="comm-content"></div>';
@@ -17185,7 +17185,7 @@ async function _renderObservatoire(c){
     c.innerHTML=`
       <div style="padding:10px 16px 6px;display:flex;justify-content:space-between;align-items:center">
         <div style="font-size:.75rem;color:var(--muted)">${isDemo?'Données de démonstration':(()=>{const v=mapData.filter(p=>{const la=parseFloat(p.lat_approx??p.lat),lo=parseFloat(p.lng_approx??p.lng);return isFinite(la)&&isFinite(lo);});return v.length?v.length+' point'+(v.length!==1?'s':'')+' sur la carte':'Carte de démonstration';})()}</div>
-        <button class="btn btn-sm btn-p" style="font-size:.75rem" id="obs-signaler-btn">+ Signaler</button>
+        <div style="display:flex;align-items:center;gap:6px">${helpBtn('observatoire')}<button class="btn btn-sm btn-p" style="font-size:.75rem" id="obs-signaler-btn">+ Signaler</button></div>
       </div>
       <div style="margin:0 16px;border-radius:10px;overflow:hidden;border:1.5px solid var(--cream3)">
         <div id="obs-map" style="height:220px"></div>
@@ -24054,6 +24054,328 @@ Date de greffe = Date dispo − (délai − 6 mois)</div>
 <li>CA total par client calculé sur toutes les commandes soldées.</li>
 </ul>`},
     en:{title:'👤 Nursery CRM',anchor:'pepiniere',body:`<p>Client portfolio management: contact details, order history, revenue per client, commercial notes. CA per client calculated automatically from completed orders.</p>`}
+  },
+  wiki:{
+    fr:{title:'📖 Citrus Wiki',anchor:'wiki',body:`
+<p>Le <strong>Citrus Wiki</strong> est une base de connaissances collaborative intégrée à l'application, accessible hors ligne. Il couvre la botanique, la culture, les maladies et les techniques horticoles des agrumes.</p>
+<h3>Navigation</h3>
+<p>Menu → <strong>📖 Communauté</strong> → onglet Wiki. Les articles sont classés par catégories (Botanique, Culture, Maladies, Variétés…). Utilisez la barre de recherche pour retrouver un article par mot-clé.</p>
+<h3>Lire un article</h3>
+<p>Cliquez sur un titre pour ouvrir l'article. Chaque article affiche son contenu formaté, les backlinks vers d'autres articles et les notes de bas de page numérotées.</p>
+<h3>Créer ou modifier un article</h3>
+<ol style="padding-left:18px;font-size:.9rem;line-height:1.8">
+<li>Ouvrez l'article → bouton <strong>✏️ Modifier</strong>.</li>
+<li>Rédigez en <strong>Markdown</strong> : gras (<code>**texte**</code>), italique (<code>*texte*</code>), listes, titres, liens internes <code>[[Titre article]]</code>.</li>
+<li>Cliquez <strong>💾 Enregistrer</strong> — vos modifications sont versionnées.</li>
+</ol>
+<h3>Historique des révisions</h3>
+<p>Bouton 🕐 sur chaque article → liste des versions avec dates. Vous pouvez consulter n'importe quelle version antérieure.</p>
+<div class="info-box">Le wiki est <strong>offline-first</strong> : les articles consultés une fois restent accessibles sans connexion. Le contenu est synchronisé avec le serveur quand vous êtes en ligne.</div>`},
+    en:{title:'📖 Citrus Wiki',anchor:'wiki',body:`<p>Integrated offline-first knowledge base covering citrus botany, culture, diseases and techniques. Navigate via Menu → 📖 Community → Wiki tab. Articles organised by category with full-text search. Edit in Markdown (bold, italic, lists, <code>[[internal links]]</code>). All edits are versioned — view history via the 🕐 button.</p>`}
+  },
+  observatoire:{
+    fr:{title:'🗺 Observatoire CitrusCodex',anchor:'observatoire',body:`
+<p>L'<strong>Observatoire CitrusCodex</strong> cartographie les événements culturaux et phytosanitaires signalés par les membres de la communauté sur toute la France et les régions méditerranéennes.</p>
+<h3>Carte</h3>
+<p>Chaque point coloré représente un événement partagé. Couleurs : 🌸 floraison (rose), 🍊 récolte (orange), ❄️ gel (bleu), 🦠 maladie (rouge), 🐛 ravageur (violet), 📌 autre (gris).</p>
+<h3>Statistiques</h3>
+<p>Vue par saison et par année : compteurs d'observations, espèces et régions les plus actives, pic de floraison, GJC moyen national.</p>
+<h3>Journal</h3>
+<p>Chronologie des 10 dernières observations partagées, avec espèce et région d'origine.</p>
+<h3>Contribuer</h3>
+<p>Activez votre participation dans <strong>⚙ Réglages → Observatoire communautaire</strong> en renseignant votre commune. Vos coordonnées sont approximées à la commune (~2 km) — jamais partagées à la parcelle près.</p>
+<div class="info-box">La participation est <strong>opt-in</strong> et peut être désactivée à tout moment. Seuls les membres ayant activé leur participation peuvent contribuer.</div>`},
+    en:{title:'🗺 CitrusCodex Observatory',anchor:'observatoire',body:`<p>Community map of cultural and phytosanitary events across France and the Mediterranean. Each colour-coded point = a shared event (flowering, harvest, frost, disease, pest). Stats by season and year. Opt-in participation: enable in Settings → Community Observatory, enter your town. Coordinates approximated to town level (~2 km precision).</p>`}
+  },
+  phyto:{
+    fr:{title:'🧪 Registre phytosanitaire',anchor:'phyto',body:`
+<p>Le <strong>registre phytosanitaire</strong> trace tous vos traitements. Il est obligatoire pour les professionnels et recommandé pour tous.</p>
+<h3>Champs réglementaires</h3>
+<table>
+<tr><th>Champ</th><th>Description</th></tr>
+<tr><td>Produit</td><td>Nom commercial + numéro AMM</td></tr>
+<tr><td>Culture / cible</td><td>Espèce traitée et usage</td></tr>
+<tr><td>Date</td><td>Date d'application</td></tr>
+<tr><td>Dose (L/ha)</td><td>Dose appliquée</td></tr>
+<tr><td>Surface (ha)</td><td>Surface traitée</td></tr>
+<tr><td>DAR</td><td>Délai Avant Récolte (jours)</td></tr>
+<tr><td>Opérateur</td><td>Personne ayant effectué le traitement</td></tr>
+</table>
+<h3>Calculs automatiques</h3>
+<p>Date de récolte au plus tôt (application + DAR) et IFT calculés automatiquement dès que dose et surface sont renseignés.</p>
+<div class="warn-box">Conservation <strong>5 ans</strong> obligatoire pour les professionnels. Exportez en PDF via le bouton d'impression sur chaque traitement.</div>`},
+    en:{title:'🧪 Phytosanitary Register',anchor:'phyto',body:`<p>Log all phytosanitary treatments: product name + AMM number, culture/target, date, dose (L/ha), surface (ha), DAR (days to harvest), operator. Earliest harvest date (date + DAR) and TFI automatically calculated. Mandatory for professional growers — keep records for 5 years.</p>`}
+  },
+  profil:{
+    fr:{title:'👤 Profil utilisateur',anchor:'profil',body:`
+<p>Votre profil détermine l'interface et les fonctionnalités disponibles dans l'application.</p>
+<h3>4 profils disponibles</h3>
+<table>
+<tr><th>Profil</th><th>Fonctionnalités supplémentaires</th></tr>
+<tr><td>🍋 Collectionneur</td><td>Collection, événements, calendrier, météo, wiki, wishlist</td></tr>
+<tr><td>🌱 Pépiniériste</td><td>+ Pépinière, semis, catalogue, commandes, clients, stages, planning</td></tr>
+<tr><td>🌳 Arboriculteur</td><td>+ Phytosanitaire, IFT, PPF, certifications, yield mapping, équipe</td></tr>
+<tr><td>🏛 Conservatoire</td><td>+ Accessions, échanges inter-institutions, export BGCI, étiquettes muséales</td></tr>
+</table>
+<p>Le profil est défini lors de la création du compte. Le tableau de bord, les alertes et les onglets Espace Pro s'adaptent automatiquement.</p>
+<div class="info-box">Contactez l'équipe CitrusCodex si vous souhaitez changer de profil.</div>`},
+    en:{title:'👤 User Profile',anchor:'profil',body:`<p>Your profile determines available features. Collector: collection, events, weather, wiki, wishlist. Nursery grower (+nursery, orders, clients, stages, planning). Orchardist (+phyto, IFT, PPF, certifications, yield mapping, team). Conservatory (+accessions, exchanges, BGCI export, museum labels). Dashboard, alerts, and Pro Space tabs adapt automatically to your profile.</p>`}
+  },
+  phenologie:{
+    fr:{title:'🌸 Phénologie BBCH',anchor:'phenologie',body:`
+<p>Le module phénologie suit les stades de développement de vos agrumes selon l'<strong>échelle BBCH</strong> (Biologische Bundesanstalt, Bundessortenamt und CHemische Industrie — référence <em>Agustí et al. 1997</em>).</p>
+<h3>8 stades principaux</h3>
+<table>
+<tr><th>Stade</th><th>Codes</th><th>Description</th></tr>
+<tr><td>🌑 Dormance</td><td>00–09</td><td>Bourgeon dormant, repos végétatif</td></tr>
+<tr><td>🟢 Gonflement</td><td>10–19</td><td>Débourrement, gonflement bourgeon</td></tr>
+<tr><td>🌱 Feuillaison</td><td>20–29</td><td>Développement feuilles</td></tr>
+<tr><td>🌿 Pousse</td><td>30–39</td><td>Allongement des tiges</td></tr>
+<tr><td>🌸 Floraison</td><td>60–69</td><td>De bouton fermé à fleur ouverte</td></tr>
+<tr><td>🍈 Nouaison</td><td>70–79</td><td>Formation et chute physiologique</td></tr>
+<tr><td>🍊 Croissance</td><td>80–89</td><td>Développement du fruit</td></tr>
+<tr><td>🟠 Maturité</td><td>90–99</td><td>Véraison à maturité complète</td></tr>
+</table>
+<h3>Accès</h3>
+<p>Dashboard → widget phénologie (sous la météo) · Fiche plante → onglet 🌸 Phénologie</p>`},
+    en:{title:'🌸 BBCH Phenology',anchor:'phenologie',body:`<p>Tracks citrus development stages using the BBCH scale (Agustí et al. 1997). 8 main stages, 33 sub-codes: dormancy (00), budding (10), leaf development (20), shoot elongation (30), flowering (60), fruit set (70), fruit growth (80), maturity (90). Available on the dashboard widget (below weather) and plant record → 🌸 Phenology tab.</p>`}
+  },
+  gel:{
+    fr:{title:'❄️ Risque de gel',anchor:'gel',body:`
+<p>L'application surveille les températures minimales prévues et compare au seuil de rusticité de chaque espèce.</p>
+<h3>Seuils indicatifs</h3>
+<table>
+<tr><th>Espèce</th><th>Seuil critique</th></tr>
+<tr><td>Citron, Lime</td><td>−2°C</td></tr>
+<tr><td>Clémentine, Mandarine</td><td>−4°C</td></tr>
+<tr><td>Oranger, Pomelo</td><td>−5°C</td></tr>
+<tr><td>Kumquat</td><td>−10°C</td></tr>
+<tr><td>Poncirus trifoliata</td><td>−20°C</td></tr>
+</table>
+<h3>Alertes</h3>
+<p>Bandeau rouge = risque de gel aujourd'hui · Bandeau bleu = risque demain. La section <strong>❄ Sujets à rentrer</strong> du tableau de bord liste les plantes en extérieur sous leur seuil de rusticité.</p>
+<h3>Enregistrer un dégât</h3>
+<p>Type d'événement <strong>❄️ Gel</strong> sur la fiche sujet → renseignez T° minimale atteinte, organes touchés, sévérité.</p>`},
+    en:{title:'❄️ Frost Risk',anchor:'gel',body:`<p>App monitors forecast minimum temperatures vs each species' hardiness threshold. Red banner = frost risk today, blue = risk tomorrow. "Plants to bring in" dashboard section lists outdoor subjects at risk. Record frost damage via the ❄️ Frost event type: min temperature reached, affected organs, severity.</p>`}
+  },
+  irrigation:{
+    fr:{title:'💧 Bilan hydrique (ETP/ETc)',anchor:'irrigation',body:`
+<p>Le bilan hydrique calcule le <strong>déficit hydrique</strong> cumulé de votre collection en comparant les besoins culturaux (ETc) aux précipitations effectives.</p>
+<h3>Calcul ETc</h3>
+<div class="formula">ETc = ETP × Kc</div>
+<p>Kc (coefficient cultural agrumes) : 0,65 en dormance → 0,85 en végétation active → 1,05 en floraison.</p>
+<h3>Bilan</h3>
+<p>Déficit = Σ(ETc − pluie efficace) sur la période sélectionnée. La réserve utile du sol (RU) détermine le nombre de jours tolérables sans irrigation.</p>
+<h3>Recommandation</h3>
+<p>L'interface affiche la durée d'arrosage recommandée en fonction du débit de votre système (L/h configurable).</p>`},
+    en:{title:'💧 Water Balance (ETP/ETc)',anchor:'irrigation',body:`<p>Cumulative water deficit from ETc (= ETP × Kc) minus effective rainfall. Citrus Kc: 0.65 dormant → 0.85 growing → 1.05 flowering. Soil Useful Reserve determines tolerable days without irrigation. Displays recommended watering duration based on your system flow rate (L/h configurable).</p>`}
+  },
+  etp:{
+    fr:{title:'🌡 ETP — Évapotranspiration',anchor:'etp',body:`
+<p>L'<strong>Évapotranspiration Potentielle</strong> (ETP) quantifie l'eau perdue par le sol et les plantes sous les conditions climatiques locales. C'est la base de tout calcul d'irrigation raisonnée.</p>
+<h3>Formule Penman-Monteith (FAO-56)</h3>
+<div class="formula">ETP = [0,408·Δ·(Rn−G) + γ·(900/(T+273))·u₂·(es−ea)] / [Δ + γ·(1+0,34·u₂)]</div>
+<p>Rn = rayonnement net · T = température (°C) · u₂ = vent à 2m · es−ea = déficit de pression vapeur · Δ = pente courbe vapeur · γ = constante psychrométrique.</p>
+<h3>Fallback Hargreaves-Samani</h3>
+<div class="formula">ETP = 0,0023 · Ra · (Tmoy+17,8) · (Tmax−Tmin)^0,5</div>
+<p>Utilisé si certains paramètres météo sont manquants. Moins précis mais robuste.</p>
+<h3>Source des données</h3>
+<p>Paramètres lus depuis Open-Meteo (<code>temperature_2m, windspeed_10m, relativehumidity_2m, shortwave_radiation</code>) à vos coordonnées GPS.</p>`},
+    en:{title:'🌡 ETP — Evapotranspiration',anchor:'etp',body:`<p>Potential Evapotranspiration quantifies water loss from soil and plants. Penman-Monteith (FAO-56) used when all parameters available; Hargreaves-Samani as fallback (Tmin/Tmax only). Data from Open-Meteo API at your GPS location. Used to calculate ETc needs and irrigation recommendations.</p>`}
+  },
+  drip:{
+    fr:{title:'💧 Goutte-à-Goutte',anchor:'drip',body:`
+<p>Le module goutte-à-goutte modélise vos circuits d'irrigation partagés et calcule la durée d'arrosage optimale par zone.</p>
+<h3>Configurer un circuit</h3>
+<ol style="padding-left:18px;font-size:.9rem;line-height:1.8">
+<li>🌿 Pro → 💧 Eau → onglet <strong>Circuits</strong> → ＋ Nouveau circuit</li>
+<li>Renseignez : débit pompe (L/h), nombre et débit de goutteurs, sujets reliés</li>
+<li>L'app calcule la durée couvrant les besoins ETc de tous les sujets du circuit</li>
+</ol>
+<h3>Détection de sur-arrosage</h3>
+<p>Si la durée calculée dépasse la capacité de drainage du substrat, un avertissement s'affiche avec suggestion de fractionnement.</p>
+<div class="info-box">Compatible avec les programmateurs temporisés : entrez le débit horaire de votre programmateur pour obtenir une durée directement réglable.</div>`},
+    en:{title:'💧 Drip Irrigation',anchor:'drip',body:`<p>Models shared drip circuits and calculates optimal watering duration per zone. Configure: pump flow (L/h), dripper count and flow rate, linked subjects. Calculated duration covers ETc needs of all circuit subjects. Over-watering detection suggests split schedule if drainage capacity exceeded.</p>`}
+  },
+  filtres:{
+    fr:{title:'🔍 Filtres de collection',anchor:'filtres',body:`
+<p>Filtrez votre collection par plusieurs critères simultanés pour retrouver rapidement un sujet.</p>
+<h3>Filtres disponibles</h3>
+<table>
+<tr><th>Critère</th><th>Valeurs</th></tr>
+<tr><td>Mode de culture</td><td>Pot / Pleine terre</td></tr>
+<tr><td>Statut sanitaire</td><td>Sain / Vigilance / Traitement / Quarantaine</td></tr>
+<tr><td>Emplacement</td><td>Intérieur / Extérieur / Orangerie / Serre</td></tr>
+<tr><td>Arrosage</td><td>Urgent / Bientôt / OK</td></tr>
+</table>
+<h3>Recherche textuelle</h3>
+<p>La barre filtre en temps réel sur : nom, espèce, variété, porte-greffe, notes.</p>
+<div class="info-box">Un badge compteur indique le nombre de filtres actifs. Appuyez sur <strong>✕ Réinitialiser</strong> pour les effacer tous.</div>`},
+    en:{title:'🔍 Collection Filters',anchor:'filtres',body:`<p>Filter your collection by multiple simultaneous criteria: growing mode (pot/ground), health status, location (indoor/outdoor/greenhouse), watering urgency. Text search filters in real time on name, species, variety, rootstock, notes. Active filters show a badge counter. Press ✕ Reset to clear all.</p>`}
+  },
+  boutures:{
+    fr:{title:'🌿 Boutures',anchor:'boutures',body:`
+<p>Suivez vos boutures depuis le prélèvement jusqu'au repiquage via le type d'événement <strong>✂️ Bouture</strong>.</p>
+<h3>Champs disponibles</h3>
+<table>
+<tr><th>Champ</th><th>Description</th></tr>
+<tr><td>Méthode</td><td>Herbacée · Semi-lignifiée · Lignifiée · Marcottage</td></tr>
+<tr><td>Substrat</td><td>Terreau boutures · Sable · Perlite · Mélange personnalisé</td></tr>
+<tr><td>Hormone</td><td>ANA, AIB, IBA ou sans</td></tr>
+<tr><td>Quantité</td><td>Nombre de boutures réalisées</td></tr>
+<tr><td>Date de contrôle</td><td>Date prévue de vérification de la reprise</td></tr>
+</table>
+<h3>Taux de reprise</h3>
+<p>Renseignez le taux observé lors d'un suivi. Les boutures avec reprise &gt; 0 peuvent être transférées vers le catalogue pépinière.</p>
+<div class="info-box">Le lien entre la bouture et le sujet source est conservé pour la traçabilité génétique dans l'espace Conservatoire.</div>`},
+    en:{title:'🌿 Cuttings',anchor:'boutures',body:`<p>Track cuttings via the ✂️ Cutting event type. Fields: method (herbaceous/semi-ligneous/ligneous/layering), substrate, hormone (IBA/ANA/none), quantity, planned check date. Record take rate on follow-up. Cuttings with take > 0 can be pushed to nursery catalog. Source subject link maintained for genetic traceability.</p>`}
+  },
+  stocks:{
+    fr:{title:'📦 Stocks d\'intrants',anchor:'stocks',body:`
+<p>Gérez vos stocks d'intrants agricoles : engrais, produits phytosanitaires, substrats, amendements.</p>
+<h3>Fonctions</h3>
+<ul>
+<li><strong>Ajout de lot</strong> : produit, fournisseur, quantité, unité, date d'achat, coût unitaire</li>
+<li><strong>Consommation automatique</strong> : décrémentée à chaque traitement ou fertilisation si le produit est lié</li>
+<li><strong>Seuil d'alerte</strong> : configurable par produit — alerte sur le tableau de bord si stock sous le seuil</li>
+</ul>
+<h3>Intégration</h3>
+<p>Les produits en stock apparaissent dans le sélecteur d'engrais et de traitements. Après un épandage, la quantité utilisée est proposée pour déduction.</p>
+<div class="info-box">Accès : 🌿 Pro → onglet 📦 Stocks.</div>`},
+    en:{title:'📦 Input Stocks',anchor:'stocks',body:`<p>Manage agricultural input stocks (fertilisers, phyto products, substrates, amendments). Functions: batch entry (product, supplier, qty, unit, date, cost), auto-deduction from treatment/fertilisation events, configurable alert threshold per product with dashboard warning. Stock products appear in event selectors.</p>`}
+  },
+  bug_report:{
+    fr:{title:'🐛 Signaler un problème',anchor:'bug-report',body:`
+<p>Le bouton flottant <strong>🐛</strong> (coin inférieur droit) permet de signaler un problème ou une suggestion directement depuis l'application.</p>
+<h3>Formulaire</h3>
+<table>
+<tr><th>Champ</th><th>Description</th></tr>
+<tr><td>Titre</td><td>Résumé court du problème (obligatoire)</td></tr>
+<tr><td>Description</td><td>Étapes pour reproduire, comportement attendu vs observé</td></tr>
+<tr><td>Catégorie</td><td>Bug · Fonctionnalité · Interface · Performance · Autre</td></tr>
+<tr><td>Sévérité</td><td>Faible · Moyenne · Haute · Critique</td></tr>
+</table>
+<h3>Mode hors-ligne</h3>
+<p>Si vous êtes hors connexion, le rapport est sauvegardé localement et envoyé automatiquement à la prochaine connexion.</p>
+<h3>Déplacer le bouton</h3>
+<p>Maintenez le bouton 🐛 enfoncé (1 seconde) et glissez-le pour le repositionner. Sa position est mémorisée.</p>
+<h3>Suivi</h3>
+<p>⚙ Réglages → <strong>Mes signalements</strong> — statuts : Ouvert / En cours / Résolu / Fermé.</p>`},
+    en:{title:'🐛 Report a Problem',anchor:'bug-report',body:`<p>The floating 🐛 button (bottom right) reports issues or suggestions directly from the app. Fields: title, description (steps to reproduce), category (bug/feature/UI/perf), severity (low/medium/high/critical). Reports saved locally when offline and sent on next connection. Long-press to drag and reposition. Track status in Settings → My Reports.</p>`}
+  },
+  notifications:{
+    fr:{title:'🔔 Notifications',anchor:'notifications',body:`
+<p>L'application peut envoyer des notifications push pour vous alerter des événements importants.</p>
+<h3>Types configurables</h3>
+<ul>
+<li>❄️ <strong>Alerte gel</strong> — température prévue sous le seuil de rusticité</li>
+<li>💧 <strong>Arrosage urgent</strong> — sujets en déficit hydrique critique</li>
+<li>📅 <strong>Rappels calendrier</strong> — événements planifiés arrivant à échéance</li>
+<li>🌸 <strong>Changement de stade BBCH</strong> — transition phénologique détectée</li>
+<li>🐛 <strong>Alerte phytosanitaire</strong> — conditions météo favorables à un ravageur</li>
+</ul>
+<h3>Activer</h3>
+<p>⚙ Réglages → section <strong>Notifications</strong> → Activer → le navigateur demande l'autorisation.</p>
+<div class="info-box">Nécessite un navigateur compatible Service Worker (Chrome, Firefox, Edge, Safari 16.4+). Les notifications ne fonctionnent pas en navigation privée.</div>`},
+    en:{title:'🔔 Notifications',anchor:'notifications',body:`<p>Push notifications for: frost alerts, urgent watering, calendar reminders, BBCH stage changes, phytosanitary alerts. Enable in Settings → Notifications → Allow browser permission. Requires Service Worker-compatible browser (Chrome/Firefox/Edge/Safari 16.4+). Not available in private browsing.</p>`}
+  },
+  dark_mode:{
+    fr:{title:'🌙 Mode sombre',anchor:'dark-mode',body:`
+<p>L'application s'adapte automatiquement au thème de votre système (clair ou sombre).</p>
+<h3>Activation manuelle</h3>
+<p>⚙ Réglages → section <strong>Apparence</strong>. Trois options :</p>
+<ul>
+<li><strong>Auto</strong> — suit le thème de l'OS</li>
+<li><strong>Clair</strong> — forcé en mode clair</li>
+<li><strong>Sombre</strong> — forcé en mode sombre</li>
+</ul>
+<p>Le mode sombre réduit la fatigue oculaire lors d'une utilisation nocturne et économise la batterie sur les écrans OLED.</p>`},
+    en:{title:'🌙 Dark Mode',anchor:'dark-mode',body:`<p>Auto-adapts to system theme. Manual override in Settings → Appearance: Auto (follows OS), Light, or Dark. Dark mode reduces eye strain and saves battery on OLED screens.</p>`}
+  },
+  historique:{
+    fr:{title:'📜 Historique global',anchor:'historique',body:`
+<p>L'historique global affiche la chronologie complète de toutes les actions sur l'ensemble de votre collection.</p>
+<h3>Contenu</h3>
+<p>Tous les événements culturaux (arrosage, fertilisation, taille, traitement…) + modifications de fiche (audit trail automatique), de tous vos sujets, en ordre chronologique inverse.</p>
+<h3>Filtrage</h3>
+<p>Filtrez par type d'événement, par sujet, ou par période. Cliquez sur un événement pour accéder directement à la fiche du sujet concerné.</p>
+<h3>Accès</h3>
+<p>⚙ Réglages → <strong>📜 Historique</strong>.</p>`},
+    en:{title:'📜 Global History',anchor:'historique',body:`<p>Reverse-chronological timeline of all events across all collection subjects: cultural events and record edits (auto audit trail). Filter by event type, subject, or date range. Click any event to navigate directly to the subject record.</p>`}
+  },
+  iot:{
+    fr:{title:'📡 Capteurs IoT',anchor:'iot',body:`
+<p>Connectez vos capteurs IoT pour automatiser la collecte de données climatiques et d'irrigation.</p>
+<h3>Protocoles supportés</h3>
+<ul>
+<li><strong>HTTP/JSON polling</strong> — lecture périodique d'une URL locale</li>
+<li><strong>WebSocket</strong> — connexion temps réel pour flux continu</li>
+</ul>
+<h3>Données lues</h3>
+<p>Température ambiante, humidité relative, humidité du substrat, conductivité électrique (EC), luminosité (lux), CO₂ (ppm).</p>
+<h3>Alertes</h3>
+<p>Configurez des seuils par paramètre — notification push déclenchée si une valeur sort de la plage définie.</p>
+<h3>Intégration</h3>
+<p>Les données capteur alimentent automatiquement les jauges d'arrosage et le bilan ETP si un capteur T°/humidité est configuré.</p>
+<div class="info-box">Accès : ⚙ Réglages → <strong>📡 Capteurs IoT</strong>.</div>`},
+    en:{title:'📡 IoT Sensors',anchor:'iot',body:`<p>Connect sensors via HTTP/JSON polling or WebSocket. Reads: ambient temperature, relative humidity, substrate moisture, EC, light (lux), CO₂ (ppm). Configure alert thresholds per parameter (push notification on breach). Sensor T°/humidity data automatically feeds watering gauges and ETP balance.</p>`}
+  },
+  admin_users:{
+    fr:{title:'👥 Administration — Utilisateurs',anchor:'admin',body:`
+<p>Accessible aux comptes administrateur uniquement : ⚙ Réglages → <strong>Administration</strong>.</p>
+<h3>Fonctions</h3>
+<ul>
+<li><strong>Liste complète</strong> : email, profil, date de création, dernière connexion, statut</li>
+<li><strong>Invitations bêta</strong> : envoyer une invitation à un nouvel utilisateur</li>
+<li><strong>Reset mot de passe</strong> : générer un token de réinitialisation</li>
+<li><strong>Notes admin</strong> : annotations internes sur un utilisateur</li>
+<li><strong>Suspension</strong> : désactiver temporairement l'accès</li>
+</ul>
+<h3>Statistiques globales</h3>
+<p>Total utilisateurs actifs · Connexions 24h/7j · Nombre total de sujets dans la collection globale.</p>`},
+    en:{title:'👥 Admin — Users',anchor:'admin',body:`<p>Admin-only (Settings → Administration). Functions: user list (email, profile, created, last login, active/suspended), beta invitations, password reset token generation, admin notes, account suspension. Global stats: active users, recent logins, total collection subjects.</p>`}
+  },
+  admin_bugs:{
+    fr:{title:'🐛 Administration — Signalements',anchor:'admin',body:`
+<p>Interface d'administration des signalements de bugs et suggestions. Accessible aux administrateurs uniquement.</p>
+<h3>Fonctions</h3>
+<ul>
+<li><strong>Liste globale</strong> : tous les signalements de tous les utilisateurs</li>
+<li><strong>Statuts</strong> : Ouvert → En cours → Résolu → Fermé · Ne sera pas corrigé</li>
+<li><strong>Notes de résolution</strong> : commentaire visible par l'utilisateur signalant</li>
+<li><strong>Filtres</strong> : par catégorie, sévérité, statut, utilisateur</li>
+</ul>`},
+    en:{title:'🐛 Admin — Bug Reports',anchor:'admin',body:`<p>Admin-only interface for managing all user reports. Functions: global list, status management (Open → In progress → Resolved → Closed/Won't fix), resolution notes visible to reporter, filters by category, severity, status, user.</p>`}
+  },
+  season_banner:{
+    fr:{title:'🌾 Bannière saisonnière',anchor:'dashboard',body:`
+<p>La bannière saisonnière affiche les <strong>tâches prioritaires</strong> du moment en haut du tableau de bord.</p>
+<h3>Recommandations par saison</h3>
+<table>
+<tr><th>Saison</th><th>Tâches types recommandées</th></tr>
+<tr><td>🌱 Printemps</td><td>Sortie hivernage · Première fertilisation · Taille de formation</td></tr>
+<tr><td>☀️ Été</td><td>Arrosage soutenu · Traitement acariens · Suivi Brix récolte</td></tr>
+<tr><td>🍂 Automne</td><td>Récolte tardive · Préparation hivernage · Amendement de fond</td></tr>
+<tr><td>❄️ Hiver</td><td>Rentrée hivernage · Taille · Traitement d'hiver (huile blanche)</td></tr>
+</table>
+<p>La détection de saison est automatique (date + hémisphère). La bannière est dismissible — cliquez ✕ pour la masquer jusqu'au prochain changement de saison.</p>`},
+    en:{title:'🌾 Seasonal Banner',anchor:'dashboard',body:`<p>Displays current season priority tasks at the top of the dashboard. Season auto-detected from date and hemisphere. Spring: bring out plants, first fertilisation, training pruning. Summer: irrigation, mite control, Brix monitoring. Autumn: late harvest, winterisation, soil amendment. Winter: bring in tender plants, pruning, dormant spray. Dismissible until next season change.</p>`}
+  },
+  dashboard:{
+    fr:{title:'🏠 Tableau de bord',anchor:'dashboard',body:`
+<p>Le tableau de bord est la page d'accueil. Son contenu s'adapte automatiquement à votre profil et à votre collection.</p>
+<h3>Widgets communs</h3>
+<ul>
+<li>🌤 <strong>Météo locale</strong> — 7 jours de prévisions, alerte gel, GJC</li>
+<li>💧 <strong>Arrosage urgent</strong> — sujets en déficit, colorés par urgence</li>
+<li>📚 <strong>Alertes KB</strong> — ravageurs en période de risque, tailles recommandées</li>
+<li>🌾 <strong>Bannière saisonnière</strong> — tâches recommandées selon la saison</li>
+<li>📅 <strong>Prochains rappels</strong> — événements planifiés du calendrier</li>
+</ul>
+<h3>Widgets adaptés au profil</h3>
+<p>Pépiniériste : KPIs nursery, CA du mois, lots disponibles. Arboriculteur : ETP, certifications, bilan récolte. Conservatoire : accessions, échanges actifs, taxons menacés IUCN.</p>
+<div class="info-box">Le tableau de bord se recharge à chaque accès pour afficher les données météo et arrosage les plus récentes.</div>`},
+    en:{title:'🏠 Dashboard',anchor:'dashboard',body:`<p>Home page of the app. Adapts to your profile. Common widgets: local weather (7-day, frost alert, GDD), urgent watering (colour-coded), KB alerts (seasonal pest/pruning warnings), seasonal banner (current period tasks), upcoming calendar reminders. Profile-specific widgets: Nursery KPIs, Orchardist ETP/certifications, Conservatory accessions/IUCN alerts.</p>`}
   }
 };
 

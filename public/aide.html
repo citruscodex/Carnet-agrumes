@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Guide d'utilisation — CitrusCodex</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g1:#162d1f;--g2:#2d5a3d;--g3:#4a8a5e;--g4:#d4e6d9;
+  --amber:#e8a020;--amber2:#fdf3dc;--amber3:#b87714;
+  --cream:#faf5eb;--cream2:#f5edda;--cream3:#ead8b4;
+  --text:#1a2a1a;--text-strong:#0d1a0d;--text-accent:#2d5a3d;--muted:#6b7a6b;
+  --blue:#1565c0;--red:#c62828;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--cream);color:var(--text);line-height:1.6;font-size:15px}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* Layout */
+.page-wrap{max-width:900px;margin:0 auto;padding:0 16px 80px}
+header{background:var(--g1);color:#fff;padding:20px 16px;text-align:center;margin-bottom:0}
+header h1{font-size:1.6rem;font-weight:700;margin-bottom:4px}
+header p{font-size:.88rem;opacity:.75}
+.toc{background:var(--amber2);border:1px solid var(--cream3);border-radius:10px;padding:16px 20px;margin:20px 0 32px}
+.toc h2{font-size:.9rem;font-weight:700;color:var(--amber3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.toc ol{padding-left:18px;column-count:2;column-gap:24px}
+.toc li{font-size:.86rem;line-height:1.9;break-inside:avoid}
+.toc a{color:var(--text-accent);font-weight:500}
+
+/* Sections */
+.section{margin-bottom:40px;scroll-margin-top:60px}
+.section>h2{font-size:1.15rem;font-weight:700;color:var(--g1);border-bottom:2px solid var(--g4);padding-bottom:8px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.subsection{margin-bottom:24px;scroll-margin-top:60px}
+.subsection h3{font-size:1rem;font-weight:700;color:var(--g2);margin-bottom:8px;padding-left:8px;border-left:3px solid var(--amber)}
+.subsection h4{font-size:.88rem;font-weight:700;color:var(--text-accent);margin:12px 0 4px}
+.subsection p{font-size:.9rem;margin-bottom:8px;color:var(--text)}
+.subsection ul,.subsection ol{font-size:.9rem;padding-left:20px;margin-bottom:8px;line-height:1.8}
+.subsection li{margin-bottom:2px}
+
+/* Tables */
+table{width:100%;border-collapse:collapse;font-size:.85rem;margin:8px 0 12px;background:#fff;border-radius:6px;overflow:hidden}
+th{background:var(--g4);color:var(--g1);font-weight:700;padding:7px 10px;text-align:left}
+td{padding:6px 10px;border-bottom:1px solid var(--cream3)}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:var(--cream2)}
+
+/* Boxes */
+.info-box{background:#e8f5e9;border-left:4px solid #2e7d32;padding:10px 12px;border-radius:0 6px 6px 0;font-size:.87rem;margin:10px 0;color:#1b5e20}
+.warn-box{background:#fff3e0;border-left:4px solid #e65100;padding:10px 12px;border-radius:0 6px 6px 0;font-size:.87rem;margin:10px 0;color:#bf360c}
+.tip{background:var(--amber2);border-left:4px solid var(--amber);padding:10px 12px;border-radius:0 6px 6px 0;font-size:.87rem;margin:10px 0;color:var(--amber3)}
+.formula{font-family:'Courier New',monospace;background:#f1f8e9;border:1px solid #c8e6c9;padding:8px 12px;border-radius:6px;font-size:.85rem;margin:8px 0;color:#1b5e20;overflow-x:auto}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:9px;background:var(--g4);color:var(--g1)}
+.badge-orange{background:#fff3e0;color:#e65100}
+.badge-blue{background:#e3f2fd;color:#1565c0}
+
+/* Breadcrumb nav */
+.back-top{position:fixed;bottom:20px;right:20px;background:var(--g1);color:#fff;border:none;border-radius:50%;width:40px;height:40px;font-size:1.1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);z-index:100}
+
+/* Responsive */
+@media(max-width:600px){
+  .toc ol{column-count:1}
+  table{font-size:.78rem}
+  th,td{padding:5px 8px}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>🍊 Guide d'utilisation CitrusCodex</h1>
+  <p>Documentation complète de l'application bêta · Version 2026</p>
+</header>
+
+<div class="page-wrap">
+
+<!-- TABLE DES MATIÈRES -->
+<nav class="toc">
+  <h2>Table des matières</h2>
+  <ol>
+    <li><a href="#premiers-pas">Premiers pas</a></li>
+    <li><a href="#dashboard">Tableau de bord</a></li>
+    <li><a href="#collection">Ma collection</a></li>
+    <li><a href="#evenements">Événements &amp; Calendrier</a></li>
+    <li><a href="#phenologie">Phénologie BBCH</a></li>
+    <li><a href="#fertilisation">Fertilisation &amp; Sol</a></li>
+    <li><a href="#arrosage">Arrosage &amp; Irrigation</a></li>
+    <li><a href="#phyto">Phytosanitaire</a></li>
+    <li><a href="#pepiniere">Greffage &amp; Pépinière</a></li>
+    <li><a href="#eco">Module économique</a></li>
+    <li><a href="#conservatoire">Conservatoire</a></li>
+    <li><a href="#iot">IoT &amp; Capteurs</a></li>
+    <li><a href="#wiki">Wiki &amp; Observatoire</a></li>
+    <li><a href="#reglages">Profil &amp; Réglages</a></li>
+    <li><a href="#signalement">Signalement &amp; Support</a></li>
+    <li><a href="#admin">Administration</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ol>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════
+     1. PREMIERS PAS
+════════════════════════════════════════════════════════ -->
+<section id="premiers-pas" class="section">
+  <h2>1. Premiers pas</h2>
+
+  <div class="subsection" id="connexion">
+    <h3>Connexion au compte</h3>
+    <p>CitrusCodex est une application bêta sur invitation. Une fois votre invitation reçue, accédez à <strong>citruscodex.fr</strong> et connectez-vous avec votre e-mail et votre mot de passe.</p>
+    <div class="info-box">L'application fonctionne hors ligne une fois chargée (PWA). Sur mobile, ajoutez-la à l'écran d'accueil via le menu du navigateur → "Ajouter à l'écran d'accueil" pour une expérience optimale.</div>
+  </div>
+
+  <div class="subsection" id="choix-profil">
+    <h3>Choix du profil</h3>
+    <p>Votre profil détermine les fonctionnalités disponibles. Il est choisi lors de la création du compte :</p>
+    <table>
+      <tr><th>Profil</th><th>Idéal pour</th><th>Fonctionnalités supplémentaires</th></tr>
+      <tr><td>🍋 Collectionneur</td><td>Amateurs, collectionneurs</td><td>Collection, météo, wiki, wishlist</td></tr>
+      <tr><td>🌱 Pépiniériste</td><td>Pépinières, producteurs</td><td>+ Semis, catalogue, commandes, stages, planning</td></tr>
+      <tr><td>🌳 Arboriculteur</td><td>Vergers, professionnels</td><td>+ Phyto, IFT, PPF, certifications, yield mapping</td></tr>
+      <tr><td>🏛 Conservatoire</td><td>Institutions, jardins botaniques</td><td>+ Accessions BGCI, échanges, étiquettes muséales</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="premier-sujet">
+    <h3>Ajouter votre premier sujet</h3>
+    <ol>
+      <li>Depuis le tableau de bord, appuyez sur le bouton <strong>＋ Ajouter</strong> (ou le FAB flottant).</li>
+      <li>Renseignez au minimum : nom, espèce, mode de culture (pot ou pleine terre), emplacement.</li>
+      <li>Appuyez sur <strong>💾 Enregistrer</strong>.</li>
+    </ol>
+    <div class="tip">💡 Plus vous renseignez d'informations (diamètre du pot, porte-greffe, exposition), plus les calculs d'arrosage, fertilisation et phénologie seront précis.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     2. TABLEAU DE BORD
+════════════════════════════════════════════════════════ -->
+<section id="dashboard" class="section">
+  <h2>2. Tableau de bord</h2>
+
+  <div class="subsection">
+    <h3>Vue d'ensemble</h3>
+    <p>Le tableau de bord est la page d'accueil de l'application. Son contenu s'adapte automatiquement à votre profil. Il se recharge à chaque accès pour afficher des données fraîches.</p>
+  </div>
+
+  <div class="subsection" id="meteo">
+    <h3>🌤 Météo locale</h3>
+    <p>Les données viennent d'<strong>Open-Meteo</strong> (gratuit, sans clé), interpolées à vos coordonnées GPS exactes. La météo s'affiche automatiquement si la géolocalisation est autorisée, ou après saisie manuelle de votre localisation.</p>
+    <table>
+      <tr><th>Donnée</th><th>Source technique</th></tr>
+      <tr><td>Température / Vent</td><td><code>hourly.temperature_2m, windspeed_10m</code></td></tr>
+      <tr><td>Lever/coucher soleil</td><td><code>daily.sunrise, daily.sunset</code></td></tr>
+      <tr><td>Humidité relative</td><td><code>hourly.relative_humidity_2m</code></td></tr>
+    </table>
+    <p><strong>Alerte gel :</strong> bandeau rouge = risque aujourd'hui · bandeau bleu = risque demain. Seuil configurable de −5°C à +5°C.</p>
+    <div class="info-box">La localisation est mémorisée après le premier chargement. Un bouton 📍 permet de la recapturer ou de la modifier manuellement.</div>
+  </div>
+
+  <div class="subsection" id="gjc">
+    <h3>🌡 GJC — Degrés-Jours de Croissance</h3>
+    <p>Calculés à partir des prévisions Open-Meteo sur 7 jours :</p>
+    <div class="formula">GJC = max(0, (Tmax + Tmin) / 2 − 10°C) par jour</div>
+    <p>Base 10°C = seuil de croissance active pour la plupart des agrumes. Le cumul saisonnier indique l'avancement de la végétation.</p>
+    <table>
+      <tr><th>GJC cumulé saison</th><th>Stade indicatif</th></tr>
+      <tr><td>&lt;200</td><td>Pré-floraison / débourrement</td></tr>
+      <tr><td>200–400</td><td>Floraison espèces précoces</td></tr>
+      <tr><td>400–700</td><td>Nouaison &amp; développement fruits</td></tr>
+      <tr><td>700–1000</td><td>Véraison variétés précoces</td></tr>
+      <tr><td>&gt;1000</td><td>Maturité en cours</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="season-banner">
+    <h3>🌾 Bannière saisonnière</h3>
+    <p>Affiche les tâches prioritaires du moment. La saison est détectée automatiquement. La bannière est dismissible (✕) jusqu'au prochain changement de saison.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     3. MA COLLECTION
+════════════════════════════════════════════════════════ -->
+<section id="collection" class="section">
+  <h2>3. Ma collection</h2>
+
+  <div class="subsection" id="liste-collection">
+    <h3>Vue liste et vue verger</h3>
+    <p>La collection affiche vos sujets en <strong>vue liste</strong> (cartes) ou en <strong>vue verger 2D</strong> (plan SVG interactif). Chaque carte affiche : espèce, nom, variété, tags, statut sanitaire, délai d'arrosage coloré, dernière T° enregistrée.</p>
+    <h4>Mode sélection multiple</h4>
+    <p>Bouton ☑ → sélectionnez plusieurs sujets → <em>Appliquer une action</em> pour des arrosages, fertilisations ou hivernages collectifs.</p>
+  </div>
+
+  <div class="subsection" id="filtres">
+    <h3>🔍 Filtres avancés</h3>
+    <table>
+      <tr><th>Critère</th><th>Valeurs</th></tr>
+      <tr><td>Mode de culture</td><td>Pot / Pleine terre</td></tr>
+      <tr><td>Statut sanitaire</td><td>Sain / Vigilance / Traitement / Quarantaine</td></tr>
+      <tr><td>Emplacement</td><td>Intérieur / Extérieur / Orangerie / Serre</td></tr>
+      <tr><td>Arrosage</td><td>Urgent / Bientôt / OK</td></tr>
+    </table>
+    <p>La barre de recherche filtre en temps réel sur nom, espèce, variété, porte-greffe et notes. Un badge compteur indique le nombre de filtres actifs.</p>
+  </div>
+
+  <div class="subsection" id="fiche-plante">
+    <h3>📋 Fiche sujet</h3>
+    <p>Ouvrez une fiche en touchant une carte. Appuyez sur <strong>💾 Enregistrer</strong> pour fermer. 19 champs sont audités automatiquement : chaque modification génère une entrée <em>📝 Modification</em> dans le journal.</p>
+    <h4>Scanner passeport phytosanitaire UE</h4>
+    <p>Bouton 📷 Scanner → vidéo temps réel ou import image. Zones lues : A (espèce), B (variété), C (porte-greffe/pays), D (agrément), E (numéro de lot).</p>
+    <h4>Recherche variété — bases intégrées</h4>
+    <table>
+      <tr><th>Badge</th><th>Source</th><th>Contenu</th></tr>
+      <tr><td><span class="badge">GCVC</span></td><td>Givaudan CVC / UCR</td><td>~1 100 cultivars historiques et commerciaux</td></tr>
+      <tr><td><span class="badge">MCCDD</span></td><td>MCCDD / UCR</td><td>1 068 cultivars modernes (post-1931)</td></tr>
+      <tr><td><span class="badge">INRAE</span></td><td>INRAE-CIRAD Corse</td><td>~800 génotypes méditerranéens (San Giuliano)</td></tr>
+      <tr><td><span class="badge">GRIN</span></td><td>USDA GRIN-Global</td><td>API dynamique — +500 000 accessions</td></tr>
+      <tr><td><span class="badge">GBIF</span></td><td>GBIF</td><td>API dynamique — taxonomie mondiale</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="photos">
+    <h3>📷 Photos</h3>
+    <p>Chaque sujet peut avoir une galerie de photos. Ajoutez des photos depuis la fiche → onglet Photos : appareil photo, galerie ou import de fichier. Chaque photo peut recevoir une légende.</p>
+    <div class="info-box">Les photos sont stockées en URL (GitHub ou autre hébergement) — elles ne gonflent pas le localStorage.</div>
+  </div>
+
+  <div class="subsection" id="export-xlsx">
+    <h3>📊 Export Excel</h3>
+    <p>Réglages → <strong>⬇ Exporter JSON</strong> — exporte l'intégralité de la collection. Pour un export Excel filtré, utilisez le bouton <em>Exporter CSV</em> disponible dans les vues liste et économique.</p>
+  </div>
+
+  <div class="subsection" id="lecture-seule">
+    <h3>🔒 Mode lecture seule</h3>
+    <p>Activable depuis ⚙ Réglages → <strong>Mode lecture seule</strong>. En mode lecture seule, aucune modification n'est possible. Utile pour partager un accès de consultation sans risque de modification accidentelle.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     4. ÉVÉNEMENTS & CALENDRIER
+════════════════════════════════════════════════════════ -->
+<section id="evenements" class="section">
+  <h2>4. Événements &amp; Calendrier</h2>
+
+  <div class="subsection">
+    <h3>✏️ Les événements</h3>
+    <p>Un événement documente une action culturale datée. 13 types disponibles :</p>
+    <table>
+      <tr><th>Type</th><th>Effets automatiques</th></tr>
+      <tr><td>❄️ Rentrée hivernage</td><td>Emplacement → intérieur/orangerie</td></tr>
+      <tr><td>☀️ Sortie hivernage</td><td>Emplacement → extérieur</td></tr>
+      <tr><td>🪴 Rempotage</td><td>Met à jour le diamètre du pot</td></tr>
+      <tr><td>💧 Arrosage</td><td>Réinitialise le compteur d'arrosage</td></tr>
+      <tr><td>🧺 Récolte</td><td>Active les champs Brix/acidité</td></tr>
+      <tr><td>🌿 Greffage</td><td>Active le panneau registre de greffage</td></tr>
+      <tr><td>🌱 Fertilisation</td><td>Active les champs NPK (poids + profil)</td></tr>
+      <tr><td>🧪 Traitement</td><td>Active les champs AMM, dose, DAR</td></tr>
+      <tr><td colspan="2">+ Taille, Floraison, Fructification, Irrigation, Observation, Autre</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="calendrier">
+    <h3>📅 Calendrier mensuel</h3>
+    <p>Vue mensuelle de tous les événements. Touchez un jour pour afficher le panneau de détail groupé par sujet. Toucher le nom d'un sujet ouvre directement sa fiche.</p>
+    <p><strong>Filtres :</strong> chaque type d'événement peut être masqué/affiché individuellement via les pills. Les événements masqués restent visibles à 40% dans le panneau du jour.</p>
+  </div>
+
+  <div class="subsection" id="gel">
+    <h3>❄️ Risque de gel</h3>
+    <p>L'application compare les températures minimales prévues au seuil de rusticité de chaque espèce (base de connaissances intégrée). La section <em>❄ Sujets à rentrer</em> du tableau de bord liste les plantes en extérieur sous leur seuil.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     5. PHÉNOLOGIE BBCH
+════════════════════════════════════════════════════════ -->
+<section id="phenologie" class="section">
+  <h2>5. Phénologie BBCH</h2>
+
+  <div class="subsection">
+    <h3>🌸 Échelle BBCH agrumes</h3>
+    <p>Source : <em>Agustí et al. 1997</em> — référence scientifique internationale. 8 stades principaux, 33 codes secondaires.</p>
+    <table>
+      <tr><th>Stade</th><th>Codes</th><th>Description</th></tr>
+      <tr><td>🌑 Dormance</td><td>00–09</td><td>Bourgeon dormant, repos végétatif</td></tr>
+      <tr><td>🟢 Gonflement</td><td>10–19</td><td>Débourrement, gonflement du bourgeon</td></tr>
+      <tr><td>🌱 Feuillaison</td><td>20–29</td><td>Développement des feuilles</td></tr>
+      <tr><td>🌿 Pousse</td><td>30–39</td><td>Allongement des tiges</td></tr>
+      <tr><td>🌸 Floraison</td><td>60–69</td><td>De bouton fermé à fleur ouverte</td></tr>
+      <tr><td>🍈 Nouaison</td><td>70–79</td><td>Formation du fruit, chute physiologique</td></tr>
+      <tr><td>🍊 Croissance</td><td>80–89</td><td>Développement et grossissement du fruit</td></tr>
+      <tr><td>🟠 Maturité</td><td>90–99</td><td>Véraison à maturité complète</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="bbch-bar">
+    <h3>📊 Barre phénologique</h3>
+    <p>Affichée sur le dashboard (widget sous la météo) et sur chaque fiche plante (onglet 🌸 Phénologie). La barre colorée représente l'avancement dans l'année. Cliquez sur un stade pour voir ses sous-stades et codes BBCH détaillés.</p>
+  </div>
+
+  <div class="subsection" id="bbch-actions">
+    <h3>🔧 Actions recommandées par stade</h3>
+    <p>Pour chaque stade BBCH, l'application affiche les actions culturales recommandées :</p>
+    <ul>
+      <li><strong>Floraison (60–69)</strong> : éviter les traitements, pas de taille, irrigation régulière</li>
+      <li><strong>Nouaison (70–79)</strong> : fertilisation K prioritaire, traitement anti-chute physiologique si nécessaire</li>
+      <li><strong>Croissance (80–89)</strong> : arrosage régulier, fertilisation N+K, protection contre acariens</li>
+      <li><strong>Maturité (90–99)</strong> : réduction arrosage, suivi Brix, taille légère possible</li>
+    </ul>
+  </div>
+
+  <div class="subsection" id="bbch-gantt">
+    <h3>📅 Calendrier Gantt phénologique</h3>
+    <p>Vue 12 mois montrant l'ensemble des événements de la collection par sujet. La barre orange verticale = aujourd'hui. Les barres horizontales = périodes de récolte. Accessible via 🌿 Pro → 📅 Planning.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     6. FERTILISATION & SOL
+════════════════════════════════════════════════════════ -->
+<section id="fertilisation" class="section">
+  <h2>6. Fertilisation &amp; Sol</h2>
+
+  <div class="subsection">
+    <h3>🌱 Jauges NPK</h3>
+    <p>Les barres comparent vos apports réels (12 mois glissants) aux cibles annuelles INRAE.</p>
+    <table>
+      <tr><th>Mode / Ø pot</th><th>N (g)</th><th>P (g)</th><th>K (g)</th></tr>
+      <tr><td>Pot &lt;25 cm</td><td>10</td><td>3</td><td>10</td></tr>
+      <tr><td>Pot 25–39 cm</td><td>18</td><td>6</td><td>18</td></tr>
+      <tr><td>Pot 40–54 cm</td><td>28</td><td>9</td><td>28</td></tr>
+      <tr><td>Pot ≥55 cm</td><td>40</td><td>13</td><td>40</td></tr>
+      <tr><td>Pleine terre</td><td>80</td><td>25</td><td>80</td></tr>
+    </table>
+    <div class="warn-box">Les jauges nécessitent que vous renseigniez le <strong>poids en grammes</strong> ET un <strong>profil NPK</strong> sur chaque événement fertilisation.</div>
+  </div>
+
+  <div class="subsection" id="epandage">
+    <h3>🪣 Cahier d'épandage</h3>
+    <p>Registre réglementaire obligatoire pour les épandages de matières organiques (compost, fumier, digestat, lisier, boues STEP). À conserver <strong>5 ans</strong>. Champs requis : date, nature, dose, ZNT (≥5 m des cours d'eau), surface (ha).</p>
+  </div>
+
+  <div class="subsection" id="ppf">
+    <h3>📋 Plan Prévisionnel de Fumure (PPF)</h3>
+    <p>Document réglementaire requis pour HVE niveau 4, Agriculture Biologique et GlobalG.A.P. Recense les besoins NPK (INRAE/CTIFL) et les apports réels sur 12 mois glissants. Renseignez la surface (ha) pour un PPF certifiable.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     7. ARROSAGE & IRRIGATION
+════════════════════════════════════════════════════════ -->
+<section id="arrosage" class="section">
+  <h2>7. Arrosage &amp; Irrigation</h2>
+
+  <div class="subsection">
+    <h3>💧 Jauges d'arrosage</h3>
+    <p>Chaque barre indique le besoin en eau en temps réel. Les seuils s'adaptent à 5 facteurs : type d'emplacement, diamètre du pot, exposition, température et probabilité de pluie.</p>
+    <table>
+      <tr><th>Situation</th><th>🟢 OK</th><th>🟠 Bientôt</th><th>🔴 Urgent</th></tr>
+      <tr><td>Pot intérieur</td><td>&lt;7j</td><td>7–14j</td><td>&gt;21j</td></tr>
+      <tr><td>Pot extérieur</td><td>&lt;5j</td><td>5–10j</td><td>&gt;18j</td></tr>
+      <tr><td>Pleine terre</td><td>&lt;14j</td><td>14–21j</td><td>&gt;35j</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="eau">
+    <h3>💧 Qualité de l'eau</h3>
+    <p>Suivez pH, conductivité (EC) et dureté de votre eau d'irrigation. Valeurs cibles pour les agrumes :</p>
+    <table>
+      <tr><th>Paramètre</th><th>Cible</th><th>Impact si hors plage</th></tr>
+      <tr><td>pH</td><td>5,5 – 7,0</td><td>&gt;7,5 → chlorose ferrique</td></tr>
+      <tr><td>EC (mS/cm)</td><td>&lt;1,5</td><td>&gt;1,5 → brûlures racinaires</td></tr>
+      <tr><td>Dureté (°f)</td><td>&lt;20°f</td><td>&gt;20°f → colmatage substrat</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="irrigation">
+    <h3>💧 Bilan hydrique (ETP/ETc)</h3>
+    <div class="formula">ETc = ETP × Kc</div>
+    <p>Kc agrumes : 0,65 en dormance → 0,85 en végétation → 1,05 en floraison. Déficit = Σ(ETc − pluie). La réserve utile du sol (RU) détermine le nombre de jours tolérables sans irrigation.</p>
+  </div>
+
+  <div class="subsection" id="etp">
+    <h3>🌡 ETP — Penman-Monteith</h3>
+    <div class="formula">ETP = [0,408·Δ·(Rn−G) + γ·(900/(T+273))·u₂·(es−ea)] / [Δ + γ·(1+0,34·u₂)]</div>
+    <p>Paramètres lus depuis Open-Meteo à vos coordonnées GPS. Fallback Hargreaves-Samani si certains paramètres sont manquants.</p>
+  </div>
+
+  <div class="subsection" id="drip">
+    <h3>💧 Irrigation Goutte-à-Goutte</h3>
+    <p>Configurez vos circuits d'irrigation (débit pompe, goutteurs, sujets reliés). L'app calcule la durée d'arrosage couvrant les besoins ETc de tous les sujets du circuit. Alerte si risque de sur-arrosage.</p>
+    <p>Accès : 🌿 Pro → 💧 Eau → onglet <strong>Circuits</strong>.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     8. PHYTOSANITAIRE
+════════════════════════════════════════════════════════ -->
+<section id="phyto" class="section">
+  <h2>8. Phytosanitaire</h2>
+
+  <div class="subsection">
+    <h3>🧪 Registre phytosanitaire</h3>
+    <p>Trace tous vos traitements phytosanitaires. Obligatoire pour les professionnels (conservation 5 ans).</p>
+    <table>
+      <tr><th>Champ réglementaire</th><th>Description</th></tr>
+      <tr><td>Produit + AMM</td><td>Nom commercial et numéro d'homologation</td></tr>
+      <tr><td>Culture / cible</td><td>Espèce et usage retenu</td></tr>
+      <tr><td>Dose (L/ha)</td><td>Dose appliquée</td></tr>
+      <tr><td>Surface (ha)</td><td>Surface traitée</td></tr>
+      <tr><td>DAR</td><td>Délai Avant Récolte (jours)</td></tr>
+      <tr><td>Opérateur</td><td>Personne ayant effectué le traitement</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection" id="ift">
+    <h3>📊 IFT — Indicateur de Fréquence de Traitement</h3>
+    <div class="formula">IFT = Σ (dose appliquée / dose de référence) par intervention</div>
+    <table>
+      <tr><th>IFT normalisé</th><th>Niveau</th></tr>
+      <tr><td>&lt;1,5</td><td>🟢 Faible</td></tr>
+      <tr><td>1,5–3</td><td>🟠 Modéré</td></tr>
+      <tr><td>&gt;3</td><td>🔴 Élevé</td></tr>
+    </table>
+    <p>Seuils HVE niveau 4 : IFT herbicides ≤ 30% de la référence, IFT hors herbicides ≤ 50%.</p>
+  </div>
+
+  <div class="subsection" id="diagnostic">
+    <h3>🔬 Diagnostic phytosanitaire</h3>
+    <p>Accès via le bouton <strong>🔬</strong> flottant dans chaque fiche sujet. Guide en 3 étapes : Photo → Contexte (zone + symptôme + âge feuilles) → Résultat.</p>
+    <table>
+      <tr><th>Moteur</th><th>Prérequis</th><th>Précision</th></tr>
+      <tr><td>Heuristique local</td><td>Aucun (offline)</td><td>~65%</td></tr>
+      <tr><td>Claude Vision IA</td><td>Clé API dans Profil 🌿</td><td>~85%</td></tr>
+    </table>
+    <div class="warn-box">Les virus (HLB, Tristeza, Chancre) ne peuvent être confirmés que par test de laboratoire agréé. La précision est limitée à 30% pour ces pathologies.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     9. GREFFAGE & PÉPINIÈRE
+════════════════════════════════════════════════════════ -->
+<section id="pepiniere" class="section">
+  <h2>9. Greffage &amp; Pépinière</h2>
+
+  <div class="subsection" id="greffes">
+    <h3>🌿 Registre de greffage</h3>
+    <p>Type d'événement <strong>🌿 Greffage</strong> pour les greffages liés à un sujet existant. Onglet ✂️ Greffes dans la Pépinière pour les lots indépendants.</p>
+    <p>Champs : méthode (écusson, fente, couronne, chip, approche), greffon × porte-greffe, lot ID, quantité, taux de reprise, durée d'élevage.</p>
+  </div>
+
+  <div class="subsection" id="boutures">
+    <h3>🌿 Suivi boutures</h3>
+    <p>Type d'événement <strong>✂️ Bouture</strong> sur la fiche du sujet source. Méthodes : herbacée, semi-lignifiée, lignifiée, marcottage. Renseignez le taux de reprise lors d'un suivi — les boutures reprises peuvent être transférées vers le catalogue.</p>
+  </div>
+
+  <div class="subsection" id="pepiniere-module">
+    <h3>🌱 Module Pépinière</h3>
+    <p>Accessible via 🌿 Pro → onglet 🌱 Pépinière. Trois sous-onglets :</p>
+    <table>
+      <tr><th>Onglet</th><th>Contenu</th></tr>
+      <tr><td>🌱 Semis</td><td>Date, espèce, substrat, quantité, taux de germination</td></tr>
+      <tr><td>🌿 Catalogue</td><td>Plants disponibles — espèce, porte-greffe, Ø pot, quantité, prix, marge</td></tr>
+      <tr><td>📦 Commandes</td><td>Suivi client — articles, statut (En attente / Livrée / Annulée), total auto</td></tr>
+    </table>
+    <div class="info-box">La livraison d'une commande décrémente automatiquement le stock catalogue. Les lots de greffage disponibles &lt;14 jours alimentent le catalogue via 🌿 Sync. greffage.</div>
+  </div>
+
+  <div class="subsection">
+    <h3>📊 Dashboard pépinière</h3>
+    <p>KPIs en temps réel : plants disponibles, en élevage, taux de reprise moyen, CA total, commandes en attente. Alertes : lots disponibles dans 30j, commandes en retard, stocks bas.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>📅 Planning de production</h3>
+    <p>Planning inversé : calcule les dates de semis et greffe à partir de la date de disponibilité cible. Délais indicatifs : limon 18 mois, sinensis 24 mois, Fortunella 14 mois, Poncirus 36 mois.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>👤 CRM Clients</h3>
+    <p>Gérez votre portefeuille clients : coordonnées, type (particulier / professionnel / collectivité), historique des commandes, CA total calculé automatiquement.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>📈 Rentabilité variétale</h3>
+    <p>Classement par CA réalisé, marge par lot, coût de production estimé. Le badge de certification (CAC, DRS, SOV, bio) apparaît sur les étiquettes et passeports plants.</p>
+  </div>
+
+  <div class="subsection" id="catalogue-export">
+    <h3>📤 Export catalogue</h3>
+    <p>Bouton <em>Étiquettes PDF</em> dans le catalogue — grille d'étiquettes 160px avec QR SVG, espèce, variété, porte-greffe, taille de pot et prix. Imprimable directement.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     10. MODULE ÉCONOMIQUE
+════════════════════════════════════════════════════════ -->
+<section id="eco" class="section">
+  <h2>10. Module économique</h2>
+
+  <div class="subsection" id="eco-tendances">
+    <h3>📈 Tendances économiques</h3>
+    <p>Analyse pluriannuelle : graphique en barres (charges rouge / revenus vert par saison), tableau récapitulatif avec marge totale et par arbre. Estimation carbone ADEME par catégorie de dépense. Export CSV disponible.</p>
+  </div>
+
+  <div class="subsection" id="stocks">
+    <h3>📦 Stocks d'intrants</h3>
+    <p>Engrais, produits phytosanitaires, substrats, amendements. Seuil d'alerte configurable par produit — notification dashboard si stock sous le seuil. Consommation décrémentée automatiquement depuis les événements traitement et fertilisation.</p>
+  </div>
+
+  <div class="subsection" id="gantt">
+    <h3>📅 Planning / Timeline Gantt</h3>
+    <p>Timeline horizontale de 12 mois (−3/+9 autour d'aujourd'hui). Chaque ligne = un sujet, chaque point = un événement. Les barres = périodes de récolte. Barre orange verticale = aujourd'hui. Cliquez un nom pour ouvrir la fiche.</p>
+  </div>
+
+  <div class="subsection" id="yieldmapping">
+    <h3>🍊 Prévision de récolte</h3>
+    <p>Saisissez les prévisions par parcelle (nom, espèce, surface ha, rendement kg, prix €/kg) puis le tonnage réel. Indicateurs : % réalisé, coût MO/ha, CA estimé, marge. Totaux consolidés sur le tableau de bord arboriculteur.</p>
+  </div>
+
+  <div class="subsection" id="genealogie">
+    <h3>🧬 Généalogie de lot</h3>
+    <p>Chaîne de traçabilité complète : lot de greffe → entrée catalogue → commandes client. Répond aux exigences de traçabilité B2B (GMS, horticulteurs, collectivités).</p>
+  </div>
+
+  <div class="subsection" id="hve">
+    <h3>🌿 Bilan HVE auto-évalué</h3>
+    <p>Calcule automatiquement votre score HVE sur 4 piliers. HVE3 : ≥10/16 · HVE4 : ≥13/16 avec B et C au max.</p>
+    <table>
+      <tr><th>Pilier</th><th>Critères</th></tr>
+      <tr><td>A — Biodiversité</td><td>Espèces patrimoniales (IUCN), diversité variétale</td></tr>
+      <tr><td>B — Phyto</td><td>IFT herbicides ≤ réf×30% · IFT hors herb ≤ réf×50%</td></tr>
+      <tr><td>C — Fertilisation</td><td>PPF établi, surplus N &lt; 30 kg</td></tr>
+      <tr><td>D — Irrigation</td><td>ETP ou IoT actif, relevés qualité eau</td></tr>
+    </table>
+    <div class="warn-box">Résultat indicatif uniquement — un audit par organisme certifié agréé est obligatoire pour la certification officielle.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     11. CONSERVATOIRE
+════════════════════════════════════════════════════════ -->
+<section id="conservatoire" class="section">
+  <h2>11. Conservatoire</h2>
+
+  <div class="subsection">
+    <h3>🏛 Espace Conservatoire</h3>
+    <p>Outils de gestion de collection vivante institutionnelle. Accessible via 🌿 Pro → 🏛 Conservatoire.</p>
+  </div>
+
+  <div class="subsection" id="accession-id">
+    <h3>📋 Registre des accessions</h3>
+    <p>Numéro d'accession au format <code>YYYY-NNNN</code> (généré automatiquement ou saisi manuellement). Champs complémentaires : statut IUCN (LC, NT, VU, EN, CR, EW, EX), statut de conservation (vivant, perdu, en dépôt, prêté), provenance géographique, institution donatrice.</p>
+  </div>
+
+  <div class="subsection" id="wishlist">
+    <h3>🌱 Wishlist</h3>
+    <p>Espèces et cultivars souhaités avec priorité (haute/moyenne/basse), source, statuts (souhaité → en recherche → trouvé → acquis). Les items haute priorité apparaissent en widget dédié sur le tableau de bord.</p>
+  </div>
+
+  <div class="subsection" id="bgci">
+    <h3>📤 Export BGCI PlantSearch</h3>
+    <p>Génère un CSV compatible BGCI PlantSearch : accession, taxon complet, provenance, statut IUCN, coordonnées GPS optionnelles. Directement importable dans les bases de données de conservation internationale.</p>
+  </div>
+
+  <div class="subsection" id="etiquettes">
+    <h3>🏷 Étiquettes muséales PDF</h3>
+    <p>Grille d'étiquettes imprimables A4 : numéro d'accession, binomial en italique, famille, porte-greffe, provenance, institution. Format multi-colonnes compatible plastification.</p>
+  </div>
+
+  <div class="subsection" id="taxonomie">
+    <h3>🌿 Vue taxonomique</h3>
+    <p>Arbre collapsible Famille → Genre → Espèce → Cultivar sur toute la collection, avec indicateurs IUCN par sujet et accès direct aux fiches.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     12. IoT & CAPTEURS
+════════════════════════════════════════════════════════ -->
+<section id="iot" class="section">
+  <h2>12. IoT &amp; Capteurs</h2>
+
+  <div class="subsection">
+    <h3>📡 Connecter un capteur</h3>
+    <p>Accès : ⚙ Réglages → 📡 Capteurs IoT. Protocoles supportés : HTTP/JSON polling (URL locale) ou WebSocket (flux continu).</p>
+    <p>Données lues : T° ambiante, humidité relative, humidité substrat, EC, luminosité (lux), CO₂ (ppm). Les données T°/humidité alimentent automatiquement les jauges d'arrosage et le bilan ETP.</p>
+    <p>Configurez des seuils d'alerte par paramètre — notification push déclenchée si la valeur sort de la plage définie.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     13. WIKI & OBSERVATOIRE
+════════════════════════════════════════════════════════ -->
+<section id="wiki" class="section">
+  <h2>13. Wiki &amp; Observatoire</h2>
+
+  <div class="subsection">
+    <h3>📖 Citrus Wiki</h3>
+    <p>Base de connaissances collaborative offline-first. Accès : Menu → 📖 Communauté → onglet Wiki.</p>
+    <h4>Navigation</h4>
+    <p>Articles classés par catégories (Botanique, Culture, Maladies, Variétés…). Barre de recherche plein-texte. Backlinks et notes de bas de page numérotées.</p>
+    <h4>Édition</h4>
+    <p>Bouton ✏️ Modifier → rédigez en Markdown (<code>**gras**</code>, <code>*italique*</code>, <code>[[lien interne]]</code>, listes, titres). Toutes les modifications sont versionnées — bouton 🕐 pour consulter l'historique.</p>
+    <div class="info-box">Les articles consultés une fois restent accessibles hors ligne. Synchronisation avec le serveur dès que vous êtes en ligne.</div>
+  </div>
+
+  <div class="subsection" id="observatoire">
+    <h3>🗺 Observatoire CitrusCodex</h3>
+    <p>Carte participative des événements culturaux et phytosanitaires. Accès : Menu → 📖 Communauté → onglet Observatoire.</p>
+    <h4>Contribution</h4>
+    <p>Activez votre participation dans ⚙ Réglages → <strong>Observatoire communautaire</strong> en renseignant votre commune. Vos coordonnées sont approximées à la commune (~2 km). Participation opt-in désactivable à tout moment.</p>
+    <h4>Statistiques</h4>
+    <p>Données par saison et par année : total observations, espèces et régions les plus actives, pic de floraison, GJC moyen national, zones à risque gel.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     14. PROFIL & RÉGLAGES
+════════════════════════════════════════════════════════ -->
+<section id="reglages" class="section">
+  <h2>14. Profil &amp; Réglages</h2>
+
+  <div class="subsection" id="profil">
+    <h3>👤 Profil utilisateur</h3>
+    <p>⚙ Réglages → section Profil. Modifiez votre nom d'affichage et vos informations de contact. Le type de profil (collectionneur, pépiniériste, etc.) est verrouillé après création — contactez l'équipe CitrusCodex pour le modifier.</p>
+  </div>
+
+  <div class="subsection" id="sync">
+    <h3>☁ Synchronisation</h3>
+    <p>Synchronisez vos données entre appareils via GitHub Gist privé ou WebDAV/Nextcloud.</p>
+    <div class="warn-box"><strong>⚠ Fine-grained PATs incompatibles.</strong> Utilisez un <strong>classic PAT</strong> (<code>ghp_…</code>) pour le Gist. Créer : github.com → Settings → Developer settings → Tokens (classic) → scope <strong>gist</strong>.</div>
+    <p>Toutes les données sont chiffrées <strong>AES-256-GCM</strong> sur votre appareil (clé dérivée PBKDF2 depuis votre mot de passe) avant tout envoi. Votre fournisseur ne peut pas lire vos données.</p>
+  </div>
+
+  <div class="subsection" id="notifications">
+    <h3>🔔 Notifications push</h3>
+    <p>⚙ Réglages → Notifications → Activer. Le navigateur demande l'autorisation. Types : alerte gel, arrosage urgent, rappels calendrier, changement de stade BBCH, alertes phytosanitaires.</p>
+    <div class="info-box">Nécessite un navigateur compatible Service Worker. Pas disponible en navigation privée. iOS : Safari 16.4+ requis.</div>
+  </div>
+
+  <div class="subsection" id="historique">
+    <h3>📜 Historique global</h3>
+    <p>⚙ Réglages → 📜 Historique. Chronologie inverse de toutes les actions sur toute la collection : événements culturaux et modifications de fiche (audit trail). Filtrable par type, sujet, période.</p>
+  </div>
+
+  <div class="subsection" id="dark-mode">
+    <h3>🌙 Mode sombre</h3>
+    <p>⚙ Réglages → Apparence. Options : Auto (suit l'OS), Clair, Sombre. Le mode sombre réduit la fatigue oculaire et économise la batterie sur les écrans OLED.</p>
+  </div>
+
+  <div class="subsection" id="securite">
+    <h3>🔒 Sécurité et données</h3>
+    <p>Toutes vos données restent 100% locales — rien n'est envoyé vers un serveur tiers (hors sync optionnelle). Mot de passe → SHA-256. Token GitHub → XOR+SHA-256. Export : ⚙ Réglages → ⬇ Exporter JSON.</p>
+    <div class="warn-box">L'import <strong>écrase</strong> la collection existante. Exportez toujours avant d'importer.</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     15. SIGNALEMENT & SUPPORT
+════════════════════════════════════════════════════════ -->
+<section id="signalement" class="section">
+  <h2>15. Signalement &amp; Support</h2>
+
+  <div class="subsection" id="bug-report">
+    <h3>🐛 Signaler un problème</h3>
+    <p>Le bouton flottant <strong>🐛</strong> (coin inférieur droit de l'écran) ouvre le formulaire de signalement :</p>
+    <table>
+      <tr><th>Champ</th><th>Description</th></tr>
+      <tr><td>Titre</td><td>Résumé court (obligatoire)</td></tr>
+      <tr><td>Description</td><td>Étapes pour reproduire, comportement attendu vs observé</td></tr>
+      <tr><td>Catégorie</td><td>Bug · Fonctionnalité · Interface · Performance · Autre</td></tr>
+      <tr><td>Sévérité</td><td>Faible · Moyenne · Haute · Critique</td></tr>
+    </table>
+    <p><strong>Repositionner le bouton :</strong> maintenez enfoncé 1 seconde et glissez.</p>
+    <p><strong>Hors ligne :</strong> le rapport est sauvegardé localement et envoyé à la prochaine connexion.</p>
+    <p><strong>Suivi :</strong> ⚙ Réglages → Mes signalements — statuts : Ouvert / En cours / Résolu / Fermé.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     16. ADMINISTRATION
+════════════════════════════════════════════════════════ -->
+<section id="admin" class="section">
+  <h2>16. Administration (comptes admin uniquement)</h2>
+
+  <div class="subsection">
+    <h3>👥 Gestion des utilisateurs</h3>
+    <p>⚙ Réglages → Administration. Liste complète des utilisateurs avec email, profil, date de création, dernière connexion, statut. Fonctions : invitations bêta, reset mot de passe, notes admin, suspension de compte.</p>
+    <p><strong>Statistiques globales :</strong> total utilisateurs actifs, connexions 24h/7j, nombre total de sujets dans la collection globale.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>🐛 Gestion des signalements</h3>
+    <p>Liste globale de tous les signalements. Gestion des statuts : Ouvert → En cours → Résolu → Fermé · Ne sera pas corrigé. Notes de résolution visibles par l'utilisateur. Filtres par catégorie, sévérité, statut, utilisateur.</p>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════
+     17. FAQ
+════════════════════════════════════════════════════════ -->
+<section id="faq" class="section">
+  <h2>17. FAQ — Questions fréquentes</h2>
+
+  <div class="subsection">
+    <h3>L'application ne charge pas ma météo</h3>
+    <p>Vérifiez que la géolocalisation est autorisée pour le site dans votre navigateur. Si le problème persiste, saisissez votre localisation manuellement via le bouton 📍 dans le bloc météo.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Mes données ont disparu après rechargement</h3>
+    <p>L'app utilise le localStorage. Vérifiez que votre navigateur ne supprime pas les données à la fermeture (mode navigation privée, ou paramètre "Effacer données à la fermeture"). Activez la synchronisation (☁ Sync) pour sauvegarder vos données sur un serveur distant.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Les jauges NPK ne s'affichent pas</h3>
+    <p>Les jauges nécessitent deux conditions sur chaque événement fertilisation : (1) le <strong>poids en grammes</strong> de l'apport, et (2) un <strong>profil NPK</strong> sélectionné (composition de l'engrais). Si l'un des deux manque, la jauge reste vide.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>La synchronisation GitHub échoue avec un token "github_pat_…"</h3>
+    <p>Les fine-grained PATs (<code>github_pat_…</code>) sont incompatibles avec l'API Gist. Créez un <strong>classic PAT</strong> (<code>ghp_…</code>) avec le scope <strong>gist</strong> uniquement. Voir <a href="#sync">section Synchronisation</a> pour les étapes détaillées.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Le bouton 🐛 masque d'autres éléments</h3>
+    <p>Maintenez le bouton enfoncé 1 seconde et glissez-le pour le repositionner. Sa nouvelle position est mémorisée.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Mon profil pépiniériste ne montre pas l'onglet 🎓 Stages</h3>
+    <p>L'onglet 🎓 Stages n'est visible que pour le profil <strong>pépiniériste</strong>. Si vous avez récemment changé de profil, déconnectez-vous et reconnectez-vous pour que le changement prenne effet. Si le problème persiste, vérifiez dans ⚙ Réglages que votre profil est bien défini comme "Pépiniériste".</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Les marqueurs de l'observatoire ne s'affichent pas</h3>
+    <p>La carte nécessite une connexion internet pour charger les tuiles OpenStreetMap. Si la connexion est présente mais la carte reste vide, rechargez la page. En cas d'absence de données serveur, des points de démonstration sont affichés automatiquement.</p>
+  </div>
+
+  <div class="subsection">
+    <h3>Comment changer de profil ?</h3>
+    <p>Le profil est verrouillé après création pour garantir la cohérence des données. Contactez l'équipe CitrusCodex via le formulaire de signalement (bouton 🐛) en précisant le profil souhaité.</p>
+  </div>
+</section>
+
+</div><!-- /page-wrap -->
+
+<button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+<script>
+// Scroll-spy pour le surlignage de la TOC (optionnel, améliore la navigation)
+const sections = document.querySelectorAll('.section, .subsection[id]');
+const tocLinks = document.querySelectorAll('.toc a');
+function updateToc() {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+  tocLinks.forEach(a => {
+    a.style.fontWeight = a.getAttribute('href') === '#' + current ? '700' : '500';
+    a.style.color = a.getAttribute('href') === '#' + current ? '#e8a020' : '';
+  });
+}
+window.addEventListener('scroll', updateToc, { passive: true });
+</script>
+</body>
+</html>
