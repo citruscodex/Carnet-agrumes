@@ -139,6 +139,20 @@ module.exports = async function trainingPlugin(fastify) {
     reply.send(rows);
   });
 
+  // ── GET /api/training/public/:slug — Info publique (sans auth) ──────────────
+  fastify.get('/training/public/:slug', async (req, reply) => {
+    const { rows: [session] } = await fastify.pg.query(
+      `SELECT s.id, s.title, s.description, s.location, s.start_datetime, s.end_datetime,
+              s.capacity, s.price_eur, s.status, s.public_url_slug,
+              (SELECT COUNT(*) FROM training_registrations r
+               WHERE r.session_id=s.id AND r.confirmed=true AND r.cancelled=false) AS confirmed_count
+       FROM training_sessions s WHERE s.public_url_slug=$1`,
+      [req.params.slug]
+    );
+    if (!session) return reply.code(404).send({ error: 'Stage introuvable' });
+    reply.send(session);
+  });
+
   // ── POST /api/training/:slug/register — Inscription publique ────────────────
   fastify.post('/training/:slug/register', {
     config: { rateLimit: rateLimitRegister },

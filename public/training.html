@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inscription au stage — Citrus Codex</title>
+<meta name="description" content="Inscription à un stage de pépinière agrumes">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --g1: #162d1f; --g2: #2e7d32; --g3: #4caf50;
+    --amber: #d4813a; --amber3: #ff9800;
+    --cream: #faf5eb; --cream2: #f0e9d2; --cream3: #e8dcc8;
+    --text: #1c1c1e; --muted: #888; --red: #c62828;
+    --white: #fff;
+  }
+  body { background: var(--cream); color: var(--text); font-family: system-ui, -apple-system, sans-serif; min-height: 100vh; }
+  .cca-header { background: var(--g1); color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .cca-header .logo { font-size: 1.8rem; }
+  .cca-header .brand { font-weight: 700; font-size: 1rem; }
+  .cca-header .sub { font-size: .78rem; opacity: .7; }
+  main { max-width: 600px; margin: 0 auto; padding: 20px 16px 60px; }
+  .card { background: var(--white); border-radius: 14px; border: 1px solid var(--cream3); padding: 20px; margin-bottom: 16px; }
+  .stage-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; color: var(--g1); }
+  .stage-meta { display: flex; flex-direction: column; gap: 6px; }
+  .stage-meta-item { display: flex; align-items: center; gap: 8px; font-size: .87rem; color: var(--muted); }
+  .stage-meta-item strong { color: var(--text); }
+  .stage-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 10px; font-size: .75rem; font-weight: 600; font-family: monospace; }
+  .badge-open { background: #e8f5e9; color: #2e7d32; }
+  .badge-full { background: #ffebee; color: #c62828; }
+  .badge-cancelled { background: #f5f5f5; color: #666; }
+  .badge-past { background: #f5f5f5; color: #666; }
+  .price-badge { background: var(--g1); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: .85rem; font-weight: 700; }
+  .cap-bar-wrap { margin-top: 12px; }
+  .cap-bar-labels { display: flex; justify-content: space-between; font-size: .75rem; color: var(--muted); margin-bottom: 4px; font-family: monospace; }
+  .cap-bar { height: 6px; background: var(--cream3); border-radius: 3px; overflow: hidden; }
+  .cap-bar-fill { height: 100%; background: var(--g2); border-radius: 3px; transition: width .4s; }
+  .stage-desc { font-size: .87rem; line-height: 1.55; color: #444; white-space: pre-wrap; }
+  h2 { font-size: 1rem; margin-bottom: 14px; color: var(--g1); }
+  label { display: block; font-size: .78rem; font-family: monospace; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 3px; margin-top: 12px; }
+  label:first-of-type { margin-top: 0; }
+  input, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--cream3); border-radius: 8px; font-size: .9rem; background: var(--white); color: var(--text); transition: border-color .15s; }
+  input:focus, textarea:focus { outline: none; border-color: var(--g2); }
+  textarea { resize: vertical; min-height: 70px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-submit { width: 100%; padding: 14px; background: var(--g2); color: #fff; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 18px; transition: opacity .15s; }
+  .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-submit:hover:not(:disabled) { opacity: .9; }
+  .err { color: var(--red); font-size: .83rem; margin-top: 8px; padding: 8px 12px; background: #ffebee; border-radius: 7px; display: none; }
+  .success-card { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 14px; padding: 28px 20px; text-align: center; }
+  .success-icon { font-size: 3rem; margin-bottom: 12px; }
+  .success-title { font-size: 1.2rem; font-weight: 700; color: #2e7d32; margin-bottom: 8px; }
+  .success-msg { font-size: .87rem; color: #555; line-height: 1.5; }
+  .skeleton { background: linear-gradient(90deg, var(--cream2) 25%, var(--cream3) 50%, var(--cream2) 75%); background-size: 200%; animation: shimmer 1.2s infinite; border-radius: 6px; }
+  @keyframes shimmer { 0% { background-position: 200% } 100% { background-position: -200% } }
+  .skel-line { height: 16px; margin-bottom: 10px; }
+  .skel-title { height: 28px; width: 70%; margin-bottom: 16px; }
+  .error-state { text-align: center; padding: 40px 20px; color: var(--red); }
+  .error-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .legal { font-size: .72rem; color: var(--muted); margin-top: 12px; line-height: 1.5; text-align: center; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; color: var(--g2); font-size: .85rem; text-decoration: none; margin-bottom: 16px; }
+  .back-link:hover { text-decoration: underline; }
+  @media (max-width: 420px) { .row2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="cca-header">
+  <span class="logo">🍊</span>
+  <div>
+    <div class="brand">Citrus Codex</div>
+    <div class="sub">Inscription aux stages pépinière</div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Loading skeleton -->
+  <div id="state-loading" class="card">
+    <div class="skel-line skeleton skel-title"></div>
+    <div class="skel-line skeleton" style="width:50%"></div>
+    <div class="skel-line skeleton" style="width:65%;margin-top:8px"></div>
+    <div class="skel-line skeleton" style="width:40%;margin-top:4px"></div>
+  </div>
+
+  <!-- Error state -->
+  <div id="state-error" class="error-state" style="display:none">
+    <div class="icon">⚠️</div>
+    <p id="error-msg">Stage introuvable.</p>
+    <a href="/" style="color:var(--g2);font-size:.87rem;margin-top:12px;display:inline-block">← Retour à Citrus Codex</a>
+  </div>
+
+  <!-- Stage info + form -->
+  <div id="state-loaded" style="display:none">
+    <a href="/" class="back-link">← Citrus Codex</a>
+
+    <!-- Stage info card -->
+    <div class="card" id="stage-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+        <div class="stage-title" id="stage-title">—</div>
+        <span class="stage-badge" id="stage-status-badge"></span>
+      </div>
+      <div class="stage-meta" id="stage-meta"></div>
+      <div class="cap-bar-wrap" id="cap-bar-wrap"></div>
+      <div id="stage-desc-wrap" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--cream3);display:none">
+        <div class="stage-desc" id="stage-desc"></div>
+      </div>
+    </div>
+
+    <!-- Registration form -->
+    <div class="card" id="form-card">
+      <h2>📝 S'inscrire au stage</h2>
+      <div class="row2">
+        <div>
+          <label>Prénom *</label>
+          <input id="f-first" type="text" maxlength="100" autocomplete="given-name" placeholder="Jean"/>
+        </div>
+        <div>
+          <label>Nom *</label>
+          <input id="f-last" type="text" maxlength="100" autocomplete="family-name" placeholder="Dupont"/>
+        </div>
+      </div>
+      <label>Email *</label>
+      <input id="f-email" type="email" maxlength="200" autocomplete="email" placeholder="jean.dupont@exemple.fr"/>
+      <label>Téléphone</label>
+      <input id="f-phone" type="tel" maxlength="30" autocomplete="tel" placeholder="06 12 34 56 78"/>
+      <label>Message ou questions (optionnel)</label>
+      <textarea id="f-notes" placeholder="Niveau débutant, questions particulières…"></textarea>
+      <div id="form-err" class="err"></div>
+      <button class="btn-submit" id="btn-submit">S'inscrire →</button>
+      <p class="legal">En vous inscrivant, vous acceptez que vos coordonnées soient communiquées à l'organisateur du stage aux fins d'organisation. Aucune donnée n'est partagée à des tiers.</p>
+    </div>
+  </div>
+
+  <!-- Closed state (full or cancelled) -->
+  <div id="state-closed" style="display:none">
+    <div class="card">
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:2rem;margin-bottom:10px" id="closed-icon">🔴</div>
+        <div style="font-weight:700;font-size:1.1rem;margin-bottom:6px" id="closed-title">Stage complet</div>
+        <div style="font-size:.87rem;color:var(--muted)" id="closed-msg">Les inscriptions sont fermées pour ce stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success state -->
+  <div id="state-success" style="display:none">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Inscription enregistrée !</div>
+      <div class="success-msg">
+        Votre demande d'inscription a été transmise à l'organisateur.<br><br>
+        <strong>Prochaine étape</strong> : vous allez recevoir un email de confirmation à l'adresse indiquée. Cliquez sur le lien dans cet email pour finaliser votre inscription.<br><br>
+        En cas de question : contactez l'organisateur du stage.
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  const STATUS_LABEL = {
+    open:      ['badge-open',     '🟢 Inscriptions ouvertes'],
+    full:      ['badge-full',     '🔴 Complet'],
+    cancelled: ['badge-cancelled','⚫ Annulé'],
+    past:      ['badge-past',     '⌛ Passé'],
+  };
+
+  function show(id) {
+    ['state-loading','state-error','state-loaded','state-closed','state-success'].forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.style.display = s === id ? '' : 'none';
+    });
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try {
+      return new Date(iso).toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+    } catch { return iso; }
+  }
+
+  // Get slug from URL: /training.html?slug=xxx  or  /training/?slug=xxx
+  const slug = new URLSearchParams(window.location.search).get('slug');
+
+  if (!slug) {
+    show('state-error');
+    document.getElementById('error-msg').textContent = 'Aucun stage spécifié dans l\'URL.';
+    return;
+  }
+
+  // Fetch session details
+  fetch('/api/training/public/' + encodeURIComponent(slug))
+    .then(r => {
+      if (!r.ok) throw new Error(r.status === 404 ? 'Stage introuvable.' : 'Erreur ' + r.status);
+      return r.json();
+    })
+    .then(s => {
+      // Update page title
+      document.title = esc(s.title) + ' — Citrus Codex';
+
+      // Stage info
+      document.getElementById('stage-title').textContent = s.title;
+      const [badgeClass, badgeLabel] = STATUS_LABEL[s.status] || ['badge-cancelled', s.status];
+      const badgeEl = document.getElementById('stage-status-badge');
+      badgeEl.className = 'stage-badge ' + badgeClass;
+      badgeEl.textContent = badgeLabel;
+
+      const dStart = new Date(s.start_datetime);
+      const dEnd   = new Date(s.end_datetime);
+      const sameDay = dStart.toDateString() === dEnd.toDateString();
+      const metaEl = document.getElementById('stage-meta');
+      metaEl.innerHTML = [
+        `<div class="stage-meta-item">📅 <strong>${fmtDate(s.start_datetime)}</strong>${sameDay ? ' → ' + dEnd.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) : ' → ' + fmtDate(s.end_datetime)}</div>`,
+        `<div class="stage-meta-item">📍 <strong>${esc(s.location)}</strong></div>`,
+        `<div class="stage-meta-item">👤 <strong>${s.capacity} places</strong> · <span class="price-badge">${s.price_eur > 0 ? s.price_eur + ' €' : 'Gratuit'}</span></div>`,
+      ].join('');
+
+      const confirmed = parseInt(s.confirmed_count) || 0;
+      const pct = s.capacity > 0 ? Math.round(confirmed / s.capacity * 100) : 0;
+      document.getElementById('cap-bar-wrap').innerHTML = `
+        <div class="cap-bar-labels"><span>Inscriptions confirmées</span><span>${confirmed} / ${s.capacity}</span></div>
+        <div class="cap-bar"><div class="cap-bar-fill" style="width:${pct}%"></div></div>`;
+
+      if (s.description) {
+        document.getElementById('stage-desc').textContent = s.description;
+        document.getElementById('stage-desc-wrap').style.display = '';
+      }
+
+      // Decide which state to show
+      if (s.status === 'cancelled') {
+        show('state-closed');
+        document.getElementById('closed-icon').textContent = '⚫';
+        document.getElementById('closed-title').textContent = 'Stage annulé';
+        document.getElementById('closed-msg').textContent = 'Ce stage a été annulé. Veuillez contacter l\'organisateur pour plus d\'informations.';
+        // Still show stage card
+        document.getElementById('state-closed').prepend(document.getElementById('stage-card').cloneNode(true));
+      } else if (s.status === 'full') {
+        show('state-closed');
+        document.getElementById('closed-title').textContent = 'Stage complet';
+        document.getElementById('closed-msg').textContent = 'Toutes les places sont prises. Revenez plus tard ou contactez l\'organisateur.';
+        document.getElementById('state-closed').prepend(document.getElementById('stage-card').cloneNode(true));
+      } else if (s.status === 'past') {
+        show('state-closed');
+        document.getElementById('closed-icon').textContent = '⌛';
+        document.getElementById('closed-title').textContent = 'Stage terminé';
+        document.getElementById('closed-msg').textContent = 'Ce stage est passé. Consultez Citrus Codex pour les prochaines sessions.';
+        document.getElementById('state-closed').prepend(document.getElementById('stage-card').cloneNode(true));
+      } else {
+        show('state-loaded');
+      }
+
+      // Submit handler
+      document.getElementById('btn-submit').addEventListener('click', function () {
+        const first = document.getElementById('f-first').value.trim();
+        const last  = document.getElementById('f-last').value.trim();
+        const email = document.getElementById('f-email').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        const notes = document.getElementById('f-notes').value.trim();
+        const errEl = document.getElementById('form-err');
+        errEl.style.display = 'none';
+
+        if (!first || !last || !email) {
+          errEl.textContent = 'Prénom, nom et email sont requis.';
+          errEl.style.display = 'block';
+          return;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errEl.textContent = 'Adresse email invalide.';
+          errEl.style.display = 'block';
+          return;
+        }
+
+        const btn = this;
+        btn.disabled = true;
+        btn.textContent = '⏳ Envoi en cours…';
+
+        fetch('/api/training/' + encodeURIComponent(slug) + '/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ first_name: first, last_name: last, email, phone: phone || undefined, notes: notes || undefined })
+        })
+          .then(r => r.json().then(d => ({ ok: r.ok, data: d })))
+          .then(({ ok, data }) => {
+            if (!ok) {
+              errEl.textContent = data.error || 'Erreur lors de l\'inscription.';
+              errEl.style.display = 'block';
+              btn.disabled = false;
+              btn.textContent = 'S\'inscrire →';
+            } else {
+              show('state-success');
+            }
+          })
+          .catch(e => {
+            errEl.textContent = 'Erreur réseau : ' + e.message;
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'S\'inscrire →';
+          });
+      });
+    })
+    .catch(e => {
+      show('state-error');
+      document.getElementById('error-msg').textContent = e.message;
+    });
+})();
+</script>
+</body>
+</html>

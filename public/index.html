@@ -9830,7 +9830,7 @@ function render(){
   const m=document.getElementById('main'),bk=document.getElementById('tb-back'),sb=document.getElementById('tb-sub'),ac=document.getElementById('tb-act');
   if(selId){bk.style.display='block';sb.textContent='Fiche sujet';ac.innerHTML='';m.innerHTML=renderDetail();_mountPheno('detail');}
   else if(page==='dashboard'){bk.style.display='none';sb.textContent=T('misc.appSubtitle');ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openInfographic()">📊</button><button class="btn btn-g btn-sm" onclick="showPage('settings')" title="Réglages">⚙</button>`;try{m.innerHTML=renderDash();_mountPheno('dash');}catch(e){m.innerHTML='<div class="page" style="padding:20px"><h3 style="color:#c62828">⚠ Erreur</h3><p style="font-size:.8rem;font-family:monospace;color:#c62828">'+esc(e.message)+'</p></div>';console.error('renderDash:',e);}}
-  else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openAddFert()">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" onclick="showPage(\'settings\')">⚙</button>':'');m.innerHTML=renderFertPage();}
+  else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openAddFert()">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" onclick="showPage(\'settings\')">⚙</button>':'');m.innerHTML=renderFertPage();if(fertView==='substrats'){requestAnimationFrame(()=>{const r=document.getElementById('cca-substrats-root');if(r&&window.__CCA_substrats)window.__CCA_substrats.mount(r,T,plants);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module substrats en cours de chargement…</div>';});}}
   else if(page==='eco'){bk.style.display='none';sb.textContent=T('misc.ecoTitle');const _ecoIsC=!PRO_PROFILES.includes((getProfile().profileType)||'collectionneur');ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="openEcoEntry(null,'cost')">${_ecoIsC?'+ Dépense':'+ '+T('misc.ecoCosts')}</button>`;try{m.innerHTML=renderEcoPage();}catch(e){console.error('renderEco:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='nursery'){showPage('pro');}
   else if(page==='pro'){bk.style.display='none';sb.textContent='🌿 Espace Pro';ac.innerHTML=`<button class="btn btn-g btn-sm" onclick="showPage('settings')">⚙</button>`;try{m.innerHTML=renderProPage();requestAnimationFrame(()=>{const active=m.querySelector('.pro-tab-bar .pro-tab-pill.active');if(active)active.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});});}catch(e){console.error('renderPro:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
@@ -15299,9 +15299,10 @@ function renderFertPage(){
   <div class="fert-tab${fertView==='profiles'?' active':''}" onclick="fertView='profiles';render()">⚗ Engrais</div>
   <div class="fert-tab${fertView==='amendments'?' active':''}" onclick="fertView='amendments';render()">🪨 Amendements</div>
   <div class="fert-tab${fertView==='stocks'?' active':''}" onclick="fertView='stocks';render()">📦 Stocks</div>
+  <div class="fert-tab${fertView==='substrats'?' active':''}" onclick="fertView='substrats';render()">🪴 Substrats</div>
   ${PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?`<div class="fert-tab${fertView==='ppf'?' active':''}" onclick="fertView='ppf';render()">📋 PPF</div><div class=\"fert-tab${fertView==='epandage'?' active':''}\" onclick=\"fertView='epandage';render()\">🪣 Épandage</div>`:''}
 </div>
-${fertView==='cal'?renderFertCal(allCalEvs):fertView==='list'?renderFertList(allFertEvs):fertView==='profiles'?renderFertProfiles():fertView==='stocks'?renderStocksTab():fertView==='ppf'?renderPPF():renderAmendProfiles()}
+${fertView==='cal'?renderFertCal(allCalEvs):fertView==='list'?renderFertList(allFertEvs):fertView==='profiles'?renderFertProfiles():fertView==='stocks'?renderStocksTab():fertView==='substrats'?'<div id="cca-substrats-root" style="min-height:200px"></div>':fertView==='ppf'?renderPPF():renderAmendProfiles()}
 </div>`}
 
 function renderFertCal(allCalEvs){
@@ -16620,11 +16621,13 @@ function renderCommunityPage(){
   const tabs=`<div class="comm-tabs">
     <div class="comm-tab${isWikiView?' active':''}" onclick="wikiView='new-wiki';renderCommunityPage()">📖 Citrus Wiki ${helpBtn('wiki')}</div>
     <div class="comm-tab${wikiView==='observatoire'?' active':''}" onclick="wikiView='observatoire';renderCommunityPage()">🗺 Observatoire ${helpBtn('observatoire')}</div>
+    <div class="comm-tab${wikiView==='bourse'?' active':''}" onclick="wikiView='bourse';renderCommunityPage()">🔄 Bourse</div>
     ${_srvUserRole()==='admin'||_srvUserRole()==='moderator'?`<div class="comm-tab${wikiView==='admin'?' active':''}" onclick="wikiView='admin';renderCommunityPage()">⚙ Admin</div>`:''}
   </div>`;
   root.innerHTML=tabs+'<div id="comm-content"></div>';
   const c=document.getElementById('comm-content');
   if(wikiView==='observatoire'){_renderObservatoire(c);return;}
+  if(wikiView==='bourse'){_renderBourse(c);return;}
   if(wikiView==='admin'){_renderAdminPanel(c);return;}
   // Nouveau wiki ES module (offline-first)
   if(isWikiView&&window.__CCA_wiki){
@@ -17087,6 +17090,179 @@ async function adminSetRole(userId,role){
     if(!r.ok)throw new Error('HTTP '+r.status);
     toast('Rôle mis à jour ✓');
   }catch(e){toast('Erreur: '+e.message,true);}
+}
+
+// ── Bourse aux greffons ───────────────────────────────────────────────────────
+let _bourseCache = null;
+async function _renderBourse(c) {
+  if (!_srvToken) {
+    c.innerHTML = `<div style="padding:32px;text-align:center;color:var(--muted)">
+      <div style="font-size:2rem;margin-bottom:10px">🔄</div>
+      <div style="font-weight:600;margin-bottom:6px">Bourse aux greffons</div>
+      <div style="font-size:.85rem;margin-bottom:16px">La bourse est disponible en ligne uniquement.<br>Connectez-vous au serveur pour y accéder.</div>
+      <button class="btn btn-p btn-sm" onclick="showServerLogin()">Se connecter</button>
+    </div>`;
+    return;
+  }
+  c.innerHTML = `<div style="padding:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+    <h3 style="margin:0;font-size:1rem">🔄 Bourse aux greffons</h3>
+    <button class="btn btn-a btn-sm" id="bourse-new-btn">+ Mon annonce</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn btn-g btn-sm" id="bourse-f-all" style="flex:1">Tout</button>
+    <button class="btn btn-g btn-sm" id="bourse-f-offre" style="flex:1">🟢 Offres</button>
+    <button class="btn btn-g btn-sm" id="bourse-f-rech" style="flex:1">🔵 Recherches</button>
+  </div>
+  <div id="bourse-list"><div style="text-align:center;padding:20px;color:var(--muted)">Chargement…</div></div>
+  </div>
+  <div id="bourse-modal" class="cca-bug-overlay" style="display:none">
+    <div class="cca-bug-modal" role="dialog" style="max-width:460px">
+      <div class="cca-bug-header">
+        <span class="cca-bug-header-title">🔄 <span id="bourse-modal-title">Nouvelle annonce</span></span>
+        <button class="cca-bug-close" id="bourse-modal-close">✕</button>
+      </div>
+      <label class="cca-bug-label">Type *</label>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <label style="flex:1;display:flex;align-items:center;gap:6px;padding:10px;border:2px solid var(--cream3);border-radius:8px;cursor:pointer">
+          <input type="radio" name="bourse-type" id="bourse-t-offre" value="offre"/> 🟢 J'offre des greffons
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:6px;padding:10px;border:2px solid var(--cream3);border-radius:8px;cursor:pointer">
+          <input type="radio" name="bourse-type" id="bourse-t-rech" value="recherche"/> 🔵 Je recherche
+        </label>
+      </div>
+      <label class="cca-bug-label">Espèce *</label>
+      <input id="bourse-species" class="cca-bug-input" placeholder="Ex : Citrus medica 'Etrog'" maxlength="200"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="cca-bug-label">Variété</label><input id="bourse-variety" class="cca-bug-input" maxlength="200"/></div>
+        <div><label class="cca-bug-label">Porte-greffe</label><input id="bourse-rootstock" class="cca-bug-input" maxlength="200"/></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="cca-bug-label">Quantité</label><input id="bourse-qty" class="cca-bug-input" type="number" min="1" value="1"/></div>
+        <div><label class="cca-bug-label">Région</label><input id="bourse-region" class="cca-bug-input" maxlength="100" placeholder="Ex : PACA"/></div>
+      </div>
+      <label class="cca-bug-label">Description</label>
+      <textarea id="bourse-desc" class="cca-bug-textarea" placeholder="Précisions, conditions d'échange, disponibilité…"></textarea>
+      <div id="bourse-err" class="aerr" style="display:none;margin-bottom:8px"></div>
+      <button class="cca-bug-submit" id="bourse-submit-btn">Publier l'annonce</button>
+    </div>
+  </div>`;
+
+  let _filter = 'all';
+  async function _load() {
+    const listEl = document.getElementById('bourse-list');
+    if (!listEl) return;
+    listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">Chargement…</div>';
+    try {
+      const url = '/api/bourse' + (_filter !== 'all' ? '?type=' + _filter : '');
+      const r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + _srvToken } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const ads = _bourseCache = await r.json();
+      if (!ads.length) {
+        listEl.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:.85rem">Aucune annonce pour l'instant.<br><br>Soyez le premier à en publier une !</div>`;
+        return;
+      }
+      listEl.innerHTML = ads.map(ad => {
+        const badge = ad.type === 'offre'
+          ? `<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;font-family:monospace">🟢 OFFRE</span>`
+          : `<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700;font-family:monospace">🔵 RECHERCHE</span>`;
+        const dExp = new Date(ad.expires_at);
+        const daysLeft = Math.max(0, Math.ceil((dExp - Date.now()) / 86400000));
+        return `<div style="background:var(--white);border:1px solid var(--cream3);border-radius:10px;padding:12px 14px;margin-bottom:8px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+            <div style="min-width:0;flex:1">
+              <div style="font-weight:600;font-size:.9rem">${esc(ad.species)}${ad.variety?' <em style="font-weight:400;font-size:.85rem">'+esc(ad.variety)+'</em>':''}</div>
+              ${ad.rootstock?`<div style="font-size:.75rem;color:var(--muted)">Porte-greffe : ${esc(ad.rootstock)}</div>`:''}
+              <div style="font-size:.75rem;color:var(--muted);margin-top:2px">
+                ${ad.quantity?`×${ad.quantity} · `:''}${ad.region?esc(ad.region)+' · ':''}Par : ${esc(ad.author||'membre')}
+                <span style="color:var(--amber3)"> · Expire dans ${daysLeft}j</span>
+              </div>
+              ${ad.description?`<div style="font-size:.8rem;color:#555;margin-top:4px;font-style:italic">${esc(ad.description.slice(0,100))}${ad.description.length>100?'…':''}</div>`:''}
+            </div>
+            ${badge}
+          </div>
+          <button class="btn btn-a btn-sm" style="width:100%" onclick="_bourseContact(${ad.id},'${esc(ad.species)}','${esc(ad.author||'')}')">Contacter</button>
+        </div>`;
+      }).join('');
+    } catch (e) {
+      listEl.innerHTML = `<div style="padding:16px;color:var(--red);font-size:.82rem">Impossible de charger la bourse : ${esc(e.message)}</div>`;
+    }
+  }
+
+  document.getElementById('bourse-f-all')?.addEventListener('click', () => { _filter='all'; _load(); });
+  document.getElementById('bourse-f-offre')?.addEventListener('click', () => { _filter='offre'; _load(); });
+  document.getElementById('bourse-f-rech')?.addEventListener('click', () => { _filter='recherche'; _load(); });
+
+  const modal = document.getElementById('bourse-modal');
+  document.getElementById('bourse-new-btn')?.addEventListener('click', () => {
+    document.getElementById('bourse-modal-title').textContent = 'Nouvelle annonce';
+    document.getElementById('bourse-t-offre').checked = true;
+    ['bourse-species','bourse-variety','bourse-rootstock','bourse-desc'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    document.getElementById('bourse-qty').value = '1';
+    document.getElementById('bourse-region').value = '';
+    document.getElementById('bourse-err').style.display = 'none';
+    modal.style.display = 'flex';
+  });
+  document.getElementById('bourse-modal-close')?.addEventListener('click', () => { modal.style.display = 'none'; });
+
+  document.getElementById('bourse-submit-btn')?.addEventListener('click', async () => {
+    const type = document.querySelector('input[name="bourse-type"]:checked')?.value;
+    const species = document.getElementById('bourse-species')?.value?.trim();
+    const errEl = document.getElementById('bourse-err');
+    errEl.style.display = 'none';
+    if (!type) { errEl.textContent = 'Choisissez Offre ou Recherche.'; errEl.style.display = 'block'; return; }
+    if (!species) { errEl.textContent = 'L\'espèce est requise.'; errEl.style.display = 'block'; return; }
+    const btn = document.getElementById('bourse-submit-btn');
+    btn.disabled = true; btn.textContent = '⏳…';
+    try {
+      const r = await fetch('/api/bourse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _srvToken },
+        body: JSON.stringify({
+          type, species,
+          variety: document.getElementById('bourse-variety')?.value?.trim()||undefined,
+          rootstock: document.getElementById('bourse-rootstock')?.value?.trim()||undefined,
+          quantity: parseInt(document.getElementById('bourse-qty')?.value)||1,
+          region: document.getElementById('bourse-region')?.value?.trim()||undefined,
+          description: document.getElementById('bourse-desc')?.value?.trim()||undefined
+        })
+      });
+      if (!r.ok) { const d = await r.json(); errEl.textContent = d.error||'Erreur serveur'; errEl.style.display='block'; return; }
+      modal.style.display = 'none';
+      toast('Annonce publiée ✓');
+      _bourseCache = null; _load();
+    } catch (e) { errEl.textContent = 'Erreur réseau : ' + e.message; errEl.style.display = 'block'; }
+    finally { btn.disabled = false; btn.textContent = 'Publier l\'annonce'; }
+  });
+
+  _load();
+}
+
+function _bourseContact(id, species, author) {
+  showModal(`<h3>📩 Contacter ${esc(author||'le membre')}</h3>
+  <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Annonce : <strong>${esc(species)}</strong></p>
+  <textarea id="bourse-msg" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--cream3);border-radius:8px;font-size:.87rem" placeholder="Votre message…"></textarea>
+  <div id="bourse-msg-err" class="aerr" style="display:none;margin-top:8px"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button class="btn" onclick="closeModal()" style="flex:1">Annuler</button>
+    <button class="btn btn-p" style="flex:2" id="bourse-msg-send">Envoyer →</button>
+  </div>`);
+  document.getElementById('bourse-msg-send')?.addEventListener('click', async () => {
+    const body = document.getElementById('bourse-msg')?.value?.trim();
+    const errEl = document.getElementById('bourse-msg-err');
+    if (!body) { errEl.textContent = 'Écrivez un message.'; errEl.style.display='block'; return; }
+    const btn = document.getElementById('bourse-msg-send');
+    btn.disabled = true; btn.textContent = '⏳…';
+    try {
+      const r = await fetch('/api/bourse/' + id + '/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _srvToken },
+        body: JSON.stringify({ body })
+      });
+      if (!r.ok) { const d = await r.json(); errEl.textContent = d.error||'Erreur'; errEl.style.display='block'; btn.disabled=false; btn.textContent='Envoyer →'; return; }
+      closeModal(); toast('Message envoyé ✓');
+    } catch (e) { errEl.textContent = 'Erreur réseau : ' + e.message; errEl.style.display='block'; btn.disabled=false; btn.textContent='Envoyer →'; }
+  });
 }
 
 // ── Observatoire ─────────────────────────────────────────────────────────────
@@ -17976,6 +18152,7 @@ async function _stagesLoad() {
         </div>
         <div style="display:flex;gap:6px;margin-top:10px">
           <button class="btn btn-g btn-sm" style="flex:1" onclick="_stagesViewRegistrations('${esc(s.id)}','${esc(s.title)}')">👥 Inscrits</button>
+          <button class="btn btn-g btn-sm" title="Copier le lien d'inscription" onclick="_stagesCopyLink('${esc(s.public_url_slug)}')">🔗</button>
           <button class="btn btn-g btn-sm" onclick="_stagesEditById('${esc(s.id)}')">✏️</button>
           ${s.status!=='cancelled'?`<button class="btn btn-sm" style="background:var(--red);color:white" onclick="_stagesCancel('${esc(s.id)}')">✕</button>`:''}
         </div>
@@ -17987,10 +18164,25 @@ async function _stagesLoad() {
 }
 
 function _stagesEditById(id) {
-  const s = (_stagesCache||[]).find(x=>x.id===id);
+  const s = (_stagesCache||[]).find(x=>String(x.id)===String(id));
   if (s) _stagesOpenForm(s);
+  else toast('Stage introuvable — rechargez la liste', true);
 }
 
+function _stagesCopyLink(slug) {
+  if (!slug) { toast('Slug manquant pour ce stage', true); return; }
+  const url = window.location.origin + '/training.html?slug=' + encodeURIComponent(slug);
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(url).then(() => toast('Lien copié ✓')).catch(() => _stagesFallbackCopy(url));
+  } else { _stagesFallbackCopy(url); }
+}
+function _stagesFallbackCopy(url) {
+  const ta = document.createElement('textarea');
+  ta.value = url; ta.style.cssText = 'position:fixed;left:-999px';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('Lien copié ✓'); } catch { toast('Lien : ' + url); }
+  document.body.removeChild(ta);
+}
 async function _stagesCancel(id) {
   if (!confirm('Annuler ce stage ? Cette action est irréversible.')) return;
   try {
@@ -22573,6 +22765,7 @@ const BOUTURE_METHODS=['aoûtée','semi-aoûtée','herbacée','feuille-tige','fe
 const BOUTURE_STATUS={
   en_cours:  {label:'En cours',    color:'#1565c0', bg:'#e3f0ff'},
   enracinee: {label:'Enracinée',   color:'#2e7d32', bg:'#e8f5e9'},
+  sevree:    {label:'Sevrée',      color:'#6a1b9a', bg:'#f3e5f5'},
   echouee:   {label:'Échouée',     color:'#c62828', bg:'#ffebee'},
   archivee:  {label:'Archivée',    color:'#78909c', bg:'#eceff1'}
 };
@@ -22641,7 +22834,11 @@ function openBoutureModal(id) {
   <div class="ff"><label>Nb prélevées</label><input id="bt-nb" type="number" min="1" value="${b?.nbPrelevees||''}" placeholder="ex : 5" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%"/></div>
   <div class="ff"><label>Nb enracinées</label><input id="bt-nr" type="number" min="0" value="${b?.nbEnracinées!=null?b.nbEnracinées:''}" placeholder="à compléter…" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%"/></div>
 </div>
-<div class="ff"><label>Substrat</label><input id="bt-sub" value="${esc(b?.substrate||'')}" placeholder="ex : tourbe + perlite 50/50…" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%"/></div>
+<div class="ff"><label>Substrat</label>
+  <select id="bt-sub" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%">
+    ${window.__CCA_substrats?window.__CCA_substrats.buildSelectOptions(b?.substratId||''):'<option value="">— Catalogue indisponible —</option>'}
+  </select>
+</div>
 <div class="ff"><label>Hormone d'enracinement</label><input id="bt-hor" value="${esc(b?.hormone||'')}" placeholder="ex : AIB 0.1%, poudre Rhizopon…" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%"/></div>
 <div class="ff"><label>Notes</label><textarea id="bt-no" style="padding:8px 10px;border:1px solid var(--cream3);border-radius:7px;background:var(--white);font-size:.87rem;width:100%;min-height:60px">${esc(b?.notes||'')}</textarea></div>
 <div style="display:flex;gap:8px;margin-top:14px">
@@ -22665,7 +22862,7 @@ function _saveBouture(id) {
     status: document.getElementById('bt-st')?.value||'en_cours',
     nbPrelevees: parseInt(document.getElementById('bt-nb')?.value)||0,
     nbEnracinées: nrRaw!==''&&nrRaw!=null ? parseInt(nrRaw)||0 : null,
-    substrate: document.getElementById('bt-sub')?.value?.trim()||'',
+    substratId: document.getElementById('bt-sub')?.value||null,
     hormone: document.getElementById('bt-hor')?.value?.trim()||'',
     notes: document.getElementById('bt-no')?.value?.trim()||'',
     archived: false,
@@ -26374,6 +26571,15 @@ window.__CCA_drip = drip;
 // Monter si la page drip est déjà affichée
 const dripRoot = document.getElementById('cca-drip-root');
 if(dripRoot && typeof T === 'function' && typeof plants !== 'undefined') drip.mount(dripRoot, T, plants);
+</script>
+<!-- Substrats (ES module) -->
+<script type="module">
+import * as substrats from './src/modules/substrats.js';
+window.__CCA_substrats = substrats;
+substrats.loadSubstrats();
+// Monter si l'onglet substrats est déjà affiché
+const subRoot = document.getElementById('cca-substrats-root');
+if(subRoot && typeof T === 'function' && typeof plants !== 'undefined') substrats.mount(subRoot, T, plants);
 </script>
 </body>
 </html>

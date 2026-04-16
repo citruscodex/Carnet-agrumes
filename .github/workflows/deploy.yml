@@ -35,6 +35,7 @@ jobs:
           cp public/sw.js    sw.js
           cp public/404.html 404.html
           cp public/manifest.json manifest.json
+          cp public/training.html training.html
           # Vérification
           echo "--- Fichiers à déployer ---"
           ls -la index.html manifest.json sw.js 404.html
@@ -52,7 +53,7 @@ jobs:
           TARGET=/var/www/cca
 
           # Créer l'archive localement (scp de fichier unique fonctionne)
-          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html assets
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html assets
           echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
           # Copier l'archive sur le serveur
