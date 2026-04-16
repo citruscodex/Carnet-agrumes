@@ -48,3 +48,5 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           source: "index.html,manifest.json,sw.js,404.html,assets"
           target: /var/www/cca/
+          rm: true
+          debug: true
