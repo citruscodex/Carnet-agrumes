@@ -2,12 +2,12 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8"/>
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/citruscodex-logo-32-CsqZi2xZ.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/assets/citruscodex-logo-16-D0BLAMg8.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/citruscodex-logo-180-cVsNh-s-.png">
-<link rel="shortcut icon" href="/assets/favicon-CR0UjbJC.ico">
-<link rel="preload" as="image" href="/assets/citruscodex-logo-192-BqbKaR41.png">
-<link rel="preload" as="image" href="/assets/citruscodex-logo-512-vFNTq7nO.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/logo/citruscodex-logo-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/logo/citruscodex-logo-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/logo/citruscodex-logo-180.png">
+<link rel="shortcut icon" href="/assets/logo/favicon.ico">
+<link rel="preload" as="image" href="/assets/logo/citruscodex-logo-192.png">
+<link rel="preload" as="image" href="/assets/logo/citruscodex-logo-512.png">
   <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 
   <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin"/>
@@ -18,7 +18,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Agrumes"/>
-<link rel="manifest" href="/manifest.json"/>
+<link rel="manifest" href="manifest.json"/>
 <title>Carnet Agrumes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
@@ -1439,11 +1439,10 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script type="module" crossorigin src="/assets/index-DLpSYfHZ.js"></script>
 </head>
 <body>
 <div id="sc-server-login" style="display:none"><div class="asc">
-  <div class="alo"><img src="/assets/citruscodex-logo-512-vFNTq7nO.png" alt="CitrusCodex" class="cca-logo-splash"><h1>CitrusCodex</h1><p>Bêta — Connexion</p></div>
+  <div class="alo"><img src="/assets/logo/citruscodex-logo-512.png" alt="CitrusCodex" class="cca-logo-splash"><h1>CitrusCodex</h1><p>Bêta — Connexion</p></div>
   <div class="acard">
     <h2>Connexion</h2>
     <p class="acsub">Accès réservé aux testeurs de la bêta.</p>
@@ -1472,7 +1471,7 @@ input,select,textarea{font-family:'EmojiFirst',var(--font-ui);font-size:1rem}
 <div id="app">
   <div id="topbar">
     <button id="tb-back" onclick="goBack()">←</button>
-    <button id="tb-logo" onclick="showPage('dashboard')" title="Tableau de bord"><img src="/assets/citruscodex-logo-64-B5u-lKgc.png" alt="CitrusCodex" class="cca-logo-topbar" width="28" height="33"></button>
+    <button id="tb-logo" onclick="showPage('dashboard')" title="Tableau de bord"><img src="/assets/logo/citruscodex-logo-64.png" alt="CitrusCodex" class="cca-logo-topbar" width="28" height="33"></button>
     <div id="tb-title"><h1>Carnet de Collection</h1><p id="tb-sub"></p></div>
     <div id="cca-readonly-badge" style="display:none;align-items:center;gap:4px;font-size:.72rem;font-weight:600;color:var(--amber3);background:var(--cream2);border:1px solid var(--cream3);border-radius:6px;padding:2px 8px;white-space:nowrap">🔒 Lecture seule</div>
     <div id="tb-act"></div>
@@ -25695,7 +25694,30 @@ function _srvTokenValid(){
 })();
 </script>
 <!-- 3D — Module phénologie BBCH (ES module, chargé après le script principal) -->
+<script type="module">
+import * as phenology from './src/modules/phenology.js';
+window.__CCA_phenology = phenology;
+// Déclencher le premier montage si le DOM est déjà rendu
+if(typeof _mountPheno==='function'){
+  if(document.getElementById('cca-pheno-dash'))_mountPheno('dash');
+  if(document.getElementById('cca-pheno-det'))_mountPheno('detail');
+}
+</script>
 <!-- Wiki offline-first (ES module) -->
+<script type="module">
+import * as wiki from './src/modules/wiki.js';
+window.__CCA_wiki = wiki;
+// Monter si la page wiki est déjà affichée
+const root = document.getElementById('cca-wiki-root');
+if(root && typeof T === 'function') wiki.mount(root, T);
+</script>
 <!-- Drip irrigation (ES module) -->
+<script type="module">
+import * as drip from './src/modules/drip.js';
+window.__CCA_drip = drip;
+// Monter si la page drip est déjà affichée
+const dripRoot = document.getElementById('cca-drip-root');
+if(dripRoot && typeof T === 'function' && typeof plants !== 'undefined') drip.mount(dripRoot, T, plants);
+</script>
 </body>
 </html>

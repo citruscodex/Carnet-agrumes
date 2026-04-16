@@ -2,7 +2,7 @@ name: Deploy to citruscodex.fr
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, refactor/repo-migration ]
 
 jobs:
   deploy:
@@ -11,11 +11,62 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
-        uses: appleboy/scp-action@v0.1.7
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          host: 62.210.237.49
-          username: root
-          key: ${{ secrets.DEPLOY_KEY }}
-          source: "index.html,manifest.json,sw.js,favicon.ico,icon-192.png,icon-512.png,icon-180.png,logo.png,404.html,assets"
-          target: /var/www/cca/
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+
+      - name: Prepare deploy (structure plate pour scp)
+        run: |
+          # index.html : fixe la référence manifest (hashée → chemin stable)
+          node .github/fix-manifest.js
+          # Assets Vite (logos + bundle JS, hachés)
+          # Vider d'abord si existant pour éviter assets/assets/
+          rm -rf assets
+          cp -r build/assets assets
+          # Fichiers statiques non bundlés par Vite
+          cp public/sw.js    sw.js
+          cp public/404.html 404.html
+          cp public/manifest.json manifest.json
+          # Vérification
+          echo "--- Fichiers à déployer ---"
+          ls -la index.html manifest.json sw.js 404.html
+          ls assets/ | head -5
+
+      - name: Deploy via SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "$DEPLOY_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+          SSH="ssh -i /tmp/deploy_key -o StrictHostKeyChecking=no"
+          HOST=root@62.210.237.49
+          TARGET=/var/www/cca
+
+          # Créer l'archive localement (scp de fichier unique fonctionne)
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html assets
+          echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
+
+          # Copier l'archive sur le serveur
+          scp -i /tmp/deploy_key -o StrictHostKeyChecking=no \
+              /tmp/deploy.tar.gz $HOST:/tmp/deploy.tar.gz
+
+          # Extraire sur le serveur et vérifier
+          $SSH $HOST "
+            set -e
+            mkdir -p $TARGET
+            tar -xzf /tmp/deploy.tar.gz -C $TARGET/
+            rm /tmp/deploy.tar.gz
+            echo '✅ Extraction OK'
+            ls -la $TARGET/ | head -12
+          "
+
+          rm /tmp/deploy_key /tmp/deploy.tar.gz
