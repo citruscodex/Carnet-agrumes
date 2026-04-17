@@ -12,6 +12,7 @@ dist/
 
 # État de session local (privé)
 SESSION_STATE.md
+TESTING.md
 
 # Firebase (abandonné)
 firebase.json

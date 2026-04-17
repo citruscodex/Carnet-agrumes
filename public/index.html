@@ -41,6 +41,59 @@
     <div class="afield"><label>Email</label><input type="email" id="sl-email" placeholder="votre@email.fr" autocomplete="email"/></div>
     <div class="afield"><label>Mot de passe</label><div class="pwd-wrap"><input type="password" id="sl-pwd" placeholder="••••••••" autocomplete="current-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('sl-pwd')" title="Afficher/masquer">👁</button></div></div>
     <button class="abtn" id="sl-btn" onclick="submitServerLogin()">Accéder à la bêta</button>
+    <div style="text-align:center;margin-top:10px;font-size:.82rem"><button style="background:none;border:none;color:rgba(80,50,20,.5);cursor:pointer;font-size:.82rem;padding:0" onclick="showSrvForgot()">Mot de passe oublié ?</button></div>
+    <div id="sl-register-link" style="text-align:center;margin-top:8px;font-size:.85rem;color:rgba(80,50,20,.7)">Pas encore de compte ? <button style="background:none;border:none;color:#c75b2a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showRegister()">Créer un compte</button></div>
+    <div style="text-align:center;margin-top:14px;font-size:.75rem;color:rgba(80,50,20,.5)">
+      <a href="/mentions-legales.html" style="color:inherit;text-decoration:none">Mentions légales</a> ·
+      <a href="/confidentialite.html" style="color:inherit;text-decoration:none">Confidentialité</a> ·
+      <a href="/cgu.html" style="color:inherit;text-decoration:none">CGU</a>
+    </div>
+  </div>
+</div></div>
+<div id="sc-register" style="display:none"><div class="asc">
+  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Créer un compte (bêta)</p></div>
+  <div class="acard">
+    <h2>Créer un compte</h2>
+    <p class="acsub">Vous avez besoin d'un code d'invitation pour vous inscrire.</p>
+    <div id="reg-err" class="aerr" style="display:none"></div>
+    <div id="reg-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
+    <div class="afield"><label>Code d'invitation *</label><input type="text" id="reg-code" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px" maxlength="9"/></div>
+    <div class="afield"><label>Email *</label><input type="email" id="reg-email" placeholder="email@exemple.fr" autocomplete="email"/></div>
+    <div class="afield"><label>Mot de passe * <span style="font-size:.75rem;color:var(--muted)">(8+ car., 1 lettre, 1 chiffre)</span></label><div class="pwd-wrap"><input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reg-pwd')" title="Afficher/masquer">👁</button></div></div>
+    <div class="afield"><label>Confirmer le mot de passe *</label><div class="pwd-wrap"><input type="password" id="reg-pwd2" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reg-pwd2')" title="Afficher/masquer">👁</button></div></div>
+    <input type="text" id="reg-website" name="website" style="display:none" tabindex="-1" autocomplete="off"/>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin:8px 0 14px"><input type="checkbox" id="reg-cgu" style="margin-top:3px;flex-shrink:0"/><label for="reg-cgu" style="font-size:.83rem;color:var(--text);cursor:pointer">J'accepte les <a href="/cgu.html" target="_blank" style="color:#c75b2a">CGU</a> et la <a href="/confidentialite.html" target="_blank" style="color:#c75b2a">politique de confidentialité</a></label></div>
+    <button class="abtn" id="reg-btn" onclick="submitRegister()">Créer mon compte</button>
+    <div style="text-align:center;margin-top:12px;font-size:.85rem;color:rgba(80,50,20,.7)">Déjà un compte ? <button style="background:none;border:none;color:#c75b2a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showServerLogin()">Se connecter</button></div>
+    <div style="text-align:center;margin-top:14px;font-size:.75rem;color:rgba(80,50,20,.5)">
+      <a href="/mentions-legales.html" style="color:inherit;text-decoration:none">Mentions légales</a> ·
+      <a href="/confidentialite.html" style="color:inherit;text-decoration:none">Confidentialité</a> ·
+      <a href="/cgu.html" style="color:inherit;text-decoration:none">CGU</a>
+    </div>
+  </div>
+</div></div>
+<div id="sc-srv-forgot" style="display:none"><div class="asc">
+  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Mot de passe oublié</p></div>
+  <div class="acard">
+    <h2>Réinitialiser le mot de passe</h2>
+    <p class="acsub">Entrez votre email. Si un compte existe, vous recevrez un lien de réinitialisation.</p>
+    <div id="forgot-err" class="aerr" style="display:none"></div>
+    <div id="forgot-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
+    <div class="afield"><label>Email</label><input type="email" id="forgot-email" placeholder="votre@email.fr" autocomplete="email"/></div>
+    <button class="abtn" id="forgot-btn" onclick="submitForgot()">Envoyer le lien</button>
+    <div style="text-align:center;margin-top:12px;font-size:.85rem;color:rgba(80,50,20,.7)"><button style="background:none;border:none;color:#c75b2a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showServerLogin()">← Retour à la connexion</button></div>
+  </div>
+</div></div>
+<div id="sc-srv-reset" style="display:none"><div class="asc">
+  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Nouveau mot de passe</p></div>
+  <div class="acard">
+    <h2>Choisir un nouveau mot de passe</h2>
+    <p class="acsub">Votre lien de réinitialisation est valide. Choisissez un nouveau mot de passe.</p>
+    <div id="reset-err" class="aerr" style="display:none"></div>
+    <div id="reset-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
+    <div class="afield"><label>Nouveau mot de passe <span style="font-size:.75rem;color:var(--muted)">(8+ car., 1 lettre, 1 chiffre)</span></label><div class="pwd-wrap"><input type="password" id="reset-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reset-pwd')" title="Afficher/masquer">👁</button></div></div>
+    <div class="afield"><label>Confirmer</label><div class="pwd-wrap"><input type="password" id="reset-pwd2" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reset-pwd2')" title="Afficher/masquer">👁</button></div></div>
+    <button class="abtn" id="reset-btn" onclick="submitSrvReset()">Changer le mot de passe</button>
   </div>
 </div></div>
 <div id="sc-setup" style="display:none"><div class="asc">
@@ -3673,7 +3726,21 @@ ${[['👥',stats.total,'Total'],['✅',stats.active_7d,'Actifs 7j'],['🆕',stat
   <button class="btn btn-g btn-sm" onclick="showPage('admin-users')">👥 Utilisateurs (${stats.total??0})</button>
 </div>`:'';
 
-    root.innerHTML=statsBlock+filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock;
+    const codesBlock=`<div class="prof-section" style="margin-top:14px;border-top:1px solid var(--cream3);padding-top:12px">
+<div class="prof-section-title">🎟 Codes d'invitation</div>
+<div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+<select id="cca-code-profile" class="cca-bug-select" style="font-size:.8rem;padding:5px 8px">
+${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_ICONS[v]} ${l}</option>`).join('')}
+</select>
+<select id="cca-code-count" class="cca-bug-select" style="font-size:.8rem;padding:5px 8px;width:80px">
+${[1,3,5,10].map(n=>`<option value="${n}">${n} code${n>1?'s':''}</option>`).join('')}
+</select>
+<button class="btn btn-sm btn-a" id="cca-code-gen-btn" style="font-size:.8rem">Générer</button>
+</div>
+<div id="cca-admin-codes-list" style="font-size:.78rem;color:var(--muted)">⏳ Chargement…</div>
+</div>`;
+
+    root.innerHTML=statsBlock+filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock+codesBlock;
 
     // Filtres
     document.getElementById('cca-adm-filter-btn')?.addEventListener('click',()=>{
@@ -3735,6 +3802,47 @@ ${[['👥',stats.total,'Total'],['✅',stats.active_7d,'Actifs 7j'],['🆕',stat
           await fetch('/api/admin/users/'+id+'/notes',{method:'PATCH',headers:_authHeader(),body:JSON.stringify({notes:inp.value})});
         }catch(e){console.warn('notes save failed',e);}
       });
+    });
+
+    // Codes d'invitation
+    async function _loadAdminCodes(){
+      const list=document.getElementById('cca-admin-codes-list');
+      if(!list)return;
+      try{
+        const r=await fetch(CCA_API+'/api/admin/invitation-codes',{headers:_authHeader()});
+        if(!r.ok)throw new Error('HTTP '+r.status);
+        const codes=await r.json();
+        if(!codes.length){list.innerHTML='<div style="color:var(--muted);padding:8px 0;font-style:italic">Aucun code actif.</div>';return;}
+        list.innerHTML=codes.map(c=>{
+          const exp=c.expires_at?new Date(c.expires_at).toLocaleDateString('fr-FR'):'—';
+          const used=c.uses+'/'+c.max_uses;
+          const active=c.uses<c.max_uses&&(!c.expires_at||new Date(c.expires_at)>new Date());
+          return`<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--cream3)">
+<span style="font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:${active?'#162d1f':'var(--muted)'};flex:1">${esc(c.code)}</span>
+<span style="font-size:.72rem;color:var(--muted)">${_PROFILE_LABELS[c.profile_type]||c.profile_type} · ${used} · exp.${exp}</span>
+<button class="btn btn-sm btn-g" style="font-size:.7rem;padding:2px 7px" onclick="navigator.clipboard.writeText('${esc(c.code)}').then(()=>toast('Copié !'))">📋</button>
+<button class="btn btn-sm" style="font-size:.7rem;padding:2px 7px;background:rgba(198,40,40,.08);color:#c62828;border-color:rgba(198,40,40,.2)" data-del-code="${esc(c.id)}">✕</button>
+</div>`;
+        }).join('');
+        list.querySelectorAll('[data-del-code]').forEach(btn=>{
+          btn.addEventListener('click',async()=>{
+            if(!confirm('Supprimer ce code ?'))return;
+            try{await fetch(CCA_API+'/api/admin/invitation-codes/'+btn.dataset.delCode,{method:'DELETE',headers:_authHeader()});_loadAdminCodes();}catch(e){toast('Erreur',true);}
+          });
+        });
+      }catch(e){list.innerHTML=`<div style="color:#c62828;font-size:.78rem">⚠ ${esc(e.message)}</div>`;}
+    }
+    _loadAdminCodes();
+    document.getElementById('cca-code-gen-btn')?.addEventListener('click',async()=>{
+      const profile_type=document.getElementById('cca-code-profile')?.value||'collectionneur';
+      const count=parseInt(document.getElementById('cca-code-count')?.value||'1');
+      try{
+        const r=await fetch(CCA_API+'/api/admin/invitation-codes',{method:'POST',headers:_authHeader(),body:JSON.stringify({count,profile_type})});
+        const d=await r.json();
+        if(!r.ok){toast(d.error||'Erreur',true);return;}
+        toast((d.codes||[]).length+' code(s) généré(s) ✓');
+        _loadAdminCodes();
+      }catch(e){toast('Erreur réseau',true);}
     });
 
     // Inviter
@@ -12322,6 +12430,38 @@ ${gh?`<div class="prof-row"><span class="prof-row-label">Dépôt</span><span cla
   }
   <div style="font-size:.75rem;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic">${T('misc.diagApiPrivacy')}</div>
 </div>
+
+${_srvToken?`
+<div class="prof-section" style="border-left:3px solid #c75b2a">
+  <div class="prof-section-title" style="color:#c75b2a">Compte CitrusCodex (bêta)</div>
+  <div class="prof-row"><span class="prof-row-label">Email</span><span class="prof-row-val" style="font-size:.8rem;font-family:'JetBrains Mono',monospace">${esc(sessionStorage.getItem('cca_srv_email')||'')}</span></div>
+  <div id="srv-chg-pwd-form" style="display:none;margin-top:12px">
+    <div id="srv-pwd-err" style="display:none;background:#fde8e8;color:#c62828;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.85rem"></div>
+    <div id="srv-pwd-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.85rem"></div>
+    <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px"><label style="font-size:.75rem;color:var(--muted)">Mot de passe actuel</label><div class="pwd-wrap" style="width:100%"><input type="password" id="srv-cur-pwd" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('srv-cur-pwd')">👁</button></div></div>
+    <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px;margin-top:8px"><label style="font-size:.75rem;color:var(--muted)">Nouveau mot de passe <span style="font-size:.72rem">(8+ car., 1 lettre, 1 chiffre)</span></label><div class="pwd-wrap" style="width:100%"><input type="password" id="srv-new-pwd" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('srv-new-pwd')">👁</button></div></div>
+    <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px;margin-top:8px"><label style="font-size:.75rem;color:var(--muted)">Confirmer le nouveau mot de passe</label><div class="pwd-wrap" style="width:100%"><input type="password" id="srv-new-pwd2" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('srv-new-pwd2')">👁</button></div></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-sm" style="flex:1;background:#c75b2a;color:white;border-color:#c75b2a" onclick="submitSrvChgPwd()">Changer</button>
+      <button class="btn btn-sm btn-g" style="flex:1" onclick="document.getElementById('srv-chg-pwd-form').style.display='none'">Annuler</button>
+    </div>
+  </div>
+  <button class="prof-action-btn pab-neutral" id="srv-chg-pwd-btn" onclick="document.getElementById('srv-chg-pwd-form').style.display='block';document.getElementById('srv-chg-pwd-btn').style.display='none'">🔑 Changer le mot de passe serveur</button>
+</div>
+
+<div class="prof-section" style="border-left:3px solid #c62828">
+  <div class="prof-section-title" style="color:#c62828">Zone de danger</div>
+  <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;line-height:1.5">La suppression de votre compte est <strong>définitive et irréversible</strong>. Toutes vos données seront effacées.</div>
+  <div id="del-acct-form" style="display:none;margin-bottom:10px">
+    <div id="del-acct-err" style="display:none;background:#fde8e8;color:#c62828;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.85rem"></div>
+    <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px"><label style="font-size:.75rem;color:var(--muted)">Confirmez votre mot de passe</label><div class="pwd-wrap" style="width:100%"><input type="password" id="del-pwd" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('del-pwd')">👁</button></div></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn btn-sm" style="flex:1;background:#c62828;color:white;border-color:#c62828" onclick="submitDeleteAccount()">Supprimer définitivement</button>
+      <button class="btn btn-sm btn-g" style="flex:1" onclick="document.getElementById('del-acct-form').style.display='none';document.getElementById('del-acct-btn').style.display='block'">Annuler</button>
+    </div>
+  </div>
+  <button class="prof-action-btn" id="del-acct-btn" style="background:rgba(198,40,40,.08);color:#c62828;border-color:rgba(198,40,40,.25)" onclick="document.getElementById('del-acct-form').style.display='block';document.getElementById('del-acct-btn').style.display='none'">🗑 Supprimer mon compte</button>
+</div>`:''}
 
 <div style="height:20px"></div>`;
 }
@@ -21075,9 +21215,128 @@ window.fetch=async function(url,...args){
   return r;
 };
 
+function _hideSrvScreens(){
+  ['sc-server-login','sc-register','sc-srv-forgot','sc-srv-reset'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+}
 function showServerLogin(){
+  _hideSrvScreens();
   document.getElementById('sc-server-login').style.display='block';
   setTimeout(()=>document.getElementById('sl-email')?.focus(),100);
+}
+function showRegister(){
+  _hideSrvScreens();
+  document.getElementById('sc-register').style.display='block';
+  setTimeout(()=>document.getElementById('reg-code')?.focus(),100);
+}
+async function submitRegister(){
+  const code=(document.getElementById('reg-code')?.value||'').trim().toUpperCase();
+  const email=(document.getElementById('reg-email')?.value||'').trim();
+  const pwd=document.getElementById('reg-pwd')?.value||'';
+  const pwd2=document.getElementById('reg-pwd2')?.value||'';
+  const website=document.getElementById('reg-website')?.value||'';
+  const cgu=document.getElementById('reg-cgu')?.checked;
+  const err=document.getElementById('reg-err');
+  const ok=document.getElementById('reg-ok');
+  const btn=document.getElementById('reg-btn');
+  err.style.display='none';ok.style.display='none';
+  if(!code){err.textContent='Code d\'invitation requis.';err.style.display='block';return;}
+  if(!email){err.textContent='Email requis.';err.style.display='block';return;}
+  if(pwd.length<8){err.textContent='Mot de passe trop court (8 caractères minimum).';err.style.display='block';return;}
+  if(!/[a-zA-Z]/.test(pwd)||!/[0-9]/.test(pwd)){err.textContent='Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.';err.style.display='block';return;}
+  if(pwd!==pwd2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
+  if(!cgu){err.textContent='Vous devez accepter les CGU pour continuer.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Création…';
+  try{
+    const r=await fetch(CCA_API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({invitation_code:code,email,password:pwd,website}),cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Erreur lors de la création du compte.';err.style.display='block';btn.disabled=false;btn.textContent='Créer mon compte';return;}
+    ok.textContent='Compte créé ! Vérifiez votre email pour activer votre compte.';ok.style.display='block';
+    btn.style.display='none';
+    setTimeout(()=>showServerLogin(),4000);
+  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Créer mon compte';}
+}
+function showSrvForgot(){
+  _hideSrvScreens();
+  document.getElementById('sc-srv-forgot').style.display='block';
+  setTimeout(()=>document.getElementById('forgot-email')?.focus(),100);
+}
+async function submitForgot(){
+  const email=(document.getElementById('forgot-email')?.value||'').trim();
+  const err=document.getElementById('forgot-err');
+  const ok=document.getElementById('forgot-ok');
+  const btn=document.getElementById('forgot-btn');
+  err.style.display='none';ok.style.display='none';
+  if(!email){err.textContent='Email requis.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Envoi…';
+  try{
+    await fetch(CCA_API+'/api/auth/forgot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email}),cache:'no-store'});
+    ok.textContent='Si un compte existe pour cet email, vous recevrez un lien de réinitialisation dans quelques minutes.';ok.style.display='block';
+    btn.disabled=false;btn.textContent='Envoyer le lien';
+  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Envoyer le lien';}
+}
+function showSrvReset(token){
+  _hideSrvScreens();
+  window._srvResetToken=token||'';
+  document.getElementById('sc-srv-reset').style.display='block';
+  setTimeout(()=>document.getElementById('reset-pwd')?.focus(),100);
+}
+async function submitSrvReset(){
+  const pwd=document.getElementById('reset-pwd')?.value||'';
+  const pwd2=document.getElementById('reset-pwd2')?.value||'';
+  const err=document.getElementById('reset-err');
+  const ok=document.getElementById('reset-ok');
+  const btn=document.getElementById('reset-btn');
+  err.style.display='none';ok.style.display='none';
+  if(pwd.length<8){err.textContent='Mot de passe trop court (8 caractères minimum).';err.style.display='block';return;}
+  if(!/[a-zA-Z]/.test(pwd)||!/[0-9]/.test(pwd)){err.textContent='Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.';err.style.display='block';return;}
+  if(pwd!==pwd2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Changement…';
+  try{
+    const r=await fetch(CCA_API+'/api/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:window._srvResetToken,new_password:pwd}),cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Lien invalide ou expiré.';err.style.display='block';btn.disabled=false;btn.textContent='Changer le mot de passe';return;}
+    ok.textContent='Mot de passe modifié avec succès. Vous pouvez vous connecter.';ok.style.display='block';
+    btn.style.display='none';
+    setTimeout(()=>showServerLogin(),3000);
+  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Changer le mot de passe';}
+}
+async function submitSrvChgPwd(){
+  const cur=document.getElementById('srv-cur-pwd')?.value||'';
+  const np=document.getElementById('srv-new-pwd')?.value||'';
+  const np2=document.getElementById('srv-new-pwd2')?.value||'';
+  const err=document.getElementById('srv-pwd-err');
+  const ok=document.getElementById('srv-pwd-ok');
+  err.style.display='none';ok.style.display='none';
+  if(!cur){err.textContent='Mot de passe actuel requis.';err.style.display='block';return;}
+  if(np.length<8){err.textContent='Nouveau mot de passe trop court (8 caractères minimum).';err.style.display='block';return;}
+  if(!/[a-zA-Z]/.test(np)||!/[0-9]/.test(np)){err.textContent='Le nouveau mot de passe doit contenir au moins 1 lettre et 1 chiffre.';err.style.display='block';return;}
+  if(np!==np2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
+  try{
+    const r=await fetch(CCA_API+'/api/auth/change-password',{method:'PUT',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_srvToken},body:JSON.stringify({current_password:cur,new_password:np}),cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Erreur lors du changement de mot de passe.';err.style.display='block';return;}
+    ok.textContent='Mot de passe modifié avec succès.';ok.style.display='block';
+    document.getElementById('srv-cur-pwd').value='';
+    document.getElementById('srv-new-pwd').value='';
+    document.getElementById('srv-new-pwd2').value='';
+  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';}
+}
+async function submitDeleteAccount(){
+  const pwd=document.getElementById('del-pwd')?.value||'';
+  const err=document.getElementById('del-acct-err');
+  err.style.display='none';
+  if(!pwd){err.textContent='Mot de passe requis pour confirmer la suppression.';err.style.display='block';return;}
+  if(!confirm('Êtes-vous absolument certain de vouloir supprimer votre compte ? Cette action est irréversible.')){return;}
+  try{
+    const r=await fetch(CCA_API+'/api/auth/account',{method:'DELETE',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_srvToken},body:JSON.stringify({password:pwd}),cache:'no-store'});
+    const d=await r.json();
+    if(!r.ok){err.textContent=d.error||'Erreur lors de la suppression du compte.';err.style.display='block';return;}
+    localStorage.clear();sessionStorage.clear();
+    alert('Votre compte a été supprimé. Vous allez être redirigé.');
+    window.location.reload();
+  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';}
 }
 
 async function submitServerLogin(){
@@ -21177,10 +21436,28 @@ function _srvTokenValid(){
   document.addEventListener('keydown',e=>{
     if(e.key==='Enter'){
       if(document.getElementById('sc-server-login')?.style.display!=='none')submitServerLogin();
+      else if(document.getElementById('sc-srv-forgot')?.style.display!=='none')submitForgot();
       else if(document.getElementById('sc-login')?.style.display!=='none')submitLogin();
     }
   });
-  if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
+  // ── Gestion des paramètres URL (vérification email, reset mot de passe) ──
+  const _urlParams=new URLSearchParams(window.location.search);
+  const _resetToken=_urlParams.get('reset_token');
+  const _verified=_urlParams.get('verified');
+  if(_resetToken){
+    // Lien de réinitialisation → afficher le formulaire nouveau mot de passe
+    showSrvReset(_resetToken);
+    history.replaceState(null,'',window.location.pathname);
+  }else if(_verified==='1'){
+    // Email vérifié → afficher login avec message de succès
+    showServerLogin();
+    const _slErr=document.getElementById('sl-err');
+    if(_slErr){
+      _slErr.style.cssText='display:block;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.9rem;border:none';
+      _slErr.textContent='Email vérifié avec succès ! Vous pouvez vous connecter.';
+    }
+    history.replaceState(null,'',window.location.pathname);
+  }else if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
 })();
 
 // ── Global action dispatcher — migrated from inline onclick (Étape 3) ──────

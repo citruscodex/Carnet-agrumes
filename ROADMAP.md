@@ -104,6 +104,28 @@
 
 ---
 
+---
+
+## 🚀 BETA_READY v2 — En cours (démarré 2026-04-17)
+
+| Chantier | Description | Statut |
+|---|---|---|
+| 1 — Comptes tests | 5 comptes @citruscodex.fr créés, vérifiés, TESTING.md | ✅ |
+| 2 — Test curl prod | 45+ endpoints testés. 2 issues 🟡, 1 🟢. Tous schémas frontend OK | ✅ |
+| 3 — onclick restants | 547 → <100 handlers inline | ⏳ |
+| 4 — Dark mode complet | CSS couverture nouveaux modules | ⏳ |
+| 5 — Photos Object Storage | Scaleway S3 (nécessite bucket) | ⏳ |
+| 6 — Polish UX | 10 corrections cosmétiques/UX | ⏳ |
+
+### Bugs chantier 2 à corriger
+| Sévérité | Issue | Action |
+|---|---|---|
+| 🟡 | `POST /api/auth/logout` → 404 | Implémenter ou ignorer (frontend ne l'appelle pas) |
+| 🟡 | `POST /api/feedback` → schéma non câblé frontend | Câbler ou supprimer l'endpoint |
+| 🟢 | `GET /api/admin/bugs` → 404 | Cosmétique — utiliser `/api/bugs` |
+
+---
+
 ## ⏳ BACKLOG (non priorisé)
 
 | Item | Détail |
