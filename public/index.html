@@ -53,10 +53,10 @@
     <div style="text-align:center;margin-top:10px;font-size:.82rem"><button style="background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:.82rem;padding:0" onclick="showSrvForgot()">Mot de passe oublié ?</button></div>
     <div id="sl-register-link" style="text-align:center;margin-top:8px;font-size:.85rem;color:rgba(255,255,255,.65)">Pas encore de compte ? <button style="background:none;border:none;color:#c4965a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showRegister()">Créer un compte</button></div>
     <div style="text-align:center;margin-top:12px;font-size:.8rem"><a href="/bienvenue.html" style="color:#c4965a;text-decoration:none;font-weight:600">📖 Guide du bêta-testeur</a></div>
-    <div style="text-align:center;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.5)">
-      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.5);text-decoration:none">Mentions légales</a> ·
-      <a href="/confidentialite.html" style="color:rgba(255,255,255,.5);text-decoration:none">Confidentialité</a> ·
-      <a href="/cgu.html" style="color:rgba(255,255,255,.5);text-decoration:none">CGU</a>
+    <div style="text-align:center;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.65)">
+      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.65);text-decoration:none">Mentions légales</a> ·
+      <a href="/confidentialite.html" style="color:rgba(255,255,255,.65);text-decoration:none">Confidentialité</a> ·
+      <a href="/cgu.html" style="color:rgba(255,255,255,.65);text-decoration:none">CGU</a>
     </div>
   </div>
 </div></div>
@@ -75,10 +75,10 @@
     <div style="display:flex;align-items:flex-start;gap:8px;margin:8px 0 14px"><input type="checkbox" id="reg-cgu" style="margin-top:3px;flex-shrink:0"/><label for="reg-cgu" style="font-size:.83rem;color:var(--text);cursor:pointer">J'accepte les <a href="/cgu.html" target="_blank" style="color:#c75b2a">CGU</a> et la <a href="/confidentialite.html" target="_blank" style="color:#c75b2a">politique de confidentialité</a></label></div>
     <button class="abtn" id="reg-btn" onclick="submitRegister()">Créer mon compte</button>
     <div style="text-align:center;margin-top:12px;font-size:.85rem;color:rgba(255,255,255,.65)">Déjà un compte ? <button style="background:none;border:none;color:#c4965a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showServerLogin()">Se connecter</button></div>
-    <div style="text-align:center;margin-top:14px;font-size:.75rem;color:rgba(255,255,255,.5)">
-      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.5);text-decoration:none">Mentions légales</a> ·
-      <a href="/confidentialite.html" style="color:rgba(255,255,255,.5);text-decoration:none">Confidentialité</a> ·
-      <a href="/cgu.html" style="color:rgba(255,255,255,.5);text-decoration:none">CGU</a>
+    <div style="text-align:center;margin-top:14px;font-size:.75rem;color:rgba(255,255,255,.65)">
+      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.65);text-decoration:none">Mentions légales</a> ·
+      <a href="/confidentialite.html" style="color:rgba(255,255,255,.65);text-decoration:none">Confidentialité</a> ·
+      <a href="/cgu.html" style="color:rgba(255,255,255,.65);text-decoration:none">CGU</a>
     </div>
   </div>
 </div></div>
@@ -6773,6 +6773,15 @@ tr:nth-child(even) td{background:var(--cream2)}
   .section{page-break-inside:avoid}
   .plant-block{break-inside:avoid}
 }
+/* ── Phase 0B — Wiki footnotes ──────────────────────────────── */
+.cca-fn-ref{font-size:.78em}
+.cca-wiki-reflink{color:var(--g3,#2e7d32);text-decoration:none;font-weight:700}
+.cca-wiki-reflink:hover{text-decoration:underline}
+.cca-footnotes{margin-top:28px;padding-top:16px;border-top:1px solid var(--cream3);font-size:.87em;list-style:none;padding-left:0}
+.cca-wiki-fn-item{display:flex;gap:8px;margin-bottom:10px;line-height:1.55}
+.cca-wiki-fn-num{font-weight:700;color:var(--muted);flex-shrink:0;min-width:24px}
+.cca-fn-backref{color:var(--g3,#2e7d32);text-decoration:none;margin-left:4px;font-size:.9em}
+.cca-fn-backref:hover{text-decoration:underline}
 /* ── Phase 0A — Sync indicator ───────────────────────────────── */
 .cca-sync-btn{position:fixed;top:9px;right:70px;z-index:900;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:none;cursor:pointer;padding:3px 8px;font-size:.72rem;color:rgba(255,255,255,.8);border-radius:6px;transition:background .15s;backdrop-filter:blur(4px)}
 .cca-sync-btn:hover{background:rgba(255,255,255,.2)}
@@ -12535,7 +12544,9 @@ ${_srvToken?`
   <div class="prof-section-title" style="color:#1565c0">📥 Mes données (RGPD)</div>
   <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;line-height:1.5">Téléchargez toutes vos données personnelles au format JSON (article 20 RGPD — droit à la portabilité).</div>
   <button class="prof-action-btn pab-neutral" id="btn-export-rgpd" onclick="submitExportRGPD()">📥 Télécharger toutes mes données</button>
-</div>`:''}
+</div>
+${(()=>{const bk=localStorage.getItem('wikiV1_backup');if(!bk)return '';try{const p=JSON.parse(bk);const days=Math.max(0,Math.ceil((30*24*3600*1000-(Date.now()-new Date(p.archived_at).getTime()))/(1000*60*60*24)));return`<div class="prof-section" style="border-left:3px solid #795548"><div class="prof-section-title" style="color:#795548">📦 ${esc(T('wikiV1.backupTitle'))}</div><div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;line-height:1.5">${esc(T('wikiV1.backupIntro').replace('{days}',days))}</div><button class="prof-action-btn pab-neutral" id="btn-dl-wikiv1-backup">${esc(T('wikiV1.downloadBackup'))}</button></div>`;}catch{return '';}})()}
+`:''}
 
 <div class="prof-section" style="border-left:3px solid #ff9800">
   <div class="prof-section-title" style="color:#ff9800">💬 Donner mon avis</div>
@@ -21780,6 +21791,12 @@ substrats.loadSubstrats();
 // Monter si l'onglet substrats est déjà affiché
 const subRoot = document.getElementById('cca-substrats-root');
 if(subRoot && typeof T === 'function' && typeof plants !== 'undefined') substrats.mount(subRoot, T, plants);
+</script>
+<!-- Phase 0B — Wiki v1 migration (ES module) -->
+<script type="module">
+import { migrateWikiV1IfNeeded } from './src/modules/wiki-v1-migration.js';
+// Archiver silencieusement les données wiki v1 si elles existent
+migrateWikiV1IfNeeded();
 </script>
 </body>
 </html>

@@ -1436,7 +1436,10 @@
       "greffage": "Injerto",
       "histoire": "Historia",
       "general": "General"
-    }
+    },
+    "footnote": "Nota",
+    "footnotePlaceholder": "Contenido de la nota",
+    "backToText": "Volver al texto"
   },
   "label": {
     "title": "Etiquetas museales",
@@ -1568,5 +1571,10 @@
     "migrationFailed": "Fallo en la migración",
     "migrationConflict": "Conflicto detectado",
     "migrationConflictIntro": "Tienes {local} sujetos localmente y {server} sujetos en el servidor. ¿Qué quieres hacer?"
+  },
+  "wikiV1": {
+    "backupTitle": "Archivo wiki personal",
+    "backupIntro": "Tu wiki personal local ha sido archivado. Las contribuciones compartidas están en Comunidad → Citrus Wiki. Este archivo se eliminará en {days} día(s) — descárgalo si quieres conservar tus notas.",
+    "downloadBackup": "Descargar archivo JSON"
   }
 }

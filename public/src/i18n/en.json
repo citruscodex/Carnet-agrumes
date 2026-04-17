@@ -1436,7 +1436,10 @@
       "greffage": "Grafting",
       "histoire": "History",
       "general": "General"
-    }
+    },
+    "footnote": "Note",
+    "footnotePlaceholder": "Note content",
+    "backToText": "Back to text"
   },
   "label": {
     "title": "Museum labels",
@@ -1568,5 +1571,10 @@
     "migrationFailed": "Migration failed",
     "migrationConflict": "Conflict detected",
     "migrationConflictIntro": "You have {local} subjects locally and {server} subjects on the server. What would you like to do?"
+  },
+  "wikiV1": {
+    "backupTitle": "Personal wiki archive",
+    "backupIntro": "Your locally stored personal wiki has been archived. Shared contributions are in Community → Citrus Wiki. This archive will be deleted in {days} day(s) — download it if you want to keep your notes.",
+    "downloadBackup": "Download JSON archive"
   }
 }

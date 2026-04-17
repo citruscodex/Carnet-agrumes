@@ -1436,7 +1436,10 @@
       "greffage": "Enxertia",
       "histoire": "História",
       "general": "Geral"
-    }
+    },
+    "footnote": "Nota",
+    "footnotePlaceholder": "Conteúdo da nota",
+    "backToText": "Voltar ao texto"
   },
   "label": {
     "title": "Etiquetas museais",
@@ -1568,5 +1571,10 @@
     "migrationFailed": "Falha na migração",
     "migrationConflict": "Conflito detetado",
     "migrationConflictIntro": "Tem {local} sujeitos localmente e {server} sujeitos no servidor. O que pretende fazer?"
+  },
+  "wikiV1": {
+    "backupTitle": "Arquivo wiki pessoal",
+    "backupIntro": "O seu wiki pessoal local foi arquivado. As contribuições partilhadas estão em Comunidade → Citrus Wiki. Este arquivo será eliminado em {days} dia(s) — descarregue-o se quiser conservar as suas notas.",
+    "downloadBackup": "Descarregar arquivo JSON"
   }
 }

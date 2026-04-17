@@ -54,6 +54,15 @@ function _wT(key, T, fallback) {
 export function parseMarkdown(md) {
   if (!md) return '';
 
+  // 0. Extract inline footnote definitions [^key]: content BEFORE escaping
+  const inlineDefs = {};
+  md = md.replace(/^\[\^([^\]]+)\]:\s*(.+)$/gm, (_, key, content) => {
+    inlineDefs[key.trim()] = content.trim();
+    return '';
+  });
+  // Remove trailing blank lines left by extraction
+  md = md.replace(/\n{3,}/g, '\n\n').trim();
+
   // 1. Escape HTML first — XSS prevention
   let s = _esc(md);
 
@@ -63,7 +72,7 @@ export function parseMarkdown(md) {
   s = s.replace(/\[\^([^\]]+)\]/g, (_, key) => {
     if (!refMap[key]) refMap[key] = ++refN;
     const safeKey = key.replace(/[^a-zA-Z0-9_-]/g, '_');
-    return `<sup class="cca-wiki-sup" id="refback-${safeKey}"><a href="#ref-${safeKey}" class="cca-wiki-reflink">[${refMap[key]}]</a></sup>`;
+    return `<sup class="cca-wiki-sup cca-fn-ref" id="refback-${safeKey}"><a href="#ref-${safeKey}" class="cca-wiki-reflink">[${refMap[key]}]</a></sup>`;
   });
 
   // 3. Headers
@@ -103,6 +112,19 @@ export function parseMarkdown(md) {
     if (/^<(h[2-4]|ul|hr|div|p)/.test(b)) return b;
     return `<p class="cca-wiki-p">${b.replace(/\n/g, ' ')}</p>`;
   }).join('\n');
+
+  // 10. Inline footnote section from [^key]: content definitions
+  const fnEntries = Object.entries(refMap)
+    .map(([key, num]) => {
+      const def = inlineDefs[key];
+      if (!def) return null;
+      const safeKey = key.replace(/[^a-zA-Z0-9_-]/g, '_');
+      return `<li id="ref-${safeKey}" class="cca-wiki-fn-item"><span class="cca-wiki-fn-num">[${num}]</span> ${_esc(def)} <a href="#refback-${safeKey}" class="cca-fn-backref" title="Retour au texte">↩</a></li>`;
+    })
+    .filter(Boolean);
+  if (fnEntries.length) {
+    s += `<hr class="cca-wiki-hr"/><ol class="cca-footnotes">${fnEntries.join('')}</ol>`;
+  }
 
   return s;
 }
@@ -479,7 +501,8 @@ export function renderWikiEditor(slug, T) {
     <button class="btn btn-sm" data-action="md-h2"     style="font-size:.78rem">H2</button>
     <button class="btn btn-sm" data-action="md-bullet" style="font-size:.78rem">• Liste</button>
     <button class="btn btn-sm" data-action="md-link"   style="font-size:.78rem">🔗 Lien</button>
-    <button class="btn btn-sm" data-action="md-ref"    style="font-size:.78rem">📚 Réf</button>
+    <button class="btn btn-sm" data-action="md-ref"      style="font-size:.78rem">📚 Réf</button>
+    <button class="btn btn-sm" data-action="md-footnote" style="font-size:.78rem">📝 Note</button>
   </div>
   <textarea id="cca-wiki-content"
     style="width:100%;min-height:280px;padding:10px;border:1px solid var(--cream3);border-radius:7px;font-size:.84rem;font-family:'JetBrains Mono',monospace;resize:vertical;line-height:1.55;box-sizing:border-box"
@@ -645,7 +668,8 @@ function _attachEvents(rootEl, T) {
       case 'md-h2':     _insertMd(rootEl, '\n## ', '\n'); break;
       case 'md-bullet': _insertMd(rootEl, '\n- ', ''); break;
       case 'md-link':   _insertMd(rootEl, '[', '](https://)'); break;
-      case 'md-ref':    _insertMd(rootEl, '[^', ']'); break;
+      case 'md-ref':      _insertMd(rootEl, '[^', ']'); break;
+      case 'md-footnote': _insertFootnote(rootEl); break;
     }
   });
 
@@ -728,4 +752,26 @@ function _insertMd(rootEl, before, after) {
   ta.focus();
   ta.selectionStart = s + before.length;
   ta.selectionEnd   = s + before.length + sel.length;
+}
+
+function _nextFootnoteN(text) {
+  const used = [...text.matchAll(/\[\^([^\]]+)\]:/g)].map(m => parseInt(m[1])).filter(n => !isNaN(n));
+  let n = 1;
+  while (used.includes(n)) n++;
+  return n;
+}
+
+function _insertFootnote(rootEl) {
+  const ta = rootEl.querySelector('#cca-wiki-content');
+  if (!ta) return;
+  const n = _nextFootnoteN(ta.value);
+  const marker = `[^${n}]`;
+  const def = `\n\n[^${n}]: Contenu de la note`;
+  const pos = ta.selectionStart;
+  // Insert marker at cursor
+  ta.value = ta.value.slice(0, pos) + marker + ta.value.slice(pos) + def;
+  // Place cursor after the definition label
+  const defStart = ta.value.lastIndexOf(`[^${n}]: `) + `[^${n}]: `.length;
+  ta.focus();
+  ta.setSelectionRange(defStart, defStart + 'Contenu de la note'.length);
 }
