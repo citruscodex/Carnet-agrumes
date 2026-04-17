@@ -30,10 +30,19 @@
   <link rel="stylesheet" href="src/styles/bug.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script defer data-domain="citruscodex.fr" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
 <div id="sc-server-login" style="display:none"><div class="asc">
-  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Bêta — Connexion</p></div>
+  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Gérez votre collection d'agrumes comme un professionnel.</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:340px;margin:0 auto 18px;text-align:center">
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🌿</div>Phénologie BBCH</div>
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🌤</div>Météo &amp; irrigation</div>
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🔄</div>Bourse greffons</div>
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">📖</div>Wiki collaboratif</div>
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🗺</div>Observatoire</div>
+    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🔒</div>Données privées</div>
+  </div>
   <div class="acard">
     <h2>Connexion</h2>
     <p class="acsub">Accès réservé aux testeurs de la bêta.</p>
@@ -4321,6 +4330,23 @@ function _dashSeasonBanner(){
 }
 
 function _renderDashCollectionneur(){
+  if(!plants.length&&!localStorage.getItem('cca_onboarding_done')){
+    return`<div class="page" style="padding:32px 20px;text-align:center">
+<div style="font-size:3.5rem;margin-bottom:16px">🍊</div>
+<h2 style="font-size:1.3rem;font-weight:700;color:var(--g1);margin-bottom:8px">Bienvenue sur CitrusCodex !</h2>
+<p style="font-size:.9rem;color:var(--muted);line-height:1.6;max-width:320px;margin:0 auto 24px">Votre carnet de collection d'agrumes.<br>Commencez par ajouter votre premier sujet !</p>
+<button class="btn btn-p" style="font-size:.95rem;padding:12px 28px;margin-bottom:24px" data-action="open-add-form">🌱 Ajouter mon premier agrume</button>
+<div style="margin-top:4px;border-top:1px solid var(--cream3);padding-top:20px;text-align:left;max-width:320px;margin:20px auto 0">
+  <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;font-family:monospace">Découvrir CitrusCodex</div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='home';showPage('community')"><span style="font-size:1.1rem">📖</span><span style="font-size:.87rem">Wiki collaboratif agrumes</span></button>
+    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='observatoire';showPage('community')"><span style="font-size:1.1rem">🗺</span><span style="font-size:.87rem">Observatoire CitrusCodex</span></button>
+    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='bourse';showPage('community')"><span style="font-size:1.1rem">🔄</span><span style="font-size:.87rem">Bourse aux greffons</span></button>
+  </div>
+</div>
+<button style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;margin-top:20px" onclick="localStorage.setItem('cca_onboarding_done','1');render()">Passer l'introduction</button>
+</div>`;
+  }
   const s=getSz();
   const nPot=plants.filter(p=>isPot(p)).length,nTerre=plants.filter(p=>!isPot(p)).length;
   const iss=plants.filter(p=>['vigilance','traitement','critique'].includes(p.status)).length;
@@ -12483,7 +12509,31 @@ ${_srvToken?`
     </div>
   </div>
   <button class="prof-action-btn" id="del-acct-btn" style="background:rgba(198,40,40,.08);color:#c62828;border-color:rgba(198,40,40,.25)" onclick="document.getElementById('del-acct-form').style.display='block';document.getElementById('del-acct-btn').style.display='none'">🗑 Supprimer mon compte</button>
+</div>
+
+<div class="prof-section" style="border-left:3px solid #1565c0">
+  <div class="prof-section-title" style="color:#1565c0">📥 Mes données (RGPD)</div>
+  <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px;line-height:1.5">Téléchargez toutes vos données personnelles au format JSON (article 20 RGPD — droit à la portabilité).</div>
+  <button class="prof-action-btn pab-neutral" id="btn-export-rgpd" onclick="submitExportRGPD()">📥 Télécharger toutes mes données</button>
 </div>`:''}
+
+<div class="prof-section" style="border-left:3px solid #ff9800">
+  <div class="prof-section-title" style="color:#ff9800">💬 Donner mon avis</div>
+  <div style="font-size:.8rem;color:var(--muted);margin-bottom:12px;line-height:1.5">Comment trouvez-vous CitrusCodex ?</div>
+  <div id="feedback-stars" style="display:flex;gap:6px;margin-bottom:12px;font-size:1.4rem">
+    ${[1,2,3,4,5].map(n=>`<span style="cursor:pointer;opacity:.35" data-star="${n}" onclick="_setRating(${n})">★</span>`).join('')}
+  </div>
+  <textarea id="feedback-comment" placeholder="Vos impressions, suggestions…" style="width:100%;min-height:70px;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;resize:vertical;background:var(--white)"></textarea>
+  <div id="feedback-err" style="display:none;color:#c62828;font-size:.8rem;margin-top:6px"></div>
+  <button class="prof-action-btn pab-neutral" style="margin-top:8px" id="btn-send-feedback" onclick="submitFeedback()">Envoyer mon avis</button>
+</div>
+
+<div class="prof-section">
+  <div class="prof-section-title">📋 Informations</div>
+  <div class="prof-row"><span class="prof-row-label">Version</span><span class="prof-row-val" style="font-family:'JetBrains Mono',monospace;font-size:.78rem">v${APP_VERSION}</span></div>
+  <div class="prof-row"><span class="prof-row-label">Nouveautés</span><span class="prof-row-val"><a href="/changelog.html" target="_blank" style="color:#c75b2a;font-size:.82rem">📋 Voir le changelog</a></span></div>
+  <div class="prof-row"><span class="prof-row-label">Légal</span><span class="prof-row-val" style="display:flex;gap:8px;font-size:.78rem"><a href="/cgu.html" target="_blank" style="color:#c75b2a">CGU</a><a href="/confidentialite.html" target="_blank" style="color:#c75b2a">Confidentialité</a><a href="/mentions-legales.html" target="_blank" style="color:#c75b2a">Mentions</a></span></div>
+</div>
 
 <div style="height:20px"></div>`;
 }
@@ -21367,6 +21417,47 @@ async function submitDeleteAccount(){
     alert('Votre compte a été supprimé. Vous allez être redirigé.');
     window.location.reload();
   }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';}
+}
+
+let _feedbackRating=0;
+function _setRating(n){
+  _feedbackRating=n;
+  document.querySelectorAll('#feedback-stars [data-star]').forEach(s=>{
+    s.style.opacity=parseInt(s.dataset.star)<=n?'1':'.35';
+  });
+}
+async function submitFeedback(){
+  if(!_feedbackRating){const e=document.getElementById('feedback-err');e.textContent='Sélectionnez une note (1 à 5 étoiles).';e.style.display='block';return;}
+  const comment=document.getElementById('feedback-comment')?.value?.trim()||'';
+  const btn=document.getElementById('btn-send-feedback');
+  btn.disabled=true;btn.textContent='⏳…';
+  try{
+    const r=await fetch(CCA_API+'/api/user-ratings',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_srvToken},body:JSON.stringify({rating:_feedbackRating,comment})});
+    if(!r.ok)throw new Error((await r.json()).error||'Erreur');
+    toast('Avis envoyé, merci ! ✓');
+    _feedbackRating=0;
+    document.getElementById('feedback-comment').value='';
+    document.querySelectorAll('#feedback-stars [data-star]').forEach(s=>{s.style.opacity='.35';});
+  }catch(e){const el=document.getElementById('feedback-err');el.textContent=e.message;el.style.display='block';}
+  finally{btn.disabled=false;btn.textContent='Envoyer mon avis';}
+}
+async function submitExportRGPD(){
+  const btn=document.getElementById('btn-export-rgpd');
+  btn.disabled=true;btn.textContent='⏳ Préparation…';
+  try{
+    const r=await fetch(CCA_API+'/api/auth/export-data',{headers:{'Authorization':'Bearer '+_srvToken}});
+    if(!r.ok)throw new Error('Erreur '+r.status);
+    const blob=await r.blob();
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    const d=r.headers.get('Content-Disposition')||'';
+    a.download=d.match(/filename="([^"]+)"/)?.[1]||'citruscodex-data.json';
+    document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+    toast('Données téléchargées ✓');
+  }catch(e){toast('Erreur export : '+e.message,true);}
+  finally{btn.disabled=false;btn.textContent='📥 Télécharger toutes mes données';}
 }
 
 async function submitServerLogin(){

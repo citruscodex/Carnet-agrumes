@@ -36,9 +36,14 @@ jobs:
           cp public/404.html 404.html
           cp public/manifest.json manifest.json
           cp public/training.html training.html
+          cp public/aide.html aide.html
+          cp public/cgu.html cgu.html
+          cp public/confidentialite.html confidentialite.html
+          cp public/mentions-legales.html mentions-legales.html
+          cp public/changelog.html changelog.html
           # Vérification
           echo "--- Fichiers à déployer ---"
-          ls -la index.html manifest.json sw.js 404.html
+          ls -la index.html manifest.json sw.js 404.html cgu.html confidentialite.html mentions-legales.html
           ls assets/ | head -5
 
       - name: Deploy via SSH
@@ -53,7 +58,7 @@ jobs:
           TARGET=/var/www/cca
 
           # Créer l'archive localement (scp de fichier unique fonctionne)
-          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html assets
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html assets
           echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
           # Copier l'archive sur le serveur

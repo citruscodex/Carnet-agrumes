@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nouveautés — CitrusCodex</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;background:#faf6f0;color:#2d3436;line-height:1.7;padding:24px 16px 48px}
+    .wrap{max-width:680px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid #e0d8ce}
+    .logo span{font-size:2rem}
+    .logo a{color:#c75b2a;text-decoration:none;font-weight:700;font-size:1.2rem}
+    h1{font-size:1.6rem;color:#2d3436;margin-bottom:8px}
+    .updated{font-size:.82rem;color:#999;margin-bottom:32px}
+    .version{margin-bottom:32px}
+    .version-header{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e0d8ce}
+    .version-tag{background:#c75b2a;color:white;font-size:.75rem;font-family:monospace;font-weight:700;padding:3px 10px;border-radius:20px}
+    .version-date{font-size:.82rem;color:#999}
+    .version-name{font-size:1.1rem;font-weight:700;color:#2d3436}
+    ul{list-style:none;padding:0}
+    li{padding:5px 0;font-size:.92rem;display:flex;gap:8px;align-items:flex-start}
+    li::before{content:'•';color:#c75b2a;font-weight:700;flex-shrink:0;margin-top:2px}
+    .cat{font-size:.72rem;font-family:monospace;text-transform:uppercase;letter-spacing:.06em;color:#c75b2a;font-weight:700;margin:14px 0 4px;display:block}
+    .back{display:inline-flex;align-items:center;gap:6px;color:#c75b2a;text-decoration:none;font-size:.88rem;font-weight:600;margin-top:32px}
+    .back:hover{text-decoration:underline}
+    footer{margin-top:40px;padding-top:16px;border-top:1px solid #e0d8ce;font-size:.78rem;color:#999;text-align:center}
+    footer a{color:#c75b2a;text-decoration:none;margin:0 6px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">
+    <span>🍊</span>
+    <a href="/">CitrusCodex</a>
+  </div>
+
+  <h1>Nouveautés</h1>
+  <p class="updated">Historique des versions de CitrusCodex</p>
+
+  <div class="version">
+    <div class="version-header">
+      <span class="version-tag">v3.1</span>
+      <span class="version-name">Beta publique</span>
+      <span class="version-date">Avril 2026</span>
+    </div>
+    <span class="cat">Communauté</span>
+    <ul>
+      <li>Inscription par code d'invitation (beta privée)</li>
+      <li>Mot de passe oublié et réinitialisation par email</li>
+      <li>Suppression de compte RGPD (toutes les données)</li>
+      <li>Bourse aux greffons — annonces offres/recherches</li>
+      <li>Commandes groupées géographiques</li>
+      <li>Observatoire communautaire avec statistiques</li>
+    </ul>
+    <span class="cat">Pépiniéristes</span>
+    <ul>
+      <li>Module stages : création, inscriptions, confirmation par email</li>
+      <li>Export CSV des inscrits</li>
+      <li>Notifications email organisateur + inscrit</li>
+    </ul>
+    <span class="cat">Interface</span>
+    <ul>
+      <li>Wiki collaboratif offline-first (catégories, articles, révisions)</li>
+      <li>Guide d'aide complet (60+ sections)</li>
+      <li>Onboarding nouveau compte</li>
+      <li>Pages légales : CGU, confidentialité, mentions légales</li>
+    </ul>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <span class="version-tag">v3.0</span>
+      <span class="version-name">Architecture modulaire</span>
+      <span class="version-date">Mars 2026</span>
+    </div>
+    <span class="cat">Infrastructure</span>
+    <ul>
+      <li>Migration vers Vite + modules ES</li>
+      <li>Sync multi-appareils chiffrée AES-256-GCM</li>
+      <li>Admin panel : gestion utilisateurs, stats, modération</li>
+      <li>Bug tracker intégré</li>
+    </ul>
+    <span class="cat">Agronomie</span>
+    <ul>
+      <li>Phénologie BBCH : 8 stades, 33 codes agrumes</li>
+      <li>Bilan hydrique ETP (méthode Penman-Monteith)</li>
+      <li>Irrigation goutte-à-goutte (module drip)</li>
+      <li>Greffes : suivi taux de reprise, alertes</li>
+    </ul>
+  </div>
+
+  <div class="version">
+    <div class="version-header">
+      <span class="version-tag">v2.x</span>
+      <span class="version-name">Collection avancée</span>
+      <span class="version-date">2025</span>
+    </div>
+    <ul>
+      <li>13 types d'événements (plantation, taille, traitement, greffage…)</li>
+      <li>Météo locale (Open-Meteo) + alertes gel</li>
+      <li>Fertilisation NPK avec suivi des apports</li>
+      <li>Export PDF et étiquettes</li>
+      <li>Pipeline phytosanitaire réglementaire</li>
+      <li>Historique et audit des modifications</li>
+    </ul>
+  </div>
+
+  <a href="/" class="back">← Retour à CitrusCodex</a>
+
+  <footer>
+    <a href="/mentions-legales.html">Mentions légales</a> ·
+    <a href="/confidentialite.html">Confidentialité</a> ·
+    <a href="/cgu.html">CGU</a>
+  </footer>
+</div>
+</body>
+</html>
