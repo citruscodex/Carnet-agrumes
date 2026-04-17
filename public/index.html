@@ -3718,8 +3718,18 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
 <div id="cca-admin-inv-list" style="margin-top:10px;font-size:.78rem;color:var(--muted)"></div>
 </div>`;
 
+    const _statClick=[
+      ()=>{ root.dataset.fp='';root.dataset.fr='';root.dataset.fs='';renderAdminUsers(); },
+      ()=>{ root.dataset.fp='';root.dataset.fr='';root.dataset.fs='active';renderAdminUsers(); },
+      ()=>{ root.dataset.fp='';root.dataset.fr='';root.dataset.fs='active';renderAdminUsers(); },
+      ()=>{ root.dataset.fp='';root.dataset.fr='';root.dataset.fs='disabled';renderAdminUsers(); },
+      ()=>{ wikiView='home';showPage('community'); },
+      ()=>showPage('admin-bugs'),
+      ()=>{ wikiView='observatoire';showPage('community'); },
+      ()=>{ wikiView='home';showPage('community'); }
+    ];
     const statsBlock=stats?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
-${[['👥',stats.total,'Total'],['✅',stats.active_7d,'Actifs 7j'],['🆕',stats.new_30d,'Nvx 30j'],['🔒',stats.disabled,'Désactivés'],['📖',stats.pages,'Pages wiki'],['🦠',stats.bugs,'Bug reports'],['🗺',stats.observations,'Observations'],['✏️',stats.revisions,'Révisions']].map(([i,v,l])=>`<div style="background:var(--white);border-radius:8px;padding:8px 6px;text-align:center;border:1px solid var(--cream3)"><div style="font-size:1.1rem">${i}</div><div style="font-size:1rem;font-weight:700;color:var(--text-strong,#1c1c1e)">${v??'—'}</div><div style="font-size:.65rem;color:var(--muted)">${l}</div></div>`).join('')}
+${[['👥',stats.total,'Total',0],['✅',stats.active_7d,'Actifs 7j',1],['🆕',stats.new_30d,'Nvx 30j',2],['🔒',stats.disabled,'Désactivés',3],['📖',stats.pages,'Pages wiki',4],['🦠',stats.bugs,'Bug reports',5],['🗺',stats.observations,'Observations',6],['✏️',stats.revisions,'Révisions',7]].map(([i,v,l,ci])=>`<div style="background:var(--white);border-radius:8px;padding:8px 6px;text-align:center;border:1px solid var(--cream3);cursor:pointer;transition:box-shadow .12s" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,.1)'" onmouseout="this.style.boxShadow=''" data-stat-click="${ci}"><div style="font-size:1.1rem">${i}</div><div style="font-size:1rem;font-weight:700;color:var(--text-strong,#1c1c1e)">${v??'—'}</div><div style="font-size:.65rem;color:var(--muted)">${l}</div></div>`).join('')}
 </div>
 <div style="display:flex;gap:8px;margin-bottom:12px">
   <button class="btn btn-o btn-sm" onclick="showPage('admin-bugs')">🐛 Gérer les bugs (${stats.bugs??0})</button>
@@ -3741,6 +3751,12 @@ ${[1,3,5,10].map(n=>`<option value="${n}">${n} code${n>1?'s':''}</option>`).join
 </div>`;
 
     root.innerHTML=statsBlock+filters+(users.length?userCards:`<div style="padding:20px;text-align:center;color:var(--muted);font-style:italic">Aucun utilisateur</div>`)+inviteBlock+codesBlock;
+
+    // Stats cliquables (16E)
+    root.querySelectorAll('[data-stat-click]').forEach(el=>{
+      const ci=parseInt(el.dataset.statClick);
+      el.addEventListener('click',()=>_statClick[ci]&&_statClick[ci]());
+    });
 
     // Filtres
     document.getElementById('cca-adm-filter-btn')?.addEventListener('click',()=>{
@@ -3787,7 +3803,7 @@ ${[1,3,5,10].map(n=>`<option value="${n}">${n} code${n>1?'s':''}</option>`).join
         if(!confirm('Désactiver ce compte ?'))return;
         const id=btn.dataset.adusrDisable;
         try{
-          const r=await fetch('/api/admin/users/'+id,{method:'DELETE',headers:_authHeader()});
+          const r=await fetch(CCA_API+'/api/admin/users/'+id+'/active',{method:'PUT',headers:_authHeader(),body:JSON.stringify({is_active:false})});
           if(!r.ok)throw new Error('HTTP '+r.status);
           toast('Compte désactivé');renderAdminUsers();
         }catch(e){toast('Erreur : '+esc(e.message),true);}
@@ -10957,9 +10973,13 @@ let wikiCategories=[];
 let wikiPages=[];
 let wikiCurrentArticle=null;
 let wikiSearchQuery='';
+let _wikiNavStack=[]; // [{view, slug, query}] for back navigation
 
 function _srvUserRole(){
   try{const t=_srvToken;if(!t)return'member';const p=JSON.parse(atob(t.split('.')[1]));return p.role||'member';}catch{return'member';}
+}
+function _srvCurrentUserId(){
+  try{const t=_srvToken;if(!t)return null;const p=JSON.parse(atob(t.split('.')[1]));return p.id||null;}catch{return null;}
 }
 // Exposé pour le module wiki.js (vérification canDelete)
 window._srvUserRole=_srvUserRole;
@@ -11102,10 +11122,12 @@ async function _renderWikiArticle(c,slug){
 
     const langBtns=['fr','en','it','es','pt'].map(l=>`<button class="btn btn-sm${wikiCurrentLang===l?' btn-p':''}" style="font-size:.75rem;padding:2px 6px" onclick="wikiCurrentLang='${l}';wikiCurrentSlug='${esc(slug)}';wikiView='article';renderCommunityPage()">${l.toUpperCase()}</button>`).join('');
 
+    const _navBack=_wikiNavStack.length?_wikiNavStack[_wikiNavStack.length-1]:null;
+    const _backLink=_navBack?`<span onclick="_wikiNavStack.pop();wikiView='${_navBack.view}';if(_navBack.query!==undefined)wikiSearchQuery=_navBack.query;renderCommunityPage()" style="cursor:pointer">← Retour</span> › `:'';
     c.innerHTML=`
       <div class="wiki-breadcrumb">
-        <span onclick="wikiView='home';renderCommunityPage()">Wiki</span> ›
-        <span onclick="wikiView='category';wikiCurrentSlug='${esc(art.category_slug)}';renderCommunityPage()">${esc(cat.icon)} ${esc(cat.label)}</span> ›
+        ${_backLink}<span onclick="_wikiNavStack=[];wikiView='home';renderCommunityPage()">Wiki</span> ›
+        <span onclick="_wikiNavStack=[];wikiView='category';wikiCurrentSlug='${esc(art.category_slug)}';renderCommunityPage()">${esc(cat.icon)} ${esc(cat.label)}</span> ›
         ${esc(art.title)}
       </div>
       <div class="wiki-article-header">
@@ -11132,7 +11154,7 @@ async function _renderWikiSearch(c,q){
   try{
     const results=await _wikiLoad('/api/wiki/search?q='+encodeURIComponent(q));
     const rows=results.map(p=>`
-      <div class="wiki-search-result-row" onclick="wikiView='article';wikiCurrentSlug='${esc(p.slug)}';renderCommunityPage()">
+      <div class="wiki-search-result-row" onclick="_wikiNavStack=[{view:'search',query:wikiSearchQuery}];wikiView='article';wikiCurrentSlug='${esc(p.slug)}';renderCommunityPage()">
         <div class="wiki-page-title">${esc(p.title)}</div>
         <div class="wiki-page-meta" style="font-size:.75rem;color:var(--muted)">${esc(p.category_slug||'')}</div>
       </div>`).join('')||'<div style="padding:20px;text-align:center;color:var(--muted)">Aucun résultat pour "${esc(q)}"</div>';
@@ -11161,7 +11183,7 @@ async function _renderWikiHistory(c,slug){
     c.innerHTML=`
       <div class="wiki-breadcrumb">
         <span onclick="wikiView='home';renderCommunityPage()">Wiki</span> ›
-        <span onclick="wikiView='article';renderCommunityPage()">${esc(slug)}</span> › Historique
+        <span onclick="wikiView='article';renderCommunityPage()">${esc(wikiCurrentArticle?.title||slug)}</span> › Historique
       </div>
       <div style="padding:8px 16px;font-size:.75rem;color:var(--muted)">Langue : ${wikiCurrentLang.toUpperCase()}</div>
       ${rows}`;
@@ -11545,14 +11567,14 @@ async function _renderBourse(c) {
               <div style="font-weight:600;font-size:.9rem">${esc(ad.species)}${ad.variety?' <em style="font-weight:400;font-size:.85rem">'+esc(ad.variety)+'</em>':''}</div>
               ${ad.rootstock?`<div style="font-size:.75rem;color:var(--muted)">Porte-greffe : ${esc(ad.rootstock)}</div>`:''}
               <div style="font-size:.75rem;color:var(--muted);margin-top:2px">
-                ${ad.quantity?`×${ad.quantity} · `:''}${ad.region?esc(ad.region)+' · ':''}Par : ${esc(ad.author||'membre')}
+                ${ad.quantity?`×${ad.quantity} · `:''}${ad.region?esc(ad.region)+' · ':''}Par : ${ad.user_id===_srvCurrentUserId()?'<strong>Vous</strong>':'Membre #'+ad.user_id}
                 <span style="color:var(--amber3)"> · Expire dans ${daysLeft}j</span>
               </div>
               ${ad.description?`<div style="font-size:.8rem;color:#555;margin-top:4px;font-style:italic">${esc(ad.description.slice(0,100))}${ad.description.length>100?'…':''}</div>`:''}
             </div>
             ${badge}
           </div>
-          <button class="btn btn-a btn-sm" style="width:100%" onclick="_bourseContact(${ad.id},'${esc(ad.species)}','${esc(ad.author||'')}')">Contacter</button>
+          ${ad.user_id!==_srvCurrentUserId()?`<button class="btn btn-a btn-sm" style="width:100%" onclick="_bourseContact(${ad.id},'${esc(ad.species)}')">Contacter</button>`:'<div style="text-align:center;font-size:.75rem;color:var(--muted);padding:4px">Votre annonce</div>'}
         </div>`;
       }).join('');
     } catch (e) {
@@ -11609,8 +11631,8 @@ async function _renderBourse(c) {
   _load();
 }
 
-function _bourseContact(id, species, author) {
-  showModal(`<h3>📩 Contacter ${esc(author||'le membre')}</h3>
+function _bourseContact(id, species) {
+  showModal(`<h3>📩 Contacter ce membre</h3>
   <p style="font-size:.85rem;color:var(--muted);margin-bottom:12px">Annonce : <strong>${esc(species)}</strong></p>
   <textarea id="bourse-msg" style="width:100%;min-height:90px;padding:10px;border:1px solid var(--cream3);border-radius:8px;font-size:.87rem" placeholder="Votre message…"></textarea>
   <div id="bourse-msg-err" class="aerr" style="display:none;margin-top:8px"></div>
@@ -12928,7 +12950,8 @@ async function _stagesViewRegistrations(id, title) {
     <table style="width:100%;border-collapse:collapse;font-size:.82rem">
     <thead><tr style="border-bottom:1px solid var(--cream3)"><th style="padding:4px 6px;text-align:left">Nom</th><th style="padding:4px 6px;text-align:left">Email</th><th style="padding:4px 6px">Confirmé</th><th style="padding:4px 6px;text-align:left">Tél.</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
-    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+    <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+    ${regs.length?`<button class="btn btn-o btn-sm" id="btn-msg-inscrits-${id}">📧 Message aux inscrits</button>`:''}
     <button class="btn btn-o btn-sm" id="btn-csv-export-${id}">⬇️ CSV</button>
     <button class="btn btn-sm" onclick="closeModal()">Fermer</button></div>`);
     document.getElementById('btn-csv-export-' + id)?.addEventListener('click', async () => {
@@ -12942,6 +12965,13 @@ async function _stagesViewRegistrations(id, title) {
         document.body.appendChild(a); a.click();
         setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
       } catch(e) { toast('Erreur export CSV : ' + e.message, true); }
+    });
+    document.getElementById('btn-msg-inscrits-' + id)?.addEventListener('click', () => {
+      const emails = regs.filter(r => r.email && r.confirmed).map(r => r.email);
+      if (!emails.length) { toast('Aucun inscrit confirmé', true); return; }
+      const bcc = encodeURIComponent(emails.join(','));
+      const sub = encodeURIComponent('Stage : ' + title);
+      window.open(`mailto:?bcc=${bcc}&subject=${sub}`, '_self');
     });
   } catch(e) { toast('Erreur : ' + e.message, true); }
 }
