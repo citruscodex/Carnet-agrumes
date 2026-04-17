@@ -3722,8 +3722,8 @@ ${Object.entries(_PROFILE_LABELS).map(([v,l])=>`<option value="${v}">${_PROFILE_
 ${[['👥',stats.total,'Total'],['✅',stats.active_7d,'Actifs 7j'],['🆕',stats.new_30d,'Nvx 30j'],['🔒',stats.disabled,'Désactivés'],['📖',stats.pages,'Pages wiki'],['🦠',stats.bugs,'Bug reports'],['🗺',stats.observations,'Observations'],['✏️',stats.revisions,'Révisions']].map(([i,v,l])=>`<div style="background:var(--white);border-radius:8px;padding:8px 6px;text-align:center;border:1px solid var(--cream3)"><div style="font-size:1.1rem">${i}</div><div style="font-size:1rem;font-weight:700;color:var(--text-strong,#1c1c1e)">${v??'—'}</div><div style="font-size:.65rem;color:var(--muted)">${l}</div></div>`).join('')}
 </div>
 <div style="display:flex;gap:8px;margin-bottom:12px">
-  <button class="btn btn-g btn-sm" onclick="showPage('admin-bugs')">🐛 Gérer les bugs (${stats.bugs??0})</button>
-  <button class="btn btn-g btn-sm" onclick="showPage('admin-users')">👥 Utilisateurs (${stats.total??0})</button>
+  <button class="btn btn-o btn-sm" onclick="showPage('admin-bugs')">🐛 Gérer les bugs (${stats.bugs??0})</button>
+  <button class="btn btn-o btn-sm" onclick="showPage('admin-users')">👥 Utilisateurs (${stats.total??0})</button>
 </div>`:'';
 
     const codesBlock=`<div class="prof-section" style="margin-top:14px;border-top:1px solid var(--cream3);padding-top:12px">
@@ -3820,7 +3820,7 @@ ${[1,3,5,10].map(n=>`<option value="${n}">${n} code${n>1?'s':''}</option>`).join
           return`<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--cream3)">
 <span style="font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:600;color:${active?'#162d1f':'var(--muted)'};flex:1">${esc(c.code)}</span>
 <span style="font-size:.72rem;color:var(--muted)">${_PROFILE_LABELS[c.profile_type]||c.profile_type} · ${used} · exp.${exp}</span>
-<button class="btn btn-sm btn-g" style="font-size:.7rem;padding:2px 7px" onclick="navigator.clipboard.writeText('${esc(c.code)}').then(()=>toast('Copié !'))">📋</button>
+<button class="btn btn-sm btn-o" style="font-size:.7rem;padding:2px 7px" onclick="navigator.clipboard.writeText('${esc(c.code)}').then(()=>toast('Copié !'))">📋</button>
 <button class="btn btn-sm" style="font-size:.7rem;padding:2px 7px;background:rgba(198,40,40,.08);color:#c62828;border-color:rgba(198,40,40,.2)" data-del-code="${esc(c.id)}">✕</button>
 </div>`;
         }).join('');
@@ -10676,7 +10676,7 @@ function _openEpandageModal(id) {
           render();
           toast('Épandage enregistré ✓');
         ">Enregistrer</button>
-        <button class="btn btn-g" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+        <button class="btn btn-o" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
       </div>
     </div>
   </div>`;
@@ -11115,7 +11115,7 @@ async function _renderWikiArticle(c,slug){
       <div class="wiki-article-actions">
         <div style="display:flex;gap:4px">${langBtns}</div>
         <div style="flex:1"></div>
-        ${canEdit?`<button class="btn btn-sm btn-g" style="font-size:.75rem" onclick="wikiView='editor';renderCommunityPage()">✏ Modifier</button>`:''}
+        ${canEdit?`<button class="btn btn-sm btn-o" style="font-size:.75rem" onclick="wikiView='editor';renderCommunityPage()">✏ Modifier</button>`:''}
         <button class="btn btn-sm" style="font-size:.75rem" onclick="wikiView='history';renderCommunityPage()">📜 Historique</button>
         ${canDelete?`<button class="btn btn-sm" style="font-size:.75rem;background:rgba(198,40,40,.1);color:#c62828" onclick="wikiDeletePage('${esc(slug)}')">🗑</button>`:''}
       </div>
@@ -11481,9 +11481,9 @@ async function _renderBourse(c) {
     <button class="btn btn-a btn-sm" id="bourse-new-btn">+ Mon annonce</button>
   </div>
   <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
-    <button class="btn btn-g btn-sm" id="bourse-f-all" style="flex:1">Tout</button>
-    <button class="btn btn-g btn-sm" id="bourse-f-offre" style="flex:1">🟢 Offres</button>
-    <button class="btn btn-g btn-sm" id="bourse-f-rech" style="flex:1">🔵 Recherches</button>
+    <button class="btn btn-o btn-sm" id="bourse-f-all" style="flex:1">Tout</button>
+    <button class="btn btn-o btn-sm" id="bourse-f-offre" style="flex:1">🟢 Offres</button>
+    <button class="btn btn-o btn-sm" id="bourse-f-rech" style="flex:1">🔵 Recherches</button>
   </div>
   <div id="bourse-list"><div style="text-align:center;padding:20px;color:var(--muted)">Chargement…</div></div>
   </div>
@@ -11646,13 +11646,13 @@ async function _renderGroupOrders(c){
   const locTxt=_grpOrdLat?`📍 ${_grpOrdLat.toFixed(3)}, ${_grpOrdLng.toFixed(3)} · 50 km`:'Localisation non activée';
   c.innerHTML=`
 <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
-  <button class="btn btn-g btn-sm" id="gord-locate-btn">📍 ${_grpOrdLat?'Re-localiser':'Ma position'}</button>
+  <button class="btn btn-o btn-sm" id="gord-locate-btn">📍 ${_grpOrdLat?'Re-localiser':'Ma position'}</button>
   ${srv?'<button class="btn btn-a btn-sm" id="gord-new-btn">+ Créer</button>':''}
-  ${srv?'<button class="btn btn-g btn-sm" id="gord-mine-btn">📋 Mes commandes</button>':''}
+  ${srv?'<button class="btn btn-o btn-sm" id="gord-mine-btn">📋 Mes commandes</button>':''}
 </div>
 <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">${esc(locTxt)}</div>
 <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
-  ${['','plants','pots','engrais','substrats','amendements','outils','divers'].map(k=>`<button class="btn btn-g btn-sm gord-cat-btn${_grpOrdCat===k?' active-cat':''}" data-cat="${k}" style="${_grpOrdCat===k?'background:var(--g2);color:#fff':''}">${k?_GORD_CAT_LABELS[k]:'Tout'}</button>`).join('')}
+  ${['','plants','pots','engrais','substrats','amendements','outils','divers'].map(k=>`<button class="btn btn-o btn-sm gord-cat-btn${_grpOrdCat===k?' active-cat':''}" data-cat="${k}" style="${_grpOrdCat===k?'background:var(--g2);color:#fff;border-color:var(--g2)':''}">${k?_GORD_CAT_LABELS[k]:'Tout'}</button>`).join('')}
 </div>
 <div id="gord-list">${_grpOrdLat?'<div style="text-align:center;padding:20px;color:var(--muted)">⏳ Chargement…</div>':'<div style="text-align:center;padding:28px 16px;color:var(--muted)"><div style="font-size:1.4rem;margin-bottom:8px">📍</div>Activez la géolocalisation pour voir les commandes groupées près de chez vous.</div>'}</div>
 
@@ -11698,7 +11698,7 @@ async function _renderGroupOrders(c){
       <label class="cca-bug-label">Mes articles</label>
       <div style="font-size:.72rem;color:var(--muted);margin-bottom:6px;display:grid;grid-template-columns:1fr 52px 68px 24px;gap:4px"><span>Article</span><span>Qté</span><span>Prix €</span><span></span></div>
       <div id="gord-items-list"></div>
-      <button class="btn btn-g btn-sm" id="gord-add-item" style="width:100%;margin-top:6px">+ Ajouter un article</button>
+      <button class="btn btn-o btn-sm" id="gord-add-item" style="width:100%;margin-top:6px">+ Ajouter un article</button>
       <div style="margin-top:10px;font-weight:700;font-size:.92rem;text-align:right" id="gord-join-total">Total : 0,00 €</div>
       <div id="gord-join-err" class="aerr" style="display:none;margin-bottom:8px"></div>
       <button class="btn btn-a" id="gord-join-submit" style="width:100%;margin-top:8px" data-oid="">Confirmer ma participation →</button>
@@ -11786,7 +11786,7 @@ function _gordRenderList(list,orders){
       ${o.delivery_address?`<div style="font-size:.76rem;color:var(--muted);margin-bottom:6px">📮 ${esc(o.delivery_address)}</div>`:''}
       ${pct!==null?`<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);margin-bottom:2px"><span>Franco de port</span><span>${parseFloat(o.current_total_eur).toFixed(0)}€ / ${parseFloat(o.min_total_eur).toFixed(0)}€ (${pct}%)</span></div><div style="height:4px;background:var(--cream3);border-radius:2px"><div style="height:4px;background:${pct>=100?'var(--g2)':'var(--amber)'};border-radius:2px;width:${pct}%"></div></div></div>`:''}
       <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn btn-g btn-sm" style="flex:1" data-gord-detail="${esc(o.id)}">Détails →</button>
+        <button class="btn btn-o btn-sm" style="flex:1" data-gord-detail="${esc(o.id)}">Détails →</button>
         ${_srvToken&&o.status==='open'?`<button class="btn btn-a btn-sm" style="flex:1" data-gord-join="${esc(o.id)}" data-gord-jtitle="${esc(o.title)}">🛒 Rejoindre</button>`:''}
       </div>
     </div>`;
@@ -11821,7 +11821,7 @@ async function _gordShowDetail(id){
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end">
         ${_srvToken&&o.status==='open'?`<button class="btn btn-a btn-sm" id="gord-detail-join" data-oid="${esc(o.id)}" data-otitle="${esc(o.title)}">🛒 Rejoindre</button>`:''}
-        <button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button>
+        <button class="btn btn-o btn-sm" onclick="closeModal()">Fermer</button>
       </div>`);
     document.getElementById('gord-detail-join')?.addEventListener('click',function(){closeModal();_gordOpenJoin(this.dataset.oid,this.dataset.otitle);});
   }catch(e){toast('Erreur : '+e.message,true);}
@@ -11929,19 +11929,19 @@ async function _gordLoadMine(){
     const r=await fetch('/api/orders/mine',{headers:{Authorization:'Bearer '+_srvToken}});
     if(!r.ok)throw new Error('HTTP '+r.status);
     const orders=await r.json();
-    if(!orders.length){showModal(`<p style="padding:16px;color:var(--muted);text-align:center">Aucune commande.<br><small>Créez ou rejoignez une commande groupée.</small></p><div style="text-align:right;padding:0 8px 8px"><button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button></div>`);return;}
+    if(!orders.length){showModal(`<p style="padding:16px;color:var(--muted);text-align:center">Aucune commande.<br><small>Créez ou rejoignez une commande groupée.</small></p><div style="text-align:right;padding:0 8px 8px"><button class="btn btn-o btn-sm" onclick="closeModal()">Fermer</button></div>`);return;}
     showModal(`<h3 style="margin-bottom:12px">📋 Mes commandes (${orders.length})</h3>
       <div style="max-height:320px;overflow-y:auto">
         ${orders.map(o=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--cream3);gap:8px">
           <div><div style="font-size:.86rem;font-weight:600">${esc(o.title)}</div>
           <div style="font-size:.73rem;color:var(--muted)">${_GORD_STATUS_LABELS[o.status]||o.status} · ${o.participant_count} part. · ${parseFloat(o.current_total_eur).toFixed(2)}€${o.my_total?` · ma part : ${parseFloat(o.my_total).toFixed(2)}€`:''}</div></div>
           <div style="display:flex;gap:5px;flex-shrink:0">
-            <button class="btn btn-g btn-sm" onclick="_gordShowDetail('${esc(o.id)}');closeModal()">Voir</button>
+            <button class="btn btn-o btn-sm" onclick="_gordShowDetail('${esc(o.id)}');closeModal()">Voir</button>
             ${o.status==='open'&&o.organizer_id===(_srvToken?JSON.parse(atob(_srvToken.split('.')[1])).id:0)?`<button class="btn btn-sm" style="background:var(--red);color:#fff" onclick="_gordCloseOrder('${esc(o.id)}')">Clore</button>`:''}
           </div>
         </div>`).join('')}
       </div>
-      <div style="text-align:right;margin-top:10px"><button class="btn btn-g btn-sm" onclick="closeModal()">Fermer</button></div>`);
+      <div style="text-align:right;margin-top:10px"><button class="btn btn-o btn-sm" onclick="closeModal()">Fermer</button></div>`);
   }catch(e){toast('Erreur : '+e.message,true);}
 }
 
@@ -12443,7 +12443,7 @@ ${_srvToken?`
     <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px;margin-top:8px"><label style="font-size:.75rem;color:var(--muted)">Confirmer le nouveau mot de passe</label><div class="pwd-wrap" style="width:100%"><input type="password" id="srv-new-pwd2" placeholder="••••••••" autocomplete="new-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('srv-new-pwd2')">👁</button></div></div>
     <div style="display:flex;gap:8px;margin-top:12px">
       <button class="btn btn-sm" style="flex:1;background:#c75b2a;color:white;border-color:#c75b2a" onclick="submitSrvChgPwd()">Changer</button>
-      <button class="btn btn-sm btn-g" style="flex:1" onclick="document.getElementById('srv-chg-pwd-form').style.display='none'">Annuler</button>
+      <button class="btn btn-sm btn-o" style="flex:1" onclick="document.getElementById('srv-chg-pwd-form').style.display='none'">Annuler</button>
     </div>
   </div>
   <button class="prof-action-btn pab-neutral" id="srv-chg-pwd-btn" onclick="document.getElementById('srv-chg-pwd-form').style.display='block';document.getElementById('srv-chg-pwd-btn').style.display='none'">🔑 Changer le mot de passe serveur</button>
@@ -12457,7 +12457,7 @@ ${_srvToken?`
     <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px"><label style="font-size:.75rem;color:var(--muted)">Confirmez votre mot de passe</label><div class="pwd-wrap" style="width:100%"><input type="password" id="del-pwd" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:9px 11px;border:1px solid var(--cream3);border-radius:8px;font-size:.85rem;background:var(--white)"/><button type="button" class="pwd-eye" onclick="togglePwdVis('del-pwd')">👁</button></div></div>
     <div style="display:flex;gap:8px;margin-top:12px">
       <button class="btn btn-sm" style="flex:1;background:#c62828;color:white;border-color:#c62828" onclick="submitDeleteAccount()">Supprimer définitivement</button>
-      <button class="btn btn-sm btn-g" style="flex:1" onclick="document.getElementById('del-acct-form').style.display='none';document.getElementById('del-acct-btn').style.display='block'">Annuler</button>
+      <button class="btn btn-sm btn-o" style="flex:1" onclick="document.getElementById('del-acct-form').style.display='none';document.getElementById('del-acct-btn').style.display='block'">Annuler</button>
     </div>
   </div>
   <button class="prof-action-btn" id="del-acct-btn" style="background:rgba(198,40,40,.08);color:#c62828;border-color:rgba(198,40,40,.25)" onclick="document.getElementById('del-acct-form').style.display='block';document.getElementById('del-acct-btn').style.display='none'">🗑 Supprimer mon compte</button>
@@ -12873,9 +12873,9 @@ async function _stagesLoad() {
           <div style="height:4px;background:var(--cream3);border-radius:2px"><div style="height:4px;background:var(--g2);border-radius:2px;width:${pct}%"></div></div>
         </div>
         <div style="display:flex;gap:6px;margin-top:10px">
-          <button class="btn btn-g btn-sm" style="flex:1" onclick="_stagesViewRegistrations('${esc(s.id)}','${esc(s.title)}')">👥 Inscrits</button>
-          <button class="btn btn-g btn-sm" title="Copier le lien d'inscription" onclick="_stagesCopyLink('${esc(s.public_url_slug)}')">🔗</button>
-          <button class="btn btn-g btn-sm" onclick="_stagesEditById('${esc(s.id)}')">✏️</button>
+          <button class="btn btn-o btn-sm" style="flex:1" onclick="_stagesViewRegistrations('${esc(s.id)}','${esc(s.title)}')">👥 Inscrits</button>
+          <button class="btn btn-o btn-sm" title="Copier le lien d'inscription" onclick="_stagesCopyLink('${esc(s.public_url_slug)}')">🔗</button>
+          <button class="btn btn-o btn-sm" onclick="_stagesEditById('${esc(s.id)}')">✏️</button>
           ${s.status!=='cancelled'?`<button class="btn btn-sm" style="background:var(--red);color:white" onclick="_stagesCancel('${esc(s.id)}')">✕</button>`:''}
         </div>
       </div>`;
@@ -12929,7 +12929,7 @@ async function _stagesViewRegistrations(id, title) {
     <thead><tr style="border-bottom:1px solid var(--cream3)"><th style="padding:4px 6px;text-align:left">Nom</th><th style="padding:4px 6px;text-align:left">Email</th><th style="padding:4px 6px">Confirmé</th><th style="padding:4px 6px;text-align:left">Tél.</th></tr></thead>
     <tbody>${rows}</tbody></table></div>
     <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
-    <button class="btn btn-g btn-sm" id="btn-csv-export-${id}">⬇️ CSV</button>
+    <button class="btn btn-o btn-sm" id="btn-csv-export-${id}">⬇️ CSV</button>
     <button class="btn btn-sm" onclick="closeModal()">Fermer</button></div>`);
     document.getElementById('btn-csv-export-' + id)?.addEventListener('click', async () => {
       try {
@@ -13662,7 +13662,7 @@ function ganttOpenTaskModal(taskId){
     +'<div style="display:flex;gap:8px">'
     +'<button class="btn" style="flex:1" id="gt-save">Enregistrer</button>'
     +(t?'<button class="btn btn-sm" style="color:#c62828;background:rgba(198,40,40,.08)" id="gt-del">🗑</button>':'')
-    +'<button class="btn btn-g" onclick="this.closest(\'.modal-overlay\').remove()">Annuler</button>'
+    +'<button class="btn btn-o" onclick="this.closest(\'.modal-overlay\').remove()">Annuler</button>'
     +'</div></div>';
 
   document.body.appendChild(modal);
@@ -15578,7 +15578,7 @@ function _openIftRefModal() {
           render();
           toast('Références IFT enregistrées ✓');
         ">Enregistrer</button>
-        <button class="btn btn-g" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
+        <button class="btn btn-o" onclick="this.closest('.modal-overlay').remove()">Annuler</button>
       </div>
     </div>
   </div>`;
