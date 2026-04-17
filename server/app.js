@@ -52,6 +52,11 @@ async function build(opts = {}) {
   // ── Routes admin panel (Chantier 8) ─────────────────────────────────────────
   await app.register(require('./routes/admin'), { prefix: '/api' });
 
+  // ── Routes données utilisateur (Phase 0A) ────────────────────────────────────
+  await app.register(require('./routes/user-data'));
+  await app.register(require('./routes/user-sync'));
+  await app.register(require('./routes/user-account'));
+
   // ── Routes sync ─────────────────────────────────────────────────────────────
   // Route GET /api/sync — retourne toutes les clés agrumes_* de l'utilisateur
   // Route PUT /api/sync/:key — enregistre une clé pour l'utilisateur

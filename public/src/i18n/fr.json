@@ -1548,5 +1548,27 @@
     "disable": "Désactiver le compte",
     "lastLogin": "Dernière connexion",
     "subjects": "Sujets"
+  },
+  "sync": {
+    "status": {
+      "synced": "Synchronisé",
+      "pending": "{n} en attente",
+      "syncing": "Synchronisation…",
+      "error": "Erreur de sync"
+    },
+    "forceNow": "Forcer la synchronisation",
+    "manualBackupTitle": "🔐 Sauvegarde manuelle (avancé)",
+    "manualBackupIntro": "Cette fonction est désormais optionnelle. Vos données sont sauvegardées automatiquement sur le serveur CitrusCodex. Cette option chiffrée reste disponible pour une sauvegarde personnelle indépendante du serveur (export chiffré vers GitHub Gist ou WebDAV).",
+    "migrationTitle": "Migration de vos données",
+    "migrationIntro": "Vos données locales ({n} sujets) vont être sauvegardées sur le serveur pour être accessibles depuis tous vos appareils.",
+    "migrationPush": "Envoyer vers le serveur",
+    "migrationLater": "Plus tard",
+    "migrationPull": "Récupérer depuis le serveur",
+    "migrationMerge": "Fusionner les deux",
+    "migrating": "Migration en cours…",
+    "migrationSuccess": "Migration réussie : {n} sujets, {e} événements",
+    "migrationFailed": "Échec de la migration",
+    "migrationConflict": "Conflit détecté",
+    "migrationConflictIntro": "Vous avez {local} sujets en local et {server} sujets sur le serveur. Que voulez-vous faire ?"
   }
 }

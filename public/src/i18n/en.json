@@ -1546,5 +1546,27 @@
     "disable": "Disable account",
     "lastLogin": "Last login",
     "subjects": "Subjects"
+  },
+  "sync": {
+    "status": {
+      "synced": "Synced",
+      "pending": "{n} pending",
+      "syncing": "Syncing…",
+      "error": "Sync error"
+    },
+    "forceNow": "Force sync",
+    "manualBackupTitle": "🔐 Manual backup (advanced)",
+    "manualBackupIntro": "This feature is now optional. Your data is automatically saved to the CitrusCodex server. This encrypted option is still available for personal backup independent of the server (encrypted export to GitHub Gist or WebDAV).",
+    "migrationTitle": "Migrate your data",
+    "migrationIntro": "Your local data ({n} subjects) will be saved to the server so it is accessible from all your devices.",
+    "migrationPush": "Send to server",
+    "migrationLater": "Later",
+    "migrationPull": "Restore from server",
+    "migrationMerge": "Merge both",
+    "migrating": "Migrating…",
+    "migrationSuccess": "Migration complete: {n} subjects, {e} events",
+    "migrationFailed": "Migration failed",
+    "migrationConflict": "Conflict detected",
+    "migrationConflictIntro": "You have {local} subjects locally and {server} subjects on the server. What would you like to do?"
   }
 }

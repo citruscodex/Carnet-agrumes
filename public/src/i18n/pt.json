@@ -1546,5 +1546,27 @@
     "disable": "Desativar conta",
     "lastLogin": "Último login",
     "subjects": "Sujeitos"
+  },
+  "sync": {
+    "status": {
+      "synced": "Sincronizado",
+      "pending": "{n} pendentes",
+      "syncing": "A sincronizar…",
+      "error": "Erro de sync"
+    },
+    "forceNow": "Forçar sincronização",
+    "manualBackupTitle": "🔐 Backup manual (avançado)",
+    "manualBackupIntro": "Esta função é agora opcional. Os seus dados são guardados automaticamente no servidor CitrusCodex. Esta opção cifrada continua disponível para backup pessoal independente do servidor.",
+    "migrationTitle": "Migrar os seus dados",
+    "migrationIntro": "Os seus dados locais ({n} sujeitos) serão guardados no servidor para serem acessíveis em todos os dispositivos.",
+    "migrationPush": "Enviar para o servidor",
+    "migrationLater": "Mais tarde",
+    "migrationPull": "Restaurar do servidor",
+    "migrationMerge": "Fundir ambos",
+    "migrating": "A migrar…",
+    "migrationSuccess": "Migração concluída: {n} sujeitos, {e} eventos",
+    "migrationFailed": "Falha na migração",
+    "migrationConflict": "Conflito detetado",
+    "migrationConflictIntro": "Tem {local} sujeitos localmente e {server} sujeitos no servidor. O que pretende fazer?"
   }
 }
