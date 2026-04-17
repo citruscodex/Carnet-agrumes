@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inscription au stage — Citrus Codex</title>
+<meta id="og-title" property="og:title" content="Inscription au stage — Citrus Codex">
+<meta id="og-desc" property="og:description" content="Inscription à un stage de pépinière agrumes">
 <meta name="description" content="Inscription à un stage de pépinière agrumes">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍊</text></svg>">
 <style>
@@ -362,7 +364,13 @@
       return r.json();
     })
     .then(s => {
-      document.title = esc(s.title) + ' — Citrus Codex';
+      const _dateShort = s.start_datetime ? new Date(s.start_datetime).toLocaleDateString('fr-FR', {day:'numeric', month:'long', year:'numeric'}) : '';
+      const _orgPart = s.organizer_name ? ' · ' + s.organizer_name : '';
+      const _richTitle = s.title + (_orgPart || '') + (_dateShort ? ' · ' + _dateShort : '') + ' — Citrus Codex';
+      document.title = _richTitle;
+      const ogT = document.getElementById('og-title'); if (ogT) ogT.content = _richTitle;
+      const ogD = document.getElementById('og-desc'); if (ogD) ogD.content = 'Inscription au stage "' + s.title + '"' + (_orgPart ? ' par' + _orgPart : '') + (_dateShort ? ' le ' + _dateShort : '') + '.';
+
 
       document.getElementById('stage-title').textContent = s.title;
       const [badgeClass, badgeLabel] = STATUS_LABEL[s.status] || ['badge-cancelled', s.status];

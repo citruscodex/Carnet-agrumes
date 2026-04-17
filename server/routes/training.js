@@ -219,9 +219,10 @@ module.exports = async function trainingPlugin(fastify) {
     const { rows: [session] } = await fastify.pg.query(
       `SELECT s.id, s.title, s.description, s.location, s.start_datetime, s.end_datetime,
               s.capacity, s.price_eur, s.status, s.public_url_slug,
+              COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS organizer_name,
               (SELECT COUNT(*) FROM training_registrations r
                WHERE r.session_id=s.id AND r.confirmed=true AND r.cancelled=false) AS confirmed_count
-       FROM training_sessions s WHERE s.public_url_slug=$1`,
+       FROM training_sessions s JOIN users u ON u.id = s.organizer_id WHERE s.public_url_slug=$1`,
       [req.params.slug]
     );
     if (!session) return reply.code(404).send({ error: 'Stage introuvable' });
@@ -289,6 +290,35 @@ module.exports = async function trainingPlugin(fastify) {
       confirmEmailHtml(first_name, session, confirmUrl, cancelUrl)
     );
 
+    // 16D — Notifier l'organisateur de la nouvelle inscription
+    try {
+      const { rows: org } = await fastify.pg.query(
+        `SELECT u.email, COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS name
+         FROM training_sessions s JOIN users u ON u.id = s.organizer_id WHERE s.id = $1`,
+        [session.id]
+      );
+      if (org.length) {
+        await sendMail(
+          org[0].email,
+          `Nouvelle inscription — ${session.title}`,
+          `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333">
+  <h2 style="color:#2e7d32">🍋 Nouvelle inscription à votre stage</h2>
+  <p>Bonjour ${sanitize(org[0].name, 100)},</p>
+  <p><strong>${sanitize(first_name, 100)} ${sanitize(last_name, 100)}</strong> vient de s'inscrire à votre stage :</p>
+  <table style="border-collapse:collapse;width:100%">
+    <tr><td style="padding:6px;border-bottom:1px solid #eee"><strong>Stage</strong></td><td style="padding:6px;border-bottom:1px solid #eee">${sanitize(session.title, 200)}</td></tr>
+    <tr><td style="padding:6px;border-bottom:1px solid #eee"><strong>Inscrit</strong></td><td style="padding:6px;border-bottom:1px solid #eee">${sanitize(first_name, 100)} ${sanitize(last_name, 100)}</td></tr>
+    <tr><td style="padding:6px;border-bottom:1px solid #eee"><strong>Email</strong></td><td style="padding:6px;border-bottom:1px solid #eee">${sanitize(email, 200)}</td></tr>
+    ${phone ? `<tr><td style="padding:6px;border-bottom:1px solid #eee"><strong>Tél.</strong></td><td style="padding:6px;border-bottom:1px solid #eee">${sanitize(phone, 30)}</td></tr>` : ''}
+    <tr><td style="padding:6px"><strong>Statut</strong></td><td style="padding:6px">⏳ En attente de confirmation par le participant</td></tr>
+  </table>
+  <p style="color:#aaa;font-size:0.8em;margin-top:32px">CitrusCodex — <a href="https://citruscodex.fr">citruscodex.fr</a></p>
+</body></html>`
+        );
+      }
+    } catch (e) { /* ne pas bloquer si email orga échoue */ }
+
     reply.code(201).send({
       ok: true,
       message: emailSent
@@ -324,34 +354,84 @@ module.exports = async function trainingPlugin(fastify) {
        FROM training_sessions s
        WHERE r.confirmation_token=$1 AND r.cancelled=false
          AND s.id=r.session_id
-       RETURNING r.id, r.email, s.public_url_slug, s.id AS session_id`,
+       RETURNING r.id, r.email, r.first_name, r.last_name, s.public_url_slug, s.id AS session_id, s.title, s.organizer_id`,
       [req.params.token]
     );
     if (!rows.length) {
       return reply.redirect(`${BASE}/training.html?error=token_invalid`);
     }
+    const reg = rows[0];
     await fastify.pg.query(
       `UPDATE training_sessions SET status='open'
        WHERE id=$1 AND status='full' AND end_datetime > NOW()`,
-      [rows[0].session_id]
+      [reg.session_id]
     );
-    reply.redirect(`${BASE}/training.html?slug=${encodeURIComponent(rows[0].public_url_slug)}&cancelled=1`);
+    // 16D — Email annulation à l'inscrit
+    try {
+      await sendMail(
+        reg.email,
+        `Inscription annulée — ${reg.title}`,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333">
+  <h2 style="color:#c62828">Inscription annulée</h2>
+  <p>Bonjour ${sanitize(reg.first_name, 100)},</p>
+  <p>Votre inscription au stage <strong>${sanitize(reg.title, 200)}</strong> a bien été annulée.</p>
+  <p style="color:#aaa;font-size:0.8em;margin-top:32px">CitrusCodex — <a href="https://citruscodex.fr">citruscodex.fr</a></p>
+</body></html>`
+      );
+    } catch (e) { /* ne pas bloquer */ }
+    // 16D — Notifier l'organisateur de l'annulation
+    try {
+      const { rows: org } = await fastify.pg.query(
+        `SELECT u.email, COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS name FROM users u WHERE u.id = $1`,
+        [reg.organizer_id]
+      );
+      if (org.length) {
+        await sendMail(
+          org[0].email,
+          `Annulation d'inscription — ${reg.title}`,
+          `<!DOCTYPE html><html><head><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333">
+  <h2 style="color:#e65100">Annulation d'inscription</h2>
+  <p>Bonjour ${sanitize(org[0].name, 100)},</p>
+  <p><strong>${sanitize(reg.first_name, 100)} ${sanitize(reg.last_name, 100)}</strong> (${sanitize(reg.email, 200)}) vient d'annuler son inscription au stage <strong>${sanitize(reg.title, 200)}</strong>.</p>
+  <p style="color:#aaa;font-size:0.8em;margin-top:32px">CitrusCodex — <a href="https://citruscodex.fr">citruscodex.fr</a></p>
+</body></html>`
+        );
+      }
+    } catch (e) { /* ne pas bloquer */ }
+    reply.redirect(`${BASE}/training.html?slug=${encodeURIComponent(reg.public_url_slug)}&cancelled=1`);
   });
 
   // ── POST /api/training/cancel/:token — Annulation via JS (JSON) ──────────────
   fastify.post('/training/cancel/:token', async (req, reply) => {
     const { rows } = await fastify.pg.query(
-      `UPDATE training_registrations SET cancelled=true, cancelled_at=NOW()
-       WHERE confirmation_token=$1 AND cancelled=false
-       RETURNING id,email,session_id`,
+      `UPDATE training_registrations r SET cancelled=true, cancelled_at=NOW()
+       FROM training_sessions s
+       WHERE r.confirmation_token=$1 AND r.cancelled=false AND s.id=r.session_id
+       RETURNING r.id, r.email, r.first_name, r.last_name, r.session_id, s.title, s.organizer_id`,
       [req.params.token]
     );
     if (!rows.length) return reply.code(400).send({ error: 'Token invalide' });
+    const reg = rows[0];
     await fastify.pg.query(
       `UPDATE training_sessions SET status='open'
        WHERE id=$1 AND status='full' AND end_datetime > NOW()`,
-      [rows[0].session_id]
+      [reg.session_id]
     );
+    // 16D — emails annulation
+    try {
+      await sendMail(reg.email, `Inscription annulée — ${reg.title}`,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333"><h2 style="color:#c62828">Inscription annulée</h2><p>Bonjour ${sanitize(reg.first_name,100)},</p><p>Votre inscription au stage <strong>${sanitize(reg.title,200)}</strong> a bien été annulée.</p></body></html>`
+      );
+      const { rows: org } = await fastify.pg.query(
+        `SELECT u.email, COALESCE(NULLIF(u.display_name,''), split_part(u.email,'@',1)) AS name FROM users u WHERE u.id = $1`,
+        [reg.organizer_id]
+      );
+      if (org.length) await sendMail(org[0].email, `Annulation d'inscription — ${reg.title}`,
+        `<!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:20px;color:#333"><h2 style="color:#e65100">Annulation d'inscription</h2><p>Bonjour ${sanitize(org[0].name,100)},</p><p><strong>${sanitize(reg.first_name,100)} ${sanitize(reg.last_name,100)}</strong> vient d'annuler son inscription au stage <strong>${sanitize(reg.title,200)}</strong>.</p></body></html>`
+      );
+    } catch (e) { /* ne pas bloquer */ }
     reply.send({ ok: true, message: 'Inscription annulée.' });
   });
 };
