@@ -330,23 +330,21 @@ export async function bulkImportLocalData(strategy = 'skip_existing') {
 // ── Topbar indicator ──────────────────────────────────────────────────────────
 
 function _injectTopbarButton() {
-  const topbar = document.getElementById('topbar')
-  if (!topbar || document.getElementById('cca-sync-btn')) return
+  if (document.getElementById('cca-sync-btn')) return
 
   const btn = document.createElement('button')
   btn.id = 'cca-sync-btn'
   btn.className = 'cca-sync-btn'
   btn.setAttribute('aria-label', 'Synchronisation serveur')
   btn.innerHTML = '<span class="cca-sync-dot" data-status="idle"></span><span class="cca-sync-label"></span>'
-  // Insert before #tb-act so it survives tb-act.innerHTML resets
-  const act = document.getElementById('tb-act')
-  topbar.insertBefore(btn, act || null)
+  // Inject into body (fixed-position) to avoid topbar overflow:hidden clipping
+  document.body.appendChild(btn)
 
   btn.addEventListener('click', () => syncNow())
 
   window.addEventListener('cca-sync-status', e => {
-    const dot   = document.querySelector('.cca-sync-dot')
-    const label = document.querySelector('.cca-sync-label')
+    const dot   = document.getElementById('cca-sync-btn')?.querySelector('.cca-sync-dot')
+    const label = document.getElementById('cca-sync-btn')?.querySelector('.cca-sync-label')
     if (!dot || !label) return
     dot.setAttribute('data-status', e.detail.status)
     const T = window.T
