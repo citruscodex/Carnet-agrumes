@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue sur CitrusCodex — Guide du bêta-testeur</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,-apple-system,sans-serif;background:#faf6f0;color:#2d3436;line-height:1.7;padding:24px 16px 48px}
+    .wrap{max-width:700px;margin:0 auto}
+    header{display:flex;align-items:center;gap:10px;margin-bottom:32px;padding-bottom:16px;border-bottom:2px solid #c75b2a}
+    header span{font-size:2rem}
+    header a{color:#c75b2a;text-decoration:none;font-weight:700;font-size:1.2rem}
+    h1{font-size:1.7rem;color:#2d3436;margin-bottom:8px;font-weight:800}
+    .subtitle{color:#636e72;font-size:.95rem;margin-bottom:36px}
+    h2{font-size:1.15rem;font-weight:700;color:#2d5016;margin:32px 0 10px;padding-bottom:6px;border-bottom:1px solid #e0d8ce}
+    h3{font-size:.97rem;font-weight:700;color:#2d3436;margin:18px 0 4px}
+    p{margin:6px 0;font-size:.93rem}
+    ol,ul{padding-left:20px;font-size:.93rem}
+    li{margin:4px 0}
+    a{color:#c75b2a;font-weight:600;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .code-box{background:#2d3436;color:#fd9644;font-family:monospace;font-size:1.1rem;font-weight:700;letter-spacing:3px;padding:12px 20px;border-radius:8px;text-align:center;margin:16px 0;display:inline-block}
+    .tip{background:#fff8f4;border-left:3px solid #c75b2a;padding:10px 14px;border-radius:0 6px 6px 0;font-size:.88rem;color:#636e72;margin:10px 0}
+    .tip strong{color:#c75b2a}
+    footer{margin-top:48px;padding-top:16px;border-top:1px solid #e0d8ce;font-size:.78rem;color:#999;text-align:center}
+    footer a{color:#c75b2a;margin:0 6px;text-decoration:none}
+    @media(max-width:480px){h1{font-size:1.4rem}h2{font-size:1rem}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span>🍊</span>
+    <a href="/">CitrusCodex</a>
+  </header>
+
+  <h1>Bienvenue, bêta-testeur !</h1>
+  <p class="subtitle">Merci de participer à la phase de test de <strong>CitrusCodex</strong>, l'application de gestion de collections d'agrumes. Votre retour compte énormément.</p>
+
+  <h2>🚀 Premiers pas</h2>
+  <ol>
+    <li>Rendez-vous sur <a href="https://citruscodex.fr">citruscodex.fr</a></li>
+    <li>Cliquez sur <strong>"Créer un compte"</strong></li>
+    <li>Saisissez votre <strong>code d'invitation</strong> (reçu par email ou message)</li>
+    <li>Choisissez votre email et mot de passe</li>
+    <li>Consultez votre boîte email pour <strong>confirmer votre inscription</strong></li>
+    <li>Connectez-vous et commencez à explorer !</li>
+  </ol>
+  <p class="tip"><strong>Spam :</strong> l'email de confirmation peut arriver dans les spams — vérifiez-y si vous ne le voyez pas en inbox.</p>
+
+  <h2>🍋 Que tester en priorité ?</h2>
+
+  <h3>1. Créer votre collection</h3>
+  <p>Ajoutez vos premiers sujets (agrumes en pot ou en terre) avec leurs informations botaniques, emplacements, et stade phénologique.</p>
+
+  <h3>2. Explorer le calendrier</h3>
+  <p>Enregistrez des événements sur vos sujets : arrosage, rempotage, taille, traitement, floraison, greffage…</p>
+
+  <h3>3. Consulter la météo et la phénologie</h3>
+  <p>Le dashboard affiche la météo locale, les degrés-jours de croissance (GJC) et le stade phénologique BBCH de vos agrumes selon votre localisation.</p>
+
+  <h3>4. Parcourir la communauté</h3>
+  <ul>
+    <li><strong>Wiki</strong> — Articles collaboratifs sur les agrumes (maladies, taille, greffage…)</li>
+    <li><strong>Observatoire</strong> — Carte des observations communautaires (floraisons, gel, maladies)</li>
+    <li><strong>Bourse aux greffons</strong> — Proposez ou recherchez des greffons</li>
+  </ul>
+
+  <h3>5. Tester la synchronisation</h3>
+  <p>Connectez-vous sur un deuxième appareil (téléphone, tablette, autre navigateur) avec le même compte. Vos données se synchronisent automatiquement et restent disponibles hors ligne.</p>
+
+  <h2>🐛 Signaler un problème</h2>
+  <p>Vous voyez un bug ? Un bouton qui ne marche pas ? Une fonctionnalité qui manque ?</p>
+  <p>Utilisez le <strong>bouton 🐛</strong> en bas à droite de l'écran pour signaler directement depuis l'app. Votre rapport sera visible dans <em>Réglages → Mes signalements</em>.</p>
+  <p>Vous pouvez aussi donner votre avis général dans <em>Réglages → Donner mon avis</em> (notation étoiles + commentaire).</p>
+
+  <h2>📱 Installer l'app sur votre téléphone</h2>
+  <p>CitrusCodex est une PWA — vous pouvez l'installer sur votre écran d'accueil :</p>
+  <ul>
+    <li><strong>iPhone / iPad</strong> : Safari → bouton Partager (↑) → "Sur l'écran d'accueil"</li>
+    <li><strong>Android</strong> : Chrome → menu ⋮ → "Installer l'application"</li>
+  </ul>
+  <p class="tip"><strong>Conseil :</strong> l'installation permet un accès hors ligne complet à votre collection.</p>
+
+  <h2>🔒 Vos données</h2>
+  <ul>
+    <li>Vos données vous appartiennent — stockées en France (Scaleway, Paris), chiffrées</li>
+    <li>Export possible à tout moment : <em>Réglages → Télécharger mes données (RGPD)</em></li>
+    <li>Suppression de compte possible à tout moment : <em>Réglages → Supprimer mon compte</em></li>
+  </ul>
+
+  <h2>📖 Besoin d'aide ?</h2>
+  <p>Consultez le <a href="/aide.html">guide d'utilisation complet</a> (60+ sections) accessible depuis <em>Réglages → Guide d'utilisation</em>.</p>
+
+  <h2>💬 Contact</h2>
+  <p>Pour toute question : <a href="mailto:tristan.peyrotty@gmail.com">tristan.peyrotty@gmail.com</a></p>
+
+  <footer>
+    <p>CitrusCodex — Bêta privée · Avril 2026</p>
+    <p>
+      <a href="/mentions-legales.html">Mentions légales</a> ·
+      <a href="/confidentialite.html">Confidentialité</a> ·
+      <a href="/cgu.html">CGU</a>
+    </p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -41,6 +41,7 @@ jobs:
           cp public/confidentialite.html confidentialite.html
           cp public/mentions-legales.html mentions-legales.html
           cp public/changelog.html changelog.html
+          cp public/bienvenue.html bienvenue.html
           # Vérification
           echo "--- Fichiers à déployer ---"
           ls -la index.html manifest.json sw.js 404.html cgu.html confidentialite.html mentions-legales.html
@@ -58,7 +59,7 @@ jobs:
           TARGET=/var/www/cca
 
           # Créer l'archive localement (scp de fichier unique fonctionne)
-          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html assets
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html bienvenue.html assets
           echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
           # Copier l'archive sur le serveur

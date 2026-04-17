@@ -1,0 +1,31 @@
+Objet : 🍊 Invitation bêta CitrusCodex — Votre code d'accès
+
+Bonjour [Prénom],
+
+Je t'invite à rejoindre la bêta privée de CitrusCodex, l'application
+de gestion de collections d'agrumes.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔑 Ton code d'invitation : [CODE-XXXX-XXXX]
+
+📱 Inscris-toi sur : https://citruscodex.fr
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Comment faire :
+1. Clique sur "Créer un compte"
+2. Entre ton code d'invitation
+3. Choisis ton email et mot de passe
+4. Confirme ton email (vérifie les spams)
+5. C'est parti !
+
+📖 Guide du bêta-testeur :
+https://citruscodex.fr/bienvenue.html
+
+🐛 Si tu trouves un bug, utilise le bouton 🐛
+en bas à droite de l'écran pour le signaler directement.
+
+Merci de m'aider à améliorer CitrusCodex !
+
+Tristan
