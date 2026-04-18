@@ -1576,5 +1576,16 @@
     "backupTitle": "Archivo wiki personal",
     "backupIntro": "Tu wiki personal local ha sido archivado. Las contribuciones compartidas están en Comunidad → Citrus Wiki. Este archivo se eliminará en {days} día(s) — descárgalo si quieres conservar tus notas.",
     "downloadBackup": "Descargar archivo JSON"
+  },
+  "guide": {
+    "title": "Guía para principiantes",
+    "search": "Buscar en la guía…",
+    "noResults": "Sin resultados",
+    "downloadPDF": "Descargar PDF",
+    "loadError": "No se puede cargar la guía. Verifique su conexión.",
+    "notTranslatedYet": "La guía para principiantes está disponible actualmente solo en francés. Las traducciones ES/EN/IT/PT se publicarán tras la beta. 🇫🇷 Le guide est disponible en français.",
+    "openChapter": "Abrir capítulo",
+    "readMore": "📖 Entender",
+    "fullGuide": "Guía nutrición"
   }
 }

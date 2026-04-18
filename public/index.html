@@ -3142,8 +3142,10 @@ function renderFertGauges(){
       const barBg=ELEM_BG[el];
       const tgtPct=Math.min(100,Math.round(tgt/Math.max(tgt,appl)*100));
       const status=pct>=90?'✅':pct>=60?'🔶':pct>=30?'⚠️':'❌';
-      return`<div class="fg-elem-row">
+      const _ga={'N':'chapitre-2-les-elements-nutritifs','P':'chapitre-2-les-elements-nutritifs','K':'chapitre-2-les-elements-nutritifs','Ca':'chapitre-2-les-elements-nutritifs','Mg':'chapitre-2-les-elements-nutritifs'}[el]||'chapitre-2-les-elements-nutritifs';
+      return`<div class="fg-elem-row" data-nutrient="${esc(el)}">
 <span class="fg-elem-lbl" style="color:${ELEM_COLORS[el]}">${el}</span>
+<button class="cca-gauge-help" data-action="open-guide-chapter" data-guide-anchor="${_ga}" title="${esc(T('guide.openChapter')||'Guide')}" aria-label="${esc(T('guide.openChapter')||'Guide')}" style="background:none;border:none;cursor:pointer;font-size:.85rem;padding:0 3px;opacity:.65;flex-shrink:0">📖</button>
 <div class="fg-bar-wrap" style="background:${barBg}">
   <div class="fg-bar" style="width:${pct}%;background:${barColor}"></div>
   <div class="fg-bar-target" style="left:${tgtPct}%"></div>
@@ -4233,7 +4235,7 @@ function render(){
   const m=document.getElementById('main'),bk=document.getElementById('tb-back'),sb=document.getElementById('tb-sub'),ac=document.getElementById('tb-act');
   if(selId){bk.style.display='block';sb.textContent='Fiche sujet';ac.innerHTML='';m.innerHTML=renderDetail();_mountPheno('detail');}
   else if(page==='dashboard'){bk.style.display='none';sb.textContent=T('misc.appSubtitle');ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-infographic">📊</button><button class="btn btn-g btn-sm" data-action="nav" data-page="settings" title="Réglages">⚙</button>`;try{m.innerHTML=renderDash();_mountPheno('dash');}catch(e){m.innerHTML='<div class="page" style="padding:20px"><h3 style="color:#c62828">⚠ Erreur</h3><p style="font-size:.8rem;font-family:monospace;color:#c62828">'+esc(e.message)+'</p></div>';console.error('renderDash:',e);}}
-  else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-add-fert">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" data-action="nav" data-page="settings">⚙</button>':'');m.innerHTML=renderFertPage();if(fertView==='substrats'){requestAnimationFrame(()=>{const r=document.getElementById('cca-substrats-root');if(r&&window.__CCA_substrats)window.__CCA_substrats.mount(r,T,plants);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module substrats en cours de chargement…</div>';});}}
+  else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-add-fert">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" data-action="nav" data-page="settings">⚙</button>':'');m.innerHTML=renderFertPage();if(fertView==='substrats'){requestAnimationFrame(()=>{const r=document.getElementById('cca-substrats-root');if(r&&window.__CCA_substrats)window.__CCA_substrats.mount(r,T,plants);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module substrats en cours de chargement…</div>';});}else if(fertView==='guide'){const _pa=_guidePendingAnchor;_guidePendingAnchor=null;requestAnimationFrame(()=>{const r=document.getElementById('cca-guide-root');if(r&&window.__CCA_guide)window.__CCA_guide.mount(r,T,getLang,_pa);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module guide en cours de chargement…</div>';});}}
   else if(page==='eco'){bk.style.display='none';sb.textContent=T('misc.ecoTitle');const _ecoIsC=!PRO_PROFILES.includes((getProfile().profileType)||'collectionneur');ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-eco-entry" data-entry-type="cost">${_ecoIsC?'+ Dépense':'+ '+T('misc.ecoCosts')}</button>`;try{m.innerHTML=renderEcoPage();}catch(e){console.error('renderEco:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='nursery'){showPage('pro');}
   else if(page==='pro'){bk.style.display='none';sb.textContent='🌿 Espace Pro';ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="nav" data-page="settings">⚙</button>`;try{m.innerHTML=renderProPage();requestAnimationFrame(()=>{const active=m.querySelector('.pro-tab-bar .pro-tab-pill.active');if(active)active.scrollIntoView({inline:'center',behavior:'smooth',block:'nearest'});});}catch(e){console.error('renderPro:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
@@ -9723,6 +9725,7 @@ function submitEV(pid){
 const CAL_TYPES=['fertilisation','traitement','taille','rempotage','hivernage','sortie','protection','floraison','fructification','récolte','arrosage','observation','modification','greffage','dégâts_gel'];
 let calHidden=new Set(); // types in this set are hidden
 let fertView='cal', calYear=new Date().getFullYear(), calMonth=new Date().getMonth(), certifView='list';
+let _guidePendingAnchor=null;
 
 function renderFertPage(){
   const allCalEvs=plants.flatMap(p=>
@@ -9740,9 +9743,10 @@ function renderFertPage(){
   <div class="fert-tab${fertView==='amendments'?' active':''}" data-action="fert-view" data-view="amendments">🪨 Amendements</div>
   <div class="fert-tab${fertView==='stocks'?' active':''}" data-action="fert-view" data-view="stocks">📦 Stocks</div>
   <div class="fert-tab${fertView==='substrats'?' active':''}" data-action="fert-view" data-view="substrats">🪴 Substrats</div>
+  <div class="fert-tab${fertView==='guide'?' active':''}" data-action="fert-view" data-view="guide">📚 Guide</div>
   ${PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?`<div class="fert-tab${fertView==='ppf'?' active':''}" data-action="fert-view" data-view="ppf">📋 PPF</div><div class=\"fert-tab${fertView==='epandage'?' active':''}\" onclick=\"fertView='epandage';render()\">🪣 Épandage</div>`:''}
 </div>
-${fertView==='cal'?renderFertCal(allCalEvs):fertView==='list'?renderFertList(allFertEvs):fertView==='profiles'?renderFertProfiles():fertView==='stocks'?renderStocksTab():fertView==='substrats'?'<div id="cca-substrats-root" style="min-height:200px"></div>':fertView==='ppf'?renderPPF():renderAmendProfiles()}
+${fertView==='cal'?renderFertCal(allCalEvs):fertView==='list'?renderFertList(allFertEvs):fertView==='profiles'?renderFertProfiles():fertView==='stocks'?renderStocksTab():fertView==='substrats'?'<div id="cca-substrats-root" style="min-height:200px"></div>':fertView==='guide'?'<div id="cca-guide-root" style="min-height:300px"></div>':fertView==='ppf'?renderPPF():renderAmendProfiles()}
 </div>`}
 
 function renderFertCal(allCalEvs){
@@ -12441,7 +12445,7 @@ ${pType==='conservatoire'?`<div class="prof-section" style="border-left:3px soli
 <button class="prof-action-btn pab-neutral" onclick="document.getElementById('imp-file').click()">${T('misc.profImport')}</button>
 <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(event)"/>
 ${['collectionneur','conservatoire'].includes(pType)?`<button class="prof-action-btn pab-neutral" onclick="exportInsurancePDF()" style="background:rgba(21,101,192,.06);border-color:rgba(21,101,192,.2);color:#1565c0">📋 Rapport assurance</button>`:''}
-<a href="aide.html" target="_blank" class="prof-action-btn pab-neutral" style="text-align:center;text-decoration:none;display:block">${T('misc.profGuide')}</a>
+<button class="prof-action-btn pab-neutral" data-action="open-guide-chapter" data-guide-anchor="">📚 ${esc(T('guide.fullGuide')||'Guide nutrition complet')}</button>
 <button class="prof-action-btn pab-red" onclick="if(confirm('Verrouiller et déconnecter ?'))location.reload()">${T('misc.profLock')}</button>
 <div style="height:20px"></div>`;
 }
@@ -20534,6 +20538,8 @@ function _diagShowResult(result){
   </div>
   ${result.source==='local'&&result.primary.cat==='virus'?`<div style="font-size:.75rem;color:#c62828;text-align:center;padding:4px 10px;margin-top:-4px;line-height:1.5">⚠ Diagnostic heuristique non confirmatoire pour les virus — test de laboratoire requis</div>`:''}
   ${result.source==='local'&&result.primary.cat==='carence'&&result.primary.confidence<0.55?`<div style="font-size:.75rem;color:#e65100;text-align:center;padding:4px 10px;margin-top:-4px;line-height:1.5">⚠ Plusieurs carences ont des symptômes proches — analyse de sol ou foliaire recommandée</div>`:''}
+  ${result.primary.cat==='carence'?`<div style="text-align:right;margin-top:6px"><button class="btn cca-alert-carence" style="background:rgba(46,125,50,.08);color:#2e7d32;border-color:rgba(46,125,50,.25);font-size:.78rem" data-action="open-guide-chapter" data-guide-anchor="chapitre-10-diagnostiquer-et-corriger-les-carences">${esc(T('guide.readMore')||'📖 Comprendre')}</button></div>`:''}
+
   ${(()=>{const pn=result.plantNetData;if(!pn||pn.noMatch)return'';
     return`<div style="background:rgba(45,90,61,.06);border-radius:9px;padding:8px 11px;margin-bottom:8px;border:1px solid rgba(45,90,61,.15)"><div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.09em;color:var(--g3);margin-bottom:5px;font-weight:700">🌿 ${T('misc.diagSpeciesConfirm')} — PlantNet</div><div style="font-size:.8rem;font-weight:600;font-style:italic;color:var(--text-strong)">${esc(pn.scientificName)}</div>${pn.commonName?`<div style="font-size:.7rem;color:var(--muted)">${esc(pn.commonName)}</div>`:''}<div style="font-size:.75rem;color:var(--g3);margin-top:3px;font-family:'JetBrains Mono',monospace">Confiance : ${pn.score}%${pn.results?.length>1?' · '+pn.results.slice(1).map(r=>r.name+' '+r.score+'%').join(', '):''}</div></div>`;
   })()}
@@ -21688,6 +21694,13 @@ document.addEventListener('click', function _gad(e){
         deleteCollection(el.dataset.id); closeModal(); render();
       }
       break;
+    // ── Guide ──
+    case 'open-guide-chapter':
+      if(typeof closeDiag==='function') closeDiag();
+      _guidePendingAnchor = el.dataset.guideAnchor || null;
+      fertView = 'guide';
+      showPage('fert');
+      break;
     // ── Fert view ──
     case 'fert-view':
       fertView = el.dataset.view || 'cal';
@@ -21797,6 +21810,23 @@ if(subRoot && typeof T === 'function' && typeof plants !== 'undefined') substrat
 import { migrateWikiV1IfNeeded } from './src/modules/wiki-v1-migration.js';
 // Archiver silencieusement les données wiki v1 si elles existent
 migrateWikiV1IfNeeded();
+</script>
+<!-- Phase 0C — Guide débutant (ES module) -->
+<script type="module">
+import * as guide from './src/modules/guide.js';
+window.__CCA_guide = guide;
+// Monter si l'onglet guide est déjà affiché
+const guideRoot = document.getElementById('cca-guide-root');
+if(guideRoot && typeof T === 'function' && typeof getLang === 'function') guide.mount(guideRoot, T, getLang, null);
+// Listener navigation contextuelle (depuis boutons NPK/carences)
+window.addEventListener('cca-navigate', e => {
+  const { view, deepLink } = e.detail || {};
+  if(view === 'guide') {
+    if(typeof _guidePendingAnchor !== 'undefined') _guidePendingAnchor = deepLink || null;
+    if(typeof fertView !== 'undefined') fertView = 'guide';
+    if(typeof showPage === 'function') showPage('fert');
+  }
+});
 </script>
 </body>
 </html>
