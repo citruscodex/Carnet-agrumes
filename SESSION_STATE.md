@@ -1,13 +1,13 @@
 # SESSION STATE — Carnet Agrumes
 
-> Mis à jour : 2026-04-18 (fin session Phase 0C)
+> Mis à jour : 2026-04-18 (fin session — emails unifiés + faille sécurité corrigée)
 
 ---
 
 ## Dernière session
 
 **Date :** 18/04/2026
-**Dernier commit :** `6e3323e` — feat(phase-0c): module guide.js, TOC, recherche, 4 points d'entrée, notes footnotes, bannière i18n
+**Dernier commit :** `0d9b92f` — chore(privacy): unification adresse contact → citruscodex@gmail.com
 
 ---
 
@@ -115,10 +115,15 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 
 ---
 
+## Corrections ponctuelles ✅ (2026-04-18)
+- Emails unifiés : `contact@citruscodex.fr` + `tristan.peyrotty@gmail.com` → `citruscodex@gmail.com` (confidentialite.html, mentions-legales.html, bienvenue.html)
+- Faille sécurité corrigée : condition email hardcodée → `_srvUserRole()==='admin'` dans index.html L12362
+
+---
+
 ## Prochaine session — À FAIRE DANS CET ORDRE
 
-1. **Remplacer emails** `contact@citruscodex.fr` et `tristan.peyrotty@gmail.com` → `citruscodex@gmail.com` dans `public/`, `src/`, `server/`
-2. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
+1. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
 
 ---
 
