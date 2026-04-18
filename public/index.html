@@ -12359,7 +12359,7 @@ ${_srvUserRole()==='admin'?`<div style="background:rgba(198,40,40,.05);border-ra
 <div class="prof-section">
 <div class="prof-section-title">Type de profil</div>
 <div class="prof-row" style="flex-direction:column;align-items:flex-start;gap:6px">
-${(sessionStorage.getItem('cca_srv_email')||_srvEmail)==='tristan.peyrotty@gmail.com'
+${_srvUserRole()==='admin'
   ? `<div class="cca-profile-badge" style="gap:8px">
   <span class="cca-profile-icon">${{collectionneur:'🍋',pepinieriste:'🌱',arboriculteur:'🌳',conservatoire:'🏛'}[pType]||'🍋'}</span>
   <select onchange="switchProfileType(this.value)" style="background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:.85rem;cursor:pointer">
