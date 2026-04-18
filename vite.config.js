@@ -2,6 +2,21 @@ import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
 
+// Plugin: copy static subdirectories from public/ to build/
+function copyStaticDirsPlugin(dirs) {
+  return {
+    name: 'copy-static-dirs',
+    closeBundle() {
+      for (const dir of dirs) {
+        const src = path.resolve('public', dir)
+        const dest = path.resolve('build', dir)
+        if (!fs.existsSync(src)) continue
+        fs.cpSync(src, dest, { recursive: true })
+      }
+    }
+  }
+}
+
 // Plugin: inject const LANGS={...} as an inline non-module <script> in <head>
 // Source of truth: public/src/i18n/*.json
 function inlineLangsPlugin() {
@@ -30,7 +45,7 @@ export default defineConfig({
   // public/ est la racine web — index.html s'y trouve directement
   root: 'public',
   publicDir: false,
-  plugins: [inlineLangsPlugin()],
+  plugins: [inlineLangsPlugin(), copyStaticDirsPlugin(['guide'])],
   build: {
     outDir: '../build',
     emptyOutDir: true,

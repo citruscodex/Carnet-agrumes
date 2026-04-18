@@ -1,13 +1,13 @@
 # SESSION STATE — Carnet Agrumes
 
-> Mis à jour : 2026-04-17 (fin session Phase 0A + 0B)
+> Mis à jour : 2026-04-18 (fin session Phase 0C)
 
 ---
 
 ## Dernière session
 
-**Date :** 17/04/2026
-**Dernier commit :** `938aba6` — feat(phase-0b): observatoire seed, wiki v2 footnotes, wiki-v1 migration, i18n
+**Date :** 18/04/2026
+**Dernier commit :** `6e3323e` — feat(phase-0c): module guide.js, TOC, recherche, 4 points d'entrée, notes footnotes, bannière i18n
 
 ---
 
@@ -42,12 +42,30 @@ Bugs bloquants + Wiki v2
 | CSS `.cca-fn-ref`, `.cca-footnotes`, `.cca-fn-backref` | ✅ |
 | Tests Playwright : **5/5 passent** | ✅ |
 
+### Phase 0C ✅ — commit `6e3323e`
+Guide débutant fertilisation intégré
+
+| Livrable | Statut |
+|---|---|
+| `public/guide/guide-debutant-citruscodex.md` — 11 chap. + 3 annexes (sources INRAE/UF-IFAS/IAC/IVIA) | ✅ |
+| `guide-debutant-citruscodex.pdf` déposé manuellement sur Scaleway `/var/www/cca/guide/` | ✅ |
+| `public/src/modules/guide.js` — rendu MD, TOC sidebar, recherche, bookmarks, footnotes ↩ | ✅ |
+| Point d'entrée 1 : onglet "📚 Guide" dans Fertilisation | ✅ |
+| Point d'entrée 2 : bouton 📖 sur chaque gauge NPK (→ chapitre-2) | ✅ |
+| Point d'entrée 3 : bouton "Comprendre" sur résultats carences diagnostic (→ chapitre-10) | ✅ |
+| Point d'entrée 4 : bouton "Guide nutrition complet" dans Réglages (data-action) | ✅ |
+| i18n `guide.*` sur 5 langues + bannière bilingue non-FR | ✅ |
+| Ancres construites depuis vrais `##` du guide (pas inventées) | ✅ |
+| `cca-navigate` event listener pour deep-link cross-module | ✅ |
+| Tests Playwright : **5/6 passent** (T3 skip valide : alerte carence absente en test) | ✅ |
+| `node --check` OK, `npm run build` OK | ✅ |
+
 ### Corrections ponctuelles ✅
 - Bug couleur liens login (`Mot de passe oublié` / `Pas encore de compte`) — texte visible résolu
 
 ---
 
-## Architecture serveur actuelle (2026-04-17)
+## Architecture serveur actuelle (2026-04-18)
 
 ```
 /opt/cca/
@@ -64,11 +82,15 @@ Bugs bloquants + Wiki v2
 
 /var/www/cca/
   index.html, sw.js, manifest.json, assets/
+  guide/
+    guide-debutant-citruscodex.md                                                  [Phase 0C]
+    guide-debutant-citruscodex.pdf  (déposé manuellement, hors CI/CD)             [Phase 0C]
   src/modules/
     server-sync.js       [Phase 0A]
     migration-modal.js   [Phase 0A]
     wiki-v1-migration.js [Phase 0B]
     wiki.js (modifié)    [Phase 0B]
+    guide.js             [Phase 0C]
 ```
 
 DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
@@ -95,9 +117,8 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 
 ## Prochaine session — À FAIRE DANS CET ORDRE
 
-1. **Exécuter `CLAUDE_CODE_PROMPT_PHASE_0C_GUIDE.md`**
-2. **Remplacer emails** `contact@citruscodex.fr` et `tristan.peyrotty@gmail.com` → `citruscodex@gmail.com` dans `public/`, `src/`, `server/`
-3. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
+1. **Remplacer emails** `contact@citruscodex.fr` et `tristan.peyrotty@gmail.com` → `citruscodex@gmail.com` dans `public/`, `src/`, `server/`
+2. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
 
 ---
 
@@ -119,3 +140,4 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 | Beta publique | `b45a6fc` | Chantiers 1–15 + 16A-16H — beta ready |
 | Phase 0A | `af5c904` + `938aba6` (fix) | Sync serveur, 19 tables, routes user data |
 | Phase 0B | `938aba6` | Observatoire, bugs, wiki v2 footnotes, migration v1 |
+| Phase 0C | `6e3323e` | Guide fertilisation intégré, 4 points d'entrée, i18n 5 langues |
