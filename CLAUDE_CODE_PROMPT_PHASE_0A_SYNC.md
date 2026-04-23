@@ -390,13 +390,13 @@ COMMIT;
 ```bash
 # Écrire le fichier dans /tmp/ puis appliquer — JAMAIS coller multi-ligne SQL dans bash
 scp server/migrations/002_user_data_normalized.sql root@62.210.237.49:/tmp/
-ssh root@62.210.237.49 "sudo -u postgres psql -d cca_prod -f /tmp/002_user_data_normalized.sql"
+ssh root@62.210.237.49 "sudo -u postgres psql -d ccadb -f /tmp/002_user_data_normalized.sql"
 ```
 
 ### Validation
 
 ```bash
-ssh root@62.210.237.49 'sudo -u postgres psql -d cca_prod -c "\dt user_*"'
+ssh root@62.210.237.49 'sudo -u postgres psql -d ccadb -c "\dt user_*"'
 # Doit lister 17 tables user_*
 ```
 
