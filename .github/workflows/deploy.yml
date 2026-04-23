@@ -31,6 +31,9 @@ jobs:
           # Vider d'abord si existant pour éviter assets/assets/
           rm -rf assets
           cp -r build/assets assets
+          # Guide utilisateur (copié par copyStaticDirsPlugin)
+          rm -rf guide
+          cp -r build/guide guide
           # Fichiers statiques non bundlés par Vite
           cp public/sw.js    sw.js
           cp public/404.html 404.html
@@ -59,7 +62,7 @@ jobs:
           TARGET=/var/www/cca
 
           # Créer l'archive localement (scp de fichier unique fonctionne)
-          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html bienvenue.html assets
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html bienvenue.html assets guide
           echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
           # Copier l'archive sur le serveur
