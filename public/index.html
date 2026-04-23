@@ -12443,7 +12443,7 @@ ${pType==='conservatoire'?`<div class="prof-section" style="border-left:3px soli
 <input type="file" id="imp-file" accept=".json" style="display:none" onchange="importData(event)"/>
 ${['collectionneur','conservatoire'].includes(pType)?`<button class="prof-action-btn pab-neutral" onclick="exportInsurancePDF()" style="background:rgba(21,101,192,.06);border-color:rgba(21,101,192,.2);color:#1565c0">📋 Rapport assurance</button>`:''}
 <button class="prof-action-btn pab-neutral" data-action="open-guide-chapter" data-guide-anchor="">📚 ${esc(T('guide.fullGuide')||'Guide nutrition complet')}</button>
-<button class="prof-action-btn pab-red" onclick="if(confirm('Verrouiller et déconnecter ?'))location.reload()">${T('misc.profLock')}</button>
+<button class="prof-action-btn pab-red" onclick="window.__CCA_AuthLogout?.logoutUser(T('misc.logoutConfirm'))">${T('misc.profLogout')}</button>
 <div style="height:20px"></div>`;
 }
 
@@ -21814,6 +21814,11 @@ if(subRoot && typeof T === 'function' && typeof plants !== 'undefined') substrat
 import { migrateWikiV1IfNeeded } from './src/modules/wiki-v1-migration.js';
 // Archiver silencieusement les données wiki v1 si elles existent
 migrateWikiV1IfNeeded();
+</script>
+<!-- auth-logout — déconnexion propre avec flush sync -->
+<script type="module">
+import { logoutUser } from './src/modules/auth-logout.js';
+window.__CCA_AuthLogout = { logoutUser };
 </script>
 <!-- Phase 0C — Guide débutant (ES module) -->
 <script type="module">
