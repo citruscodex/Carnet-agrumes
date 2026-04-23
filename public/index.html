@@ -21619,6 +21619,15 @@ function _srvTokenValid(){
       _slErr.textContent='Email vérifié avec succès ! Vous pouvez vous connecter.';
     }
     history.replaceState(null,'',window.location.pathname);
+  }else if(_verified==='0'){
+    // Lien de vérification invalide ou expiré
+    showServerLogin();
+    const _slErr=document.getElementById('sl-err');
+    if(_slErr){
+      _slErr.style.cssText='display:block;background:#ffeaea;color:#c62828;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.9rem;border:none';
+      _slErr.textContent='Lien de vérification invalide ou expiré. Contactez le support si le problème persiste.';
+    }
+    history.replaceState(null,'',window.location.pathname);
   }else if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
 })();
 
