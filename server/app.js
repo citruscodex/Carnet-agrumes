@@ -41,9 +41,7 @@ async function build(opts = {}) {
   });
 
   // ── Routes publiques (auth) ──────────────────────────────────────────────────
-  // Les routes /api/auth/* doivent exister sur le serveur (login, refresh, register)
-  // Exemple minimal si pas encore présent :
-  // await app.register(require('./routes/auth'), { prefix: '/api' });
+  await app.register(require('./routes/auth'));
 
   // ── Routes bugs (Chantier 5 — fix 404) ─────────────────────────────────────
   // IMPORTANT : ce register résout les 404 sur /api/bugs/mine et /api/bugs
