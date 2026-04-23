@@ -4329,7 +4329,9 @@ function _dashWeatherGelBlock(){
   } else if(sortisPl.length>0&&!gel.enabled){
     sortisBanner=`<div style="background:rgba(232,148,26,.08);border-radius:var(--r);padding:8px 12px;margin-bottom:8px;border:1px solid rgba(232,148,26,.2);display:flex;align-items:center;gap:10px"><span style="font-size:1rem">☀️</span><div style="font-size:.75rem;color:var(--amber3);flex:1">${sortisPl.length} sujet${sortisPl.length>1?'s':''} sorti${sortisPl.length>1?'s':''} au soleil — activez l'alerte gel pour recevoir des rappels de rentrée.</div></div>`;
   }
-  return`${sortisBanner}${alertBanner}<div class="gel-toggle-card"><div class="gel-toggle-row"><div><div class="gel-toggle-lbl">${T('misc.gelAlertTitle')}</div><div class="gel-toggle-sub">${T('misc.gelAlertSub')}</div></div><label class="sw"><input type="checkbox" ${gel.enabled?'checked':''} onchange="toggleGelAlert()"><span class="sw-track"></span></label></div>${gel.enabled?`<div class="gel-thresh-row"><span class="gel-thresh-lbl">${T('misc.gelThreshLabel')}</span><span style="font-size:.75rem;color:var(--muted)">−5°C</span><input type="range" min="-5" max="5" step="0.5" value="${gel.threshold}" oninput="setGelThreshold(this.value)" style="flex:1;margin:0 6px;accent-color:#1565c0"/><span style="font-size:.75rem;color:var(--muted)">+5°C</span><span class="gel-thresh-val" id="gel-thresh-display">${gel.threshold}°C</span></div>`:''}</div><div class="wx-card"><div id="wx-inner">${renderWxInner()}</div></div>`;
+  const _nc=getNotifCfg();const _nActive=[_nc.gel,_nc.watering,_nc.fert,_nc.graft,_nc.bbch].filter(Boolean).length;
+  const notifIndicator=_nc.enabled?`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(45,90,61,.06);border-radius:8px;margin-bottom:6px;border:1px solid rgba(45,90,61,.12)"><span style="font-size:.75rem;color:var(--g2)">🔔 ${_nActive} notification${_nActive>1?'s':''} active${_nActive>1?'s':''}</span><button style="background:none;border:none;color:var(--g2);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-weight:600" data-action="nav" data-page="settings" data-prof-view="notifs">Gérer →</button></div>`:`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(100,100,100,.05);border-radius:8px;margin-bottom:6px;border:1px solid rgba(100,100,100,.12)"><span style="font-size:.75rem;color:var(--muted)">🔕 Notifications désactivées</span><button style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-weight:600" data-action="nav" data-page="settings" data-prof-view="notifs">Activer →</button></div>`;
+  return`${sortisBanner}${alertBanner}${notifIndicator}<div class="wx-card"><div id="wx-inner">${renderWxInner()}</div></div>`;
 }
 function _dashEventsBlock(limit){
   const evs=plants.flatMap(p=>p.events.map(e=>({...e,pn:p.name,pi:p.id,ct:p.cultureType||'pot'}))).filter(e=>!e.audit).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,limit||6);
@@ -21643,6 +21645,7 @@ document.addEventListener('click', function _gad(e){
       if(el.dataset.consView !== undefined) consView = el.dataset.consView;
       if(el.dataset.collView !== undefined) collView = el.dataset.collView;
       if(el.dataset.fertView !== undefined) fertView = el.dataset.fertView;
+      if(el.dataset.profView !== undefined) profView = el.dataset.profView;
       showPage(pg);
       if(el.dataset.fertView !== undefined) render();
       break;
