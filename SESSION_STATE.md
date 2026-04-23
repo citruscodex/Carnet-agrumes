@@ -1,13 +1,13 @@
 # SESSION STATE — Carnet Agrumes
 
-> Mis à jour : 2026-04-18 (fin session — emails unifiés + faille sécurité corrigée)
+> Mis à jour : 2026-04-23 (fin session — 10 correctifs bloquants+importants hotfix bêta)
 
 ---
 
 ## Dernière session
 
-**Date :** 18/04/2026
-**Dernier commit :** `0d9b92f` — chore(privacy): unification adresse contact → citruscodex@gmail.com
+**Date :** 23/04/2026
+**Dernier commit :** `5443772` — fix(pwa): nom affiché CitrusCodex au lieu d'agrumes
 
 ---
 
@@ -121,6 +121,30 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 
 ---
 
+## Hotfix bêta ✅ (2026-04-23) — 10 correctifs livrés
+
+### Bloquants corrigés
+
+| # | Commit | Correctif |
+|---|---|---|
+| 1 | `be14690` | Inscription : création `server/routes/auth.js` + migration `007_auth_tokens.sql` — routes register/verify/login/forgot/reset opérationnelles |
+| 2 | `8fa8ce5` | Événements : bug TDZ `const graftMethode` etc. déclarés après usage → ReferenceError silencieux corrigé |
+| 3 | `f1980f0` | Reset mot de passe : extraction `?reset_token` URL + gestion `?verified=0` (lien expiré) |
+| 4 | `cd8f05f` | Guide fertilisation : `guide/` absent du tar deploy.yml → ajout `cp -r build/guide guide` et `guide` dans archive |
+| 5 | `bcfa6ff` | Double mot de passe : `_startLocalFlow()` n'appelle plus `showLogin()` AES-GCM après auth serveur réussie |
+
+### Importants corrigés
+
+| # | Commit | Correctif |
+|---|---|---|
+| 6 | `e1534b1` | Alerte gel centralisée dans Réglages → Notifications, suppression bloc gel dashboard |
+| 7 | `8271ad7` | ETP/météo : skeleton au lieu de message "pas de données", troncature ville corrigée |
+| 8 | `65b5df6` | Profils : indicateur visuel mode admin (accès tous modules), comportement métier inchangé |
+| 9 | `52b8645` | Guide bêta-testeur (`bienvenue.html`) : bouton login ajouté, accès guide MD derrière auth |
+| 10 | `5443772` | PWA : nom `CitrusCodex` (manifest.json, title, apple-mobile-web-app-title) |
+
+---
+
 ## Prochaine session — À FAIRE DANS CET ORDRE
 
 1. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
@@ -146,3 +170,4 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 | Phase 0A | `af5c904` + `938aba6` (fix) | Sync serveur, 19 tables, routes user data |
 | Phase 0B | `938aba6` | Observatoire, bugs, wiki v2 footnotes, migration v1 |
 | Phase 0C | `6e3323e` | Guide fertilisation intégré, 4 points d'entrée, i18n 5 langues |
+| Hotfix bêta | `be14690`→`5443772` | 5 bloquants + 5 importants corrigés avant bêta publique |
