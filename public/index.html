@@ -2600,7 +2600,7 @@ function renderWxInner(){
   <div class="wx-today-cell" style="align-items:flex-end">
     <div class="wx-today-lbl">${T('misc.wxConditions')||'Conditions'}</div>
     <div class="wx-today-val">${cwi.i} ${Math.round(cw.temperature)}°C</div>
-    <div class="wx-today-sub">▲ ${Math.round(todayMax)}° / ▼ ${Math.round(todayMin)}° · ${esc(WX.city)||'position détectée'}</div>
+    <div class="wx-today-sub" title="${esc(WX.city)||''}">▲ ${Math.round(todayMax)}° / ▼ ${Math.round(todayMin)}° · <span style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom">${esc(WX.city)||'position détectée'}</span></div>
   </div>
 </div>
 <div class="wx-sun-row">
@@ -3041,12 +3041,7 @@ function applyDarkMode(){document.body.classList.toggle('dark',!!getCfg().darkMo
 function renderETPPanel() {
   if (!isETPEnabled()) return '';
   const etp = getETPToday();
-  if (etp === null) {
-    return `<div class="nv-card" style="border-left:3px solid #2d7dd2;margin-top:10px">
-<div class="nv-hdr"><span class="nv-hdr-title">💧 ${T('misc.etpTitle')}</span></div>
-<div style="padding:12px 14px;font-size:.78rem;color:var(--muted);font-style:italic">${T('misc.etpNoData')}</div>
-</div>`;
-  }
+  if (etp === null) return ''; // données météo pas encore chargées — panel affiché après fetch
   const month   = new Date().getMonth() + 1;
   const outdoor = plants.filter(p =>
     !isPot(p) || ['extérieur','jardin','terrasse'].includes(p.location)
