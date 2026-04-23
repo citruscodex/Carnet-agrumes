@@ -53,6 +53,10 @@ async function build(opts = {}) {
   // ── Routes admin panel étendu (Phase 1) ──────────────────────────────────────
   await app.register(require('./routes/admin-panel'));
 
+  // ── Cron BBCH — notification uniquement au changement de stade (Phase 1) ─────
+  const { scheduleBBCHCron } = require('./crons/bbch-notifications');
+  scheduleBBCHCron(app);
+
   // ── Routes données utilisateur (Phase 0A) ────────────────────────────────────
   await app.register(require('./routes/user-data'));
   await app.register(require('./routes/user-sync'));
