@@ -1,6 +1,6 @@
 {
-  "name": "Carnet de Collection Agrumes",
-  "short_name": "Agrumes",
+  "name": "CitrusCodex",
+  "short_name": "CitrusCodex",
   "description": "Gérez votre collection d'agrumes : soins, événements, diagnostic phytosanitaire.",
   "start_url": "./",
   "scope": "./",
