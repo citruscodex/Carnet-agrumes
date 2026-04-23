@@ -50,6 +50,9 @@ async function build(opts = {}) {
   // ── Routes admin panel (Chantier 8) ─────────────────────────────────────────
   await app.register(require('./routes/admin'), { prefix: '/api' });
 
+  // ── Routes admin panel étendu (Phase 1) ──────────────────────────────────────
+  await app.register(require('./routes/admin-panel'));
+
   // ── Routes données utilisateur (Phase 0A) ────────────────────────────────────
   await app.register(require('./routes/user-data'));
   await app.register(require('./routes/user-sync'));
