@@ -21541,13 +21541,10 @@ async function _startLocalFlow(){
   if(!c||!c.pwdHash){
     console.log('[CCA Auth] → startSetup() (pas de config locale après pull)');
     startSetup();
-  }else if(IS_LOCAL){
-    // Mode dev local : bypass du mot de passe → dashboard direct
-    console.log('[CCA Auth] IS_LOCAL → launchApp() direct (bypass login)');
-    loadData(); launchApp();
   }else{
-    console.log('[CCA Auth] → showLogin()');
-    showLogin();
+    // Auth serveur déjà validée — accès direct au dashboard sans double mot de passe
+    console.log('[CCA Auth] → launchApp() direct (auth serveur OK)');
+    loadData(); launchApp();
   }
 }
 
