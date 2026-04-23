@@ -626,9 +626,15 @@ tr:nth-child(even) td{background:var(--cream2)}
 
   <div class="subsection" id="sync">
     <h3>☁ Synchronisation</h3>
-    <p>Synchronisez vos données entre appareils via GitHub Gist privé ou WebDAV/Nextcloud.</p>
-    <div class="warn-box"><strong>⚠ Fine-grained PATs incompatibles.</strong> Utilisez un <strong>classic PAT</strong> (<code>ghp_…</code>) pour le Gist. Créer : github.com → Settings → Developer settings → Tokens (classic) → scope <strong>gist</strong>.</div>
-    <p>Toutes les données sont chiffrées <strong>AES-256-GCM</strong> sur votre appareil (clé dérivée PBKDF2 depuis votre mot de passe) avant tout envoi. Votre fournisseur ne peut pas lire vos données.</p>
+    <p>Vos données sont automatiquement synchronisées entre tous vos appareils via le serveur CitrusCodex (hébergé en France). Connectez-vous avec le même compte depuis n'importe quel appareil pour retrouver votre collection.</p>
+    <p>L'indicateur de synchronisation dans la barre supérieure vous informe de l'état :</p>
+    <ul>
+      <li>🟢 Synchronisé — tout est à jour</li>
+      <li>🟡 En attente — modifications non encore envoyées</li>
+      <li>🔵 Synchronisation en cours</li>
+      <li>🔴 Erreur — vérifiez votre connexion</li>
+    </ul>
+    <div class="info-box"><strong>Option avancée :</strong> une sauvegarde chiffrée indépendante (AES-256-GCM) reste disponible dans Réglages → Sauvegarde manuelle, vers GitHub Gist ou WebDAV/Nextcloud.</div>
   </div>
 
   <div class="subsection" id="notifications">
