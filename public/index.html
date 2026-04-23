@@ -9607,6 +9607,21 @@ function submitEV(pid){
   const phytoTarget=type==='traitement'?(document.getElementById('ev-phyto-target')?.value?.trim()||null):null;
   const phytoJustif=type==='traitement'?(document.getElementById('ev-phyto-justif')?.value||null):null;
   const phytoOperateur=type==='traitement'?(document.getElementById('ev-phyto-operateur')?.value?.trim()||null):null;
+  const graftMethode=type==='greffage'?(document.getElementById('ev-graft-meth')?.value||'écusson'):null;
+  const graftStade=type==='greffage'?(document.getElementById('ev-graft-stade')?.value||''):null;
+  const graftGreffon=type==='greffage'?(document.getElementById('ev-graft-greffon')?.value?.trim()||''):null;
+  const graftPG=type==='greffage'?(document.getElementById('ev-graft-pg')?.value?.trim()||''):null;
+  const graftLotId=type==='greffage'?(document.getElementById('ev-graft-lot')?.value?.trim()||''):null;
+  const graftLotQty=type==='greffage'?(parseInt(document.getElementById('ev-lot-qty')?.value)||null):null;
+  const graftSrc=type==='greffage'?(document.querySelector('input[name="ev-graft-src"]:checked')?.value||'collection'):null;
+  const graftReprisePct=type==='greffage'?(parseFloat(document.getElementById('ev-reprise-pct')?.value)||null):null;
+  const graftRepriseDate=type==='greffage'?(document.getElementById('ev-reprise-date')?.value||null):null;
+  const graftElev=type==='greffage'?(parseInt(document.getElementById('ev-elev')?.value)||null):null;
+  const graftDispo=type==='greffage'&&graftElev?(()=>{
+    const d=new Date(document.getElementById('ev-dt')?.value||todayStr());
+    d.setDate(d.getDate()+graftElev*7);
+    return d.toISOString().slice(0,10);
+  })():null;
   let desc=ds;
   if(fert&&!ds.toLowerCase().includes(fert.name.toLowerCase()))desc=`[${fert.name} · N${fert.N}-P${fert.P}-K${fert.K}${fert.Ca?`-Ca${fert.Ca}`:''}] ${ds}`;
   if(type==='taille'&&tailleType&&!desc.includes(tailleType))desc=`[${tailleType}] ${desc}`;
@@ -9662,21 +9677,6 @@ function submitEV(pid){
   }
   if(ecoPrice)ev.ecoPrice=ecoPrice;
   if(ecoBuyer)ev.ecoBuyer=ecoBuyer;
-  const graftMethode=type==='greffage'?(document.getElementById('ev-graft-meth')?.value||'écusson'):null;
-  const graftStade=type==='greffage'?(document.getElementById('ev-graft-stade')?.value||''):null;
-  const graftGreffon=type==='greffage'?(document.getElementById('ev-graft-greffon')?.value?.trim()||''):null;
-  const graftPG=type==='greffage'?(document.getElementById('ev-graft-pg')?.value?.trim()||''):null;
-  const graftLotId=type==='greffage'?(document.getElementById('ev-graft-lot')?.value?.trim()||''):null;
-  const graftLotQty=type==='greffage'?(parseInt(document.getElementById('ev-lot-qty')?.value)||null):null;
-  const graftSrc=type==='greffage'?(document.querySelector('input[name="ev-graft-src"]:checked')?.value||'collection'):null;
-  const graftReprisePct=type==='greffage'?(parseFloat(document.getElementById('ev-reprise-pct')?.value)||null):null;
-  const graftRepriseDate=type==='greffage'?(document.getElementById('ev-reprise-date')?.value||null):null;
-  const graftElev=type==='greffage'?(parseInt(document.getElementById('ev-elev')?.value)||null):null;
-  const graftDispo=type==='greffage'&&graftElev?(()=>{
-    const d=new Date(document.getElementById('ev-dt')?.value||todayStr());
-    d.setDate(d.getDate()+graftElev*7);
-    return d.toISOString().slice(0,10);
-  })():null;
   if(type==='récolte'&&(brixVal||aciditeVal)){
     const parts=[];
     if(qtyRecolte)parts.push(`${qtyRecolte} kg`);
