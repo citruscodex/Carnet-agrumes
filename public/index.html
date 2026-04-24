@@ -51,8 +51,8 @@
 </div></div>
 <div id="app">
   <div id="topbar">
-    <button id="tb-back" onclick="goBack()">←</button>
-    <button id="tb-logo" onclick="showPage('dashboard')" title="Tableau de bord"><span class="cca-logo-topbar">🍊</span></button>
+    <button id="tb-back">←</button>
+    <button id="tb-logo" title="Tableau de bord"><span class="cca-logo-topbar">🍊</span></button>
     <div id="tb-title"><h1>Carnet de Collection</h1><p id="tb-sub"></p></div>
     <div id="cca-readonly-badge" style="display:none;align-items:center;gap:4px;font-size:.72rem;font-weight:600;color:var(--amber3);background:var(--cream2);border:1px solid var(--cream3);border-radius:6px;padding:2px 8px;white-space:nowrap">🔒 Lecture seule</div>
     <div id="tb-act"></div>
@@ -66,12 +66,12 @@
     </div>
   </div>
   <nav id="navbar" role="tablist" aria-label="Navigation principale">
-    <button class="navi active" id="nv-dashboard" role="tab" aria-selected="true" onclick="showPage('dashboard')"><span class="ni">📊</span><span class="navi-lbl" data-t="nav.dashboard">Tableau</span></button>
-    <button class="navi" id="nv-collection" role="tab" aria-selected="false" onclick="showPage('collection')"><span class="ni">🍋</span><span class="navi-lbl" data-t="nav.collection">Collection</span></button>
-    <button class="navi" id="nv-fert" role="tab" aria-selected="false" onclick="showPage('fert')"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></button>
-    <button class="navi" id="nv-community" role="tab" aria-selected="false" onclick="showPage('community')"><span class="ni">🌍</span><span class="navi-lbl" data-t="nav.community">Communauté</span></button>
-    <button class="navi" id="nv-settings" role="tab" aria-selected="false" onclick="showPage('settings')"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></button>
-    <button class="navi" id="nv-admin" role="tab" aria-selected="false" onclick="showPage('admin-users')" style="display:none"><span class="ni">👥</span><span class="navi-lbl">Admin</span></button>
+    <button class="navi active" id="nv-dashboard" role="tab" aria-selected="true"><span class="ni">📊</span><span class="navi-lbl" data-t="nav.dashboard">Tableau</span></button>
+    <button class="navi" id="nv-collection" role="tab" aria-selected="false"><span class="ni">🍋</span><span class="navi-lbl" data-t="nav.collection">Collection</span></button>
+    <button class="navi" id="nv-fert" role="tab" aria-selected="false"><span class="ni">📅</span><span class="navi-lbl" data-t="nav.calendar">Calendrier</span></button>
+    <button class="navi" id="nv-community" role="tab" aria-selected="false"><span class="ni">🌍</span><span class="navi-lbl" data-t="nav.community">Communauté</span></button>
+    <button class="navi" id="nv-settings" role="tab" aria-selected="false"><span class="ni">⚙</span><span class="navi-lbl" data-t="nav.settings">Réglages</span></button>
+    <button class="navi" id="nv-admin" role="tab" aria-selected="false" style="display:none"><span class="ni">👥</span><span class="navi-lbl">Admin</span></button>
   </nav>
 </div>
 <div id="toast"></div>
@@ -3817,8 +3817,9 @@ function launchApp(){
     }).catch(e=>console.warn('[CCA] server-sync load failed',e));
   }
 }
-function showPage(p){if(p==='nursery')p='pro';if(p==='wiki'){p='community';wikiView='new-wiki';}page=p;selId=null;clearSel();exitSelMode(false);['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});_updateNavbarForProfile();render();if(p==='dashboard')initWeather()}
+function showPage(p){if(p==='nursery')p='pro';if(p==='wiki'){p='community';wikiView='new-wiki';}page=p;selId=null;clearSel();exitSelMode(false);if(window.__CCA_bottomnav){window.__CCA_bottomnav.setActive(p);window.__CCA_bottomnav.updateForProfile();}else{['dashboard','collection','settings','fert','eco','pro','community'].forEach(n=>{const el=document.getElementById('nv-'+n);if(el){el.classList.toggle('active',n===p);el.setAttribute('aria-selected',n===p?'true':'false');}});_updateNavbarForProfile();}render();if(p==='dashboard')initWeather()}
 function _updateNavbarForProfile(){
+  if(window.__CCA_bottomnav){window.__CCA_bottomnav.updateForProfile();return;}
   const settingsEl=document.getElementById('nv-settings');
   if(settingsEl) settingsEl.style.display='';
   const adminEl=document.getElementById('nv-admin');
@@ -21337,6 +21338,18 @@ import * as collFilters from './src/modules/collection-filters.js';
 window.__CCA_filters = collFilters;
 const filtersRoot = document.getElementById('cca-filters-root');
 if(filtersRoot && typeof rGrid === 'function' && typeof plants !== 'undefined') collFilters.mount(filtersRoot, rGrid, plants);
+</script>
+<!-- Étape 4 — Topbar + Bottom nav (ES modules) -->
+<script type="module">
+import { init as initTopbar } from './src/modules/topbar.js';
+initTopbar();
+</script>
+<script type="module">
+import { init as initBottomnav, setActive, updateForProfile } from './src/modules/bottomnav.js';
+initBottomnav();
+// Sync active state with current page
+if(typeof page !== 'undefined') setActive(page);
+updateForProfile();
 </script>
 </body>
 </html>
