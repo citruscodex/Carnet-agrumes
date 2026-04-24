@@ -1591,5 +1591,48 @@
     "fullGuide": "Guia nutrição",
     "tocShow": "Mostrar sumário",
     "tocHide": "Ocultar sumário"
+  },
+  "plant": {
+    "emplacement": {
+      "title": "Localização",
+      "zone": "Zona",
+      "zone_placeholder": "Ex.: Estufa A, Exterior, Cave…",
+      "section": "Secção",
+      "section_placeholder": "Ex.: Prateleira 2, Fila 3…",
+      "position": "Posição",
+      "position_placeholder": "Ex.: Vaso 12, Canto nordeste…"
+    },
+    "provenance": {
+      "achat": "Compra",
+      "don": "Doação",
+      "echange": "Troca",
+      "production_propre": "Produção própria",
+      "inconnu": "Desconhecido"
+    },
+    "production": {
+      "greffe": "Enxertado",
+      "marcotte": "Mergulhia",
+      "semis": "Sementeira",
+      "bouture": "Estaca",
+      "inconnu": "Desconhecido"
+    }
+  },
+  "filters": {
+    "title": "Filtros",
+    "reset": "Reiniciar",
+    "toggle": "Mostrar/ocultar filtros",
+    "all": "Todos",
+    "search": "Pesquisar",
+    "search_placeholder": "Espécie, variedade, número…",
+    "provenance_type": "Origem",
+    "zone": "Zona",
+    "zone_placeholder": "Ex.: Estufa A…",
+    "has_photo": "Com foto apenas",
+    "acquisition_year": "Ano de aquisição",
+    "production_type": "Tipo de produção"
+  },
+  "collection": {
+    "count": "{n} sujeitos",
+    "filtered_count": "{n} de {total} sujeitos"
   }
 }

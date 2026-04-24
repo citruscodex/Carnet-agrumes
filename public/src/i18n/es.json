@@ -1591,5 +1591,48 @@
     "fullGuide": "Guía nutrición",
     "tocShow": "Mostrar índice",
     "tocHide": "Ocultar índice"
+  },
+  "plant": {
+    "emplacement": {
+      "title": "Ubicación",
+      "zone": "Zona",
+      "zone_placeholder": "Ej.: Invernadero A, Exterior, Sótano…",
+      "section": "Sección",
+      "section_placeholder": "Ej.: Estante 2, Fila 3…",
+      "position": "Posición",
+      "position_placeholder": "Ej.: Maceta 12, Rincón noreste…"
+    },
+    "provenance": {
+      "achat": "Compra",
+      "don": "Donación",
+      "echange": "Intercambio",
+      "production_propre": "Producción propia",
+      "inconnu": "Desconocido"
+    },
+    "production": {
+      "greffe": "Injertado",
+      "marcotte": "Acodo",
+      "semis": "Semilla",
+      "bouture": "Esqueje",
+      "inconnu": "Desconocido"
+    }
+  },
+  "filters": {
+    "title": "Filtros",
+    "reset": "Reiniciar",
+    "toggle": "Mostrar/ocultar filtros",
+    "all": "Todos",
+    "search": "Buscar",
+    "search_placeholder": "Especie, variedad, número…",
+    "provenance_type": "Origen",
+    "zone": "Zona",
+    "zone_placeholder": "Ej.: Invernadero A…",
+    "has_photo": "Con foto únicamente",
+    "acquisition_year": "Año de adquisición",
+    "production_type": "Tipo de producción"
+  },
+  "collection": {
+    "count": "{n} sujetos",
+    "filtered_count": "{n} de {total} sujetos"
   }
 }

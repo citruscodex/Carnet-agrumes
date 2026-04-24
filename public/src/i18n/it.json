@@ -1591,5 +1591,48 @@
     "fullGuide": "Guida nutrizione",
     "tocShow": "Mostra sommario",
     "tocHide": "Nascondi sommario"
+  },
+  "plant": {
+    "emplacement": {
+      "title": "Posizione",
+      "zone": "Zona",
+      "zone_placeholder": "Es.: Serra A, Esterno, Cantina…",
+      "section": "Sezione",
+      "section_placeholder": "Es.: Scaffale 2, Fila 3…",
+      "position": "Posizione precisa",
+      "position_placeholder": "Es.: Vaso 12, Angolo nord-est…"
+    },
+    "provenance": {
+      "achat": "Acquisto",
+      "don": "Dono",
+      "echange": "Scambio",
+      "production_propre": "Produzione propria",
+      "inconnu": "Sconosciuto"
+    },
+    "production": {
+      "greffe": "Innestato",
+      "marcotte": "Margotta",
+      "semis": "Da seme",
+      "bouture": "Talea",
+      "inconnu": "Sconosciuto"
+    }
+  },
+  "filters": {
+    "title": "Filtri",
+    "reset": "Azzera",
+    "toggle": "Mostra/nascondi filtri",
+    "all": "Tutti",
+    "search": "Cerca",
+    "search_placeholder": "Specie, varietà, numero…",
+    "provenance_type": "Origine",
+    "zone": "Zona",
+    "zone_placeholder": "Es.: Serra A…",
+    "has_photo": "Solo con foto",
+    "acquisition_year": "Anno di acquisizione",
+    "production_type": "Tipo di produzione"
+  },
+  "collection": {
+    "count": "{n} soggetti",
+    "filtered_count": "{n} su {total} soggetti"
   }
 }

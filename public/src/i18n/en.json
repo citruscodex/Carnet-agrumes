@@ -1591,5 +1591,48 @@
     "fullGuide": "Nutrition guide",
     "tocShow": "Show table of contents",
     "tocHide": "Hide table of contents"
+  },
+  "plant": {
+    "emplacement": {
+      "title": "Location",
+      "zone": "Zone",
+      "zone_placeholder": "E.g. Greenhouse A, Outdoor, Cellar…",
+      "section": "Section",
+      "section_placeholder": "E.g. Shelf 2, Row 3…",
+      "position": "Position",
+      "position_placeholder": "E.g. Pot 12, North-east corner…"
+    },
+    "provenance": {
+      "achat": "Purchase",
+      "don": "Gift",
+      "echange": "Trade",
+      "production_propre": "Own production",
+      "inconnu": "Unknown"
+    },
+    "production": {
+      "greffe": "Grafted",
+      "marcotte": "Layered",
+      "semis": "Seedling",
+      "bouture": "Cutting",
+      "inconnu": "Unknown"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "reset": "Reset",
+    "toggle": "Show/hide filters",
+    "all": "All",
+    "search": "Search",
+    "search_placeholder": "Species, variety, number…",
+    "provenance_type": "Origin",
+    "zone": "Zone",
+    "zone_placeholder": "E.g. Greenhouse A…",
+    "has_photo": "With photo only",
+    "acquisition_year": "Acquisition year",
+    "production_type": "Production type"
+  },
+  "collection": {
+    "count": "{n} subjects",
+    "filtered_count": "{n} of {total} subjects"
   }
 }

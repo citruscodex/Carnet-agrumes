@@ -1593,5 +1593,48 @@
     "fullGuide": "Guide nutrition complet",
     "tocShow": "Afficher le sommaire",
     "tocHide": "Masquer le sommaire"
+  },
+  "plant": {
+    "emplacement": {
+      "title": "Emplacement",
+      "zone": "Zone",
+      "zone_placeholder": "Ex : Serre A, Extérieur, Cave…",
+      "section": "Section",
+      "section_placeholder": "Ex : Étagère 2, Rang 3…",
+      "position": "Position",
+      "position_placeholder": "Ex : Pot 12, Coin nord-est…"
+    },
+    "provenance": {
+      "achat": "Achat",
+      "don": "Don",
+      "echange": "Échange",
+      "production_propre": "Production propre",
+      "inconnu": "Inconnu"
+    },
+    "production": {
+      "greffe": "Greffé",
+      "marcotte": "Marcotté",
+      "semis": "Semis",
+      "bouture": "Bouturé",
+      "inconnu": "Inconnu"
+    }
+  },
+  "filters": {
+    "title": "Filtres",
+    "reset": "Réinitialiser",
+    "toggle": "Afficher/masquer les filtres",
+    "all": "Tous",
+    "search": "Rechercher",
+    "search_placeholder": "Espèce, variété, numéro…",
+    "provenance_type": "Origine",
+    "zone": "Zone",
+    "zone_placeholder": "Ex : Serre A…",
+    "has_photo": "Avec photo uniquement",
+    "acquisition_year": "Année d'acquisition",
+    "production_type": "Mode de production"
+  },
+  "collection": {
+    "count": "{n} sujets",
+    "filtered_count": "{n} sur {total} sujets"
   }
 }
