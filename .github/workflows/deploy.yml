@@ -34,6 +34,9 @@ jobs:
           # Guide utilisateur (copié par copyStaticDirsPlugin)
           rm -rf guide
           cp -r build/guide guide
+          # lib/ : contient esc.js requis par les chunks dynamiques (admin-panel, server-sync, migration-modal)
+          rm -rf lib
+          cp -r build/lib lib
           # Fichiers statiques non bundlés par Vite
           cp public/sw.js    sw.js
           cp public/404.html 404.html
@@ -62,7 +65,7 @@ jobs:
           TARGET=/var/www/cca
 
           # Créer l'archive localement (scp de fichier unique fonctionne)
-          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html bienvenue.html assets guide
+          tar -czf /tmp/deploy.tar.gz index.html manifest.json sw.js 404.html training.html aide.html cgu.html confidentialite.html mentions-legales.html changelog.html bienvenue.html assets guide lib
           echo "Archive créée : $(du -sh /tmp/deploy.tar.gz)"
 
           # Copier l'archive sur le serveur
