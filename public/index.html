@@ -33,79 +33,6 @@
 <script defer data-domain="citruscodex.fr" src="https://plausible.io/js/script.js"></script>
 </head>
 <body>
-<div id="sc-server-login" style="display:none"><div class="asc">
-  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Gérez votre collection d'agrumes comme un professionnel.</p></div>
-  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;max-width:340px;margin:0 auto 18px;text-align:center">
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🌿</div>Phénologie BBCH</div>
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🌤</div>Météo &amp; irrigation</div>
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🔄</div>Bourse greffons</div>
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">📖</div>Wiki collaboratif</div>
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">🗺</div>Observatoire</div>
-    <div style="background:rgba(255,255,255,.12);border-radius:8px;padding:8px 4px;font-size:.72rem;color:rgba(255,255,255,.85)"><div style="font-size:1.1rem;margin-bottom:2px">📋</div>Fiches culturales</div>
-  </div>
-  <div class="acard">
-    <h2>Connexion</h2>
-    <p class="acsub">Accès réservé aux testeurs de la bêta.</p>
-    <div id="sl-err" class="aerr" style="display:none"></div>
-    <div class="afield"><label>Email</label><input type="email" id="sl-email" placeholder="votre@email.fr" autocomplete="email"/></div>
-    <div class="afield"><label>Mot de passe</label><div class="pwd-wrap"><input type="password" id="sl-pwd" placeholder="••••••••" autocomplete="current-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('sl-pwd')" title="Afficher/masquer">👁</button></div></div>
-    <button class="abtn" id="sl-btn" onclick="submitServerLogin()">Accéder à la bêta</button>
-    <div style="text-align:center;margin-top:10px;font-size:.82rem"><button style="background:none;border:none;color:rgba(255,255,255,.55);cursor:pointer;font-size:.82rem;padding:0" onclick="showSrvForgot()">Mot de passe oublié ?</button></div>
-    <div id="sl-register-link" style="text-align:center;margin-top:8px;font-size:.85rem;color:rgba(255,255,255,.65)">Pas encore de compte ? <button style="background:none;border:none;color:#c4965a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showRegister()">Créer un compte</button></div>
-    <div style="text-align:center;margin-top:12px;font-size:.8rem"><a href="/bienvenue.html" style="color:#c4965a;text-decoration:none;font-weight:600">📖 Guide du bêta-testeur</a></div>
-    <div style="text-align:center;margin-top:12px;font-size:.75rem;color:rgba(255,255,255,.65)">
-      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.65);text-decoration:none">Mentions légales</a> ·
-      <a href="/confidentialite.html" style="color:rgba(255,255,255,.65);text-decoration:none">Confidentialité</a> ·
-      <a href="/cgu.html" style="color:rgba(255,255,255,.65);text-decoration:none">CGU</a>
-    </div>
-  </div>
-</div></div>
-<div id="sc-register" style="display:none"><div class="asc">
-  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Créer un compte (bêta)</p></div>
-  <div class="acard">
-    <h2>Créer un compte</h2>
-    <p class="acsub">Vous avez besoin d'un code d'invitation pour vous inscrire.</p>
-    <div id="reg-err" class="aerr" style="display:none"></div>
-    <div id="reg-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
-    <div class="afield"><label>Code d'invitation *</label><input type="text" id="reg-code" placeholder="XXXX-XXXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:2px" maxlength="9"/></div>
-    <div class="afield"><label>Email *</label><input type="email" id="reg-email" placeholder="email@exemple.fr" autocomplete="email"/></div>
-    <div class="afield"><label>Mot de passe * <span style="font-size:.75rem;color:var(--muted)">(8+ car., 1 lettre, 1 chiffre)</span></label><div class="pwd-wrap"><input type="password" id="reg-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reg-pwd')" title="Afficher/masquer">👁</button></div></div>
-    <div class="afield"><label>Confirmer le mot de passe *</label><div class="pwd-wrap"><input type="password" id="reg-pwd2" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reg-pwd2')" title="Afficher/masquer">👁</button></div></div>
-    <input type="text" id="reg-website" name="website" style="display:none" tabindex="-1" autocomplete="off"/>
-    <div style="display:flex;align-items:flex-start;gap:8px;margin:8px 0 14px"><input type="checkbox" id="reg-cgu" style="margin-top:3px;flex-shrink:0"/><label for="reg-cgu" style="font-size:.83rem;color:rgba(255,255,255,.85);cursor:pointer">J'accepte les <a href="/cgu.html" target="_blank" style="color:var(--accent,#f5a623);text-decoration:underline">CGU</a> et la <a href="/confidentialite.html" target="_blank" style="color:var(--accent,#f5a623);text-decoration:underline">politique de confidentialité</a></label></div>
-    <button class="abtn" id="reg-btn" onclick="submitRegister()">Créer mon compte</button>
-    <div style="text-align:center;margin-top:12px;font-size:.85rem;color:rgba(255,255,255,.65)">Déjà un compte ? <button style="background:none;border:none;color:#c4965a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showServerLogin()">Se connecter</button></div>
-    <div style="text-align:center;margin-top:14px;font-size:.75rem;color:rgba(255,255,255,.65)">
-      <a href="/mentions-legales.html" style="color:rgba(255,255,255,.65);text-decoration:none">Mentions légales</a> ·
-      <a href="/confidentialite.html" style="color:rgba(255,255,255,.65);text-decoration:none">Confidentialité</a> ·
-      <a href="/cgu.html" style="color:rgba(255,255,255,.65);text-decoration:none">CGU</a>
-    </div>
-  </div>
-</div></div>
-<div id="sc-srv-forgot" style="display:none"><div class="asc">
-  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Mot de passe oublié</p></div>
-  <div class="acard">
-    <h2>Réinitialiser le mot de passe</h2>
-    <p class="acsub">Entrez votre email. Si un compte existe, vous recevrez un lien de réinitialisation.</p>
-    <div id="forgot-err" class="aerr" style="display:none"></div>
-    <div id="forgot-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
-    <div class="afield"><label>Email</label><input type="email" id="forgot-email" placeholder="votre@email.fr" autocomplete="email"/></div>
-    <button class="abtn" id="forgot-btn" onclick="submitForgot()">Envoyer le lien</button>
-    <div style="text-align:center;margin-top:12px;font-size:.85rem;color:rgba(255,255,255,.65)"><button style="background:none;border:none;color:#c4965a;font-weight:600;cursor:pointer;font-size:.85rem;padding:0" onclick="showServerLogin()">← Retour à la connexion</button></div>
-  </div>
-</div></div>
-<div id="sc-srv-reset" style="display:none"><div class="asc">
-  <div class="alo"><span class="cca-logo-splash">🍊</span><h1>CitrusCodex</h1><p>Nouveau mot de passe</p></div>
-  <div class="acard">
-    <h2>Choisir un nouveau mot de passe</h2>
-    <p class="acsub">Votre lien de réinitialisation est valide. Choisissez un nouveau mot de passe.</p>
-    <div id="reset-err" class="aerr" style="display:none"></div>
-    <div id="reset-ok" style="display:none;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.9rem"></div>
-    <div class="afield"><label>Nouveau mot de passe <span style="font-size:.75rem;color:var(--muted)">(8+ car., 1 lettre, 1 chiffre)</span></label><div class="pwd-wrap"><input type="password" id="reset-pwd" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reset-pwd')" title="Afficher/masquer">👁</button></div></div>
-    <div class="afield"><label>Confirmer</label><div class="pwd-wrap"><input type="password" id="reset-pwd2" placeholder="••••••••" autocomplete="new-password"/><button type="button" class="pwd-eye" onclick="togglePwdVis('reset-pwd2')" title="Afficher/masquer">👁</button></div></div>
-    <button class="abtn" id="reset-btn" onclick="submitSrvReset()">Changer le mot de passe</button>
-  </div>
-</div></div>
 <div id="sc-setup" style="display:none"><div class="asc">
   <div class="alo"><span class="ali">🍊</span><h1>Carnet de Collection</h1><p>Première configuration</p></div>
   <div class="sdots"><div class="sdot active" id="sd0"></div><div class="sdot" id="sd1"></div><div class="sdot" id="sd2"></div><div class="sdot" id="sd3"></div></div>
@@ -21043,93 +20970,6 @@ window.fetch=async function(url,...args){
   return r;
 };
 
-function _hideSrvScreens(){
-  ['sc-server-login','sc-register','sc-srv-forgot','sc-srv-reset'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.style.display='none';
-  });
-}
-function showServerLogin(){
-  _hideSrvScreens();
-  document.getElementById('sc-server-login').style.display='block';
-  setTimeout(()=>document.getElementById('sl-email')?.focus(),100);
-}
-function showRegister(){
-  _hideSrvScreens();
-  document.getElementById('sc-register').style.display='block';
-  setTimeout(()=>document.getElementById('reg-code')?.focus(),100);
-}
-async function submitRegister(){
-  const code=(document.getElementById('reg-code')?.value||'').trim().toUpperCase();
-  const email=(document.getElementById('reg-email')?.value||'').trim();
-  const pwd=document.getElementById('reg-pwd')?.value||'';
-  const pwd2=document.getElementById('reg-pwd2')?.value||'';
-  const website=document.getElementById('reg-website')?.value||'';
-  const cgu=document.getElementById('reg-cgu')?.checked;
-  const err=document.getElementById('reg-err');
-  const ok=document.getElementById('reg-ok');
-  const btn=document.getElementById('reg-btn');
-  err.style.display='none';ok.style.display='none';
-  if(!code){err.textContent='Code d\'invitation requis.';err.style.display='block';return;}
-  if(!email){err.textContent='Email requis.';err.style.display='block';return;}
-  if(pwd.length<8){err.textContent='Mot de passe trop court (8 caractères minimum).';err.style.display='block';return;}
-  if(!/[a-zA-Z]/.test(pwd)||!/[0-9]/.test(pwd)){err.textContent='Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.';err.style.display='block';return;}
-  if(pwd!==pwd2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
-  if(!cgu){err.textContent='Vous devez accepter les CGU pour continuer.';err.style.display='block';return;}
-  btn.disabled=true;btn.textContent='Création…';
-  try{
-    const r=await fetch(CCA_API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({invitation_code:code,email,password:pwd,website}),cache:'no-store'});
-    const d=await r.json();
-    if(!r.ok){err.textContent=d.error||'Erreur lors de la création du compte.';err.style.display='block';btn.disabled=false;btn.textContent='Créer mon compte';return;}
-    ok.textContent='Compte créé ! Vérifiez votre email pour activer votre compte.';ok.style.display='block';
-    btn.style.display='none';
-    setTimeout(()=>showServerLogin(),4000);
-  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Créer mon compte';}
-}
-function showSrvForgot(){
-  _hideSrvScreens();
-  document.getElementById('sc-srv-forgot').style.display='block';
-  setTimeout(()=>document.getElementById('forgot-email')?.focus(),100);
-}
-async function submitForgot(){
-  const email=(document.getElementById('forgot-email')?.value||'').trim();
-  const err=document.getElementById('forgot-err');
-  const ok=document.getElementById('forgot-ok');
-  const btn=document.getElementById('forgot-btn');
-  err.style.display='none';ok.style.display='none';
-  if(!email){err.textContent='Email requis.';err.style.display='block';return;}
-  btn.disabled=true;btn.textContent='Envoi…';
-  try{
-    await fetch(CCA_API+'/api/auth/forgot',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email}),cache:'no-store'});
-    ok.textContent='Si un compte existe pour cet email, vous recevrez un lien de réinitialisation dans quelques minutes.';ok.style.display='block';
-    btn.disabled=false;btn.textContent='Envoyer le lien';
-  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Envoyer le lien';}
-}
-function showSrvReset(token){
-  _hideSrvScreens();
-  window._srvResetToken=token||'';
-  document.getElementById('sc-srv-reset').style.display='block';
-  setTimeout(()=>document.getElementById('reset-pwd')?.focus(),100);
-}
-async function submitSrvReset(){
-  const pwd=document.getElementById('reset-pwd')?.value||'';
-  const pwd2=document.getElementById('reset-pwd2')?.value||'';
-  const err=document.getElementById('reset-err');
-  const ok=document.getElementById('reset-ok');
-  const btn=document.getElementById('reset-btn');
-  err.style.display='none';ok.style.display='none';
-  if(pwd.length<8){err.textContent='Mot de passe trop court (8 caractères minimum).';err.style.display='block';return;}
-  if(!/[a-zA-Z]/.test(pwd)||!/[0-9]/.test(pwd)){err.textContent='Le mot de passe doit contenir au moins 1 lettre et 1 chiffre.';err.style.display='block';return;}
-  if(pwd!==pwd2){err.textContent='Les mots de passe ne correspondent pas.';err.style.display='block';return;}
-  btn.disabled=true;btn.textContent='Changement…';
-  try{
-    const r=await fetch(CCA_API+'/api/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:window._srvResetToken,new_password:pwd}),cache:'no-store'});
-    const d=await r.json();
-    if(!r.ok){err.textContent=d.error||'Lien invalide ou expiré.';err.style.display='block';btn.disabled=false;btn.textContent='Changer le mot de passe';return;}
-    ok.textContent='Mot de passe modifié avec succès. Vous pouvez vous connecter.';ok.style.display='block';
-    btn.style.display='none';
-    setTimeout(()=>showServerLogin(),3000);
-  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Changer le mot de passe';}
-}
 async function submitSrvChgPwd(){
   const cur=document.getElementById('srv-cur-pwd')?.value||'';
   const np=document.getElementById('srv-new-pwd')?.value||'';
@@ -21208,32 +21048,6 @@ async function submitExportRGPD(){
   finally{btn.disabled=false;btn.textContent='📥 Télécharger toutes mes données';}
 }
 
-async function submitServerLogin(){
-  const email=document.getElementById('sl-email')?.value?.trim();
-  const pwd=document.getElementById('sl-pwd')?.value;
-  const err=document.getElementById('sl-err');
-  const btn=document.getElementById('sl-btn');
-  err.style.display='none';
-  if(!email||!pwd){err.textContent='Email et mot de passe requis.';err.style.display='block';return;}
-  btn.disabled=true;btn.textContent='Connexion…';
-  try{
-    const r=await fetch(CCA_API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pwd}),cache:'no-store'});
-    const d=await r.json();
-    if(!r.ok){err.textContent=d.error||'Identifiants invalides.';err.style.display='block';btn.disabled=false;btn.textContent='Accéder à la bêta';return;}
-    _srvToken=d.token;_srvProfile=d.profile;_srvRefreshToken=d.refreshToken||null;_srvEmail=d.email||null;
-    sessionStorage.setItem('cca_srv_token',d.token);
-    sessionStorage.setItem('cca_srv_profile',d.profile);
-    if(d.refreshToken)sessionStorage.setItem('cca_srv_refresh',d.refreshToken);
-    if(d.email)sessionStorage.setItem('cca_srv_email',d.email);
-    // Stocker le profile_type serveur pour application post-pull (d.profile = profile_type dans la réponse login)
-    const _srvPT=d.profile||d.profile_type;
-    if(_srvPT)sessionStorage.setItem('cca_srv_profile_type',_srvPT);
-    // 1A — Le profileType est autoritatif côté serveur : l'écraser localement si cfg existe déjà
-    if(_srvPT){const _cfg=getCfg();if(_cfg?.profile){_cfg.profile.profileType=_srvPT;setCfg(_cfg);}}
-    document.getElementById('sc-server-login').style.display='none';
-    _startLocalFlow();
-  }catch(e){err.textContent='Erreur réseau. Réessayez.';err.style.display='block';btn.disabled=false;btn.textContent='Accéder à la bêta';}
-}
 
 async function _startLocalFlow(){
   console.log('[CCA Auth] _startLocalFlow() — démarrage');
@@ -21255,92 +21069,6 @@ async function _startLocalFlow(){
   }
 }
 
-// Vérification token serveur (expiry côté client : 14 min)
-function _srvTokenValid(){
-  if(!_srvToken)return false;
-  try{const p=JSON.parse(atob(_srvToken.split('.')[1]));return p.exp*1000>Date.now()+60000;}catch{return false;}
-}
-
-(function(){
-  // ── CHANTIER 3 — Bypass auth + mock fetch en local ──────────────────────────
-  if(IS_LOCAL){
-    // Mock fetch : intercepte tous les endpoints backend
-    const _orig=window.fetch;
-    window.fetch=async(url,opts)=>{
-      const u=typeof url==='string'?url:(url.url||String(url));
-      if(u.includes('/api/auth'))  return new Response(JSON.stringify({token:'local-dev-token',email:'dev@localhost',profile:'collectionneur',role:'admin'}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/sync')&&opts?.method==='POST') return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/sync'))  return new Response(JSON.stringify({keys:[]}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/bugs'))  return opts?.method==='POST'?new Response(JSON.stringify({id:Date.now(),status:'open'}),{status:201,headers:{'Content-Type':'application/json'}}):new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/training')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/bourse'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/orders'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/stats/extended')) return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.statsExt||{users:{total:0,active:0,inactive:0,logins_week:0,top_users:[]},bugs:{open:0,resolved:0},plants:0}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/stats'))  return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.stats||{total:0,active_7d:0,new_30d:0,disabled:0,bugs:0,wiki_pages:0,observations:0,revisions:0}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/users')&&!u.match(/\/\d+/))  return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.users||[]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/bugs/groups')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/bugs/list'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.bugs||[]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/audit-log'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.audit||[]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin/invitation-codes')) return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.invCodes||[]),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/admin'))    return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
-      if(u.includes('/api/observatoire')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
-      return _orig(url,opts);
-    };
-    // Injecter session dev
-    sessionStorage.setItem('cca_srv_token','local-dev-token');
-    sessionStorage.setItem('cca_srv_email','dev@localhost');
-    sessionStorage.setItem('cca_srv_role','admin');
-    sessionStorage.setItem('cca_srv_profile_type','collectionneur');
-    _srvToken='local-dev-token'; // mise à jour de la variable live
-    // Config locale minimale si localStorage vide (évite le wizard en mode dev)
-    if(!getCfg().pwdHash){
-      setCfg({pwdHash:'local-dev-bypass',profile:{name:'Dev Local',loc:'',bio:'',profileType:'collectionneur',since:''},createdAt:'2026-01-01'});
-    }
-    // Bannière MODE LOCAL
-    const banner=document.createElement('div');
-    banner.id='cca-local-banner';
-    banner.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#e94560;font-size:11px;text-align:center;padding:2px 0;z-index:9999;font-family:monospace;pointer-events:none';
-    banner.textContent='🔧 MODE LOCAL — données localStorage uniquement — backend mocké';
-    document.body.appendChild(banner);
-    _startLocalFlow();
-    return;
-  }
-  // ── Flux normal (production) ─────────────────────────────────────────────
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-      if(document.getElementById('sc-server-login')?.style.display!=='none')submitServerLogin();
-      else if(document.getElementById('sc-srv-forgot')?.style.display!=='none')submitForgot();
-      else if(document.getElementById('sc-login')?.style.display!=='none')submitLogin();
-    }
-  });
-  // ── Gestion des paramètres URL (vérification email, reset mot de passe) ──
-  const _urlParams=new URLSearchParams(window.location.search);
-  const _resetToken=_urlParams.get('reset_token');
-  const _verified=_urlParams.get('verified');
-  if(_resetToken){
-    // Lien de réinitialisation → afficher le formulaire nouveau mot de passe
-    showSrvReset(_resetToken);
-    history.replaceState(null,'',window.location.pathname);
-  }else if(_verified==='1'){
-    // Email vérifié → afficher login avec message de succès
-    showServerLogin();
-    const _slErr=document.getElementById('sl-err');
-    if(_slErr){
-      _slErr.style.cssText='display:block;background:#e8f5e9;color:#2e7d32;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.9rem;border:none';
-      _slErr.textContent='Email vérifié avec succès ! Vous pouvez vous connecter.';
-    }
-    history.replaceState(null,'',window.location.pathname);
-  }else if(_verified==='0'){
-    // Lien de vérification invalide ou expiré
-    showServerLogin();
-    const _slErr=document.getElementById('sl-err');
-    if(_slErr){
-      _slErr.style.cssText='display:block;background:#ffeaea;color:#c62828;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:.9rem;border:none';
-      _slErr.textContent='Lien de vérification invalide ou expiré. Contactez le support si le problème persiste.';
-    }
-    history.replaceState(null,'',window.location.pathname);
-  }else if(_srvTokenValid()){_startLocalFlow();}else{sessionStorage.removeItem('cca_srv_token');sessionStorage.removeItem('cca_srv_profile');showServerLogin();}
-})();
 
 // ── Global action dispatcher — migrated from inline onclick (Étape 3) ──────
 (function(){
@@ -21490,6 +21218,50 @@ document.addEventListener('click', function _gad(e){
   }
 });
 })();
+
+// ── Bootstrap auth ──────────────────────────────────────────────────────────
+(function _bootAuth(){
+  if(IS_LOCAL){
+    const _orig=window.fetch;
+    window.fetch=async(url,opts)=>{
+      const u=typeof url==='string'?url:(url.url||String(url));
+      if(u.includes('/api/auth'))  return new Response(JSON.stringify({token:'local-dev-token',email:'dev@localhost',profile:'collectionneur',role:'admin'}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/sync')&&opts?.method==='POST') return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/sync'))  return new Response(JSON.stringify({keys:[]}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/bugs'))  return opts?.method==='POST'?new Response(JSON.stringify({id:Date.now(),status:'open'}),{status:201,headers:{'Content-Type':'application/json'}}):new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/training')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/bourse'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/orders'))   return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/stats/extended')) return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.statsExt||{users:{total:0,active:0,inactive:0,logins_week:0,top_users:[]},bugs:{open:0,resolved:0},plants:0}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/stats'))  return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.stats||{total:0,active_7d:0,new_30d:0,disabled:0,bugs:0,wiki_pages:0,observations:0,revisions:0}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/users')&&!u.match(/\/\d+/))  return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.users||[]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/bugs/groups')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/bugs/list'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.bugs||[]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/audit-log'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.audit||[]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/invitation-codes')) return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.invCodes||[]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin'))    return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/observatoire')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
+      return _orig(url,opts);
+    };
+    sessionStorage.setItem('cca_srv_token','local-dev-token');
+    sessionStorage.setItem('cca_srv_email','dev@localhost');
+    sessionStorage.setItem('cca_srv_role','admin');
+    sessionStorage.setItem('cca_srv_profile_type','collectionneur');
+    _srvToken='local-dev-token';
+    if(!getCfg().pwdHash){
+      setCfg({pwdHash:'local-dev-bypass',profile:{name:'Dev Local',loc:'',bio:'',profileType:'collectionneur',since:''},createdAt:'2026-01-01'});
+    }
+    const banner=document.createElement('div');
+    banner.id='cca-local-banner';
+    banner.style.cssText='position:fixed;bottom:0;left:0;right:0;background:#1a1a2e;color:#e94560;font-size:11px;text-align:center;padding:2px 0;z-index:9999;font-family:monospace;pointer-events:none';
+    banner.textContent='🔧 MODE LOCAL — données localStorage uniquement — backend mocké';
+    document.body.appendChild(banner);
+    _startLocalFlow();
+    return;
+  }
+  // Production : charger le module login et initialiser l'auth
+  import('./src/modules/login.js').then(m => m.initAuth(_startLocalFlow));
+}());
 </script>
 <!-- 3D — Module phénologie BBCH (ES module, chargé après le script principal) -->
 <script type="module">
