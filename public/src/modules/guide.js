@@ -27,19 +27,14 @@ export const CARENCE_GUIDE_ANCHOR = 'chapitre-10-diagnostiquer-et-corriger-les-c
 const _CSS = `
 .cca-guide{max-width:1200px;margin:0 auto;padding:16px}
 .cca-lang-notice{background:#fff3cd;border:1px solid #ffc107;padding:12px;margin-bottom:16px;border-radius:6px;font-size:.85rem}
-.cca-guide-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;transition:grid-template-columns 0.3s ease}
-.cca-guide-layout.cca-guide-toc-hidden{grid-template-columns:0 1fr}
-.cca-guide-layout.cca-guide-toc-hidden .cca-guide-toc{opacity:0;pointer-events:none;overflow:hidden;padding:0;border:none}
-.cca-guide-toc{transition:opacity 0.3s ease,padding 0.3s ease}
-.cca-guide-toc-toggle{position:fixed;top:80px;left:8px;z-index:100;background:var(--primary,#2e7d32);color:white;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.cca-guide-toc-toggle:hover{background:var(--primary-dark,#1b5e20)}
-@media(max-width:768px){
-  .cca-guide-layout{grid-template-columns:1fr}
-  .cca-guide-layout.cca-guide-toc-hidden{grid-template-columns:1fr}
-  .cca-guide-toc{position:static;max-height:280px;overflow-y:auto;border-right:none;border-bottom:1px solid #e0e0e0;padding-bottom:12px;margin-bottom:12px}
-  .cca-guide-layout:not(.cca-guide-toc-hidden) .cca-guide-toc{position:fixed;top:120px;left:0;right:0;bottom:0;background:white;z-index:99;padding:20px;overflow-y:auto;max-height:unset}
-}
-.cca-guide-toc{position:sticky;top:16px;max-height:calc(100vh - 60px);overflow-y:auto;padding-right:10px;border-right:1px solid #e0e0e0}
+.cca-guide-header{display:flex;align-items:center;gap:10px;padding:10px 0 12px;border-bottom:1px solid #e0e0e0;margin-bottom:14px;flex-wrap:wrap}
+.cca-guide-header h2{flex:1;margin:0;font-size:1.1rem;color:#1b5e20}
+#guide-toc-toggle{background:#f5f9f5;border:1px solid rgba(46,125,50,.3);border-radius:6px;padding:6px 12px;cursor:pointer;font-size:.83rem;color:#2e7d32;white-space:nowrap}
+#guide-toc-toggle:hover{background:rgba(46,125,50,.12)}
+.cca-guide-layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+.cca-guide-layout[data-toc-visible="false"]{grid-template-columns:1fr}
+.cca-guide-layout[data-toc-visible="false"] .cca-guide-toc{display:none}
+.cca-guide-toc{max-height:calc(100vh - 140px);overflow-y:auto;padding-right:10px;border-right:1px solid #e0e0e0}
 .cca-guide-search input{width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;box-sizing:border-box;font-size:.85rem}
 .cca-toc-item{padding:5px 6px;display:flex;justify-content:space-between;align-items:center}
 .cca-toc-item a{color:#444;text-decoration:none;font-size:.83rem;flex:1;line-height:1.3}
@@ -63,6 +58,12 @@ const _CSS = `
 .cca-no-results{padding:12px;color:#999;font-size:.83rem;font-style:italic}
 .cca-guide-error{padding:24px;text-align:center;color:#c62828;font-size:.85rem}
 .cca-btn-secondary{display:inline-block;padding:7px 14px;background:#f5f9f5;border:1px solid rgba(46,125,50,.3);border-radius:6px;color:#2e7d32;text-decoration:none;font-size:.83rem;cursor:pointer}
+@media(max-width:768px){
+  .cca-guide-layout{grid-template-columns:1fr}
+  .cca-guide-layout[data-toc-visible="false"]{grid-template-columns:1fr}
+  .cca-guide-toc{max-height:50vh;overflow-y:auto;border-right:none;border-bottom:1px solid #e0e0e0;padding-right:0;padding-bottom:12px;margin-bottom:12px}
+  .cca-guide-layout[data-toc-visible="false"] .cca-guide-toc{display:none}
+}
 `
 
 let _cssInjected = false
@@ -101,21 +102,17 @@ export async function renderGuide(container, { deepLink = null } = {}) {
   container.innerHTML = `
 <div class="cca-guide">
   ${showFRNotice ? `<div class="cca-lang-notice">🇫🇷 ${esc(_T('guide.notTranslatedYet') || 'Guide available in French only during beta.')}</div>` : ''}
-  <button class="cca-guide-toc-toggle" id="guide-toc-toggle" aria-label="${esc(_T('guide.tocHide') || 'Masquer le sommaire')}">
-    <span class="cca-guide-toc-toggle-icon">◀</span>
-    <span class="cca-guide-toc-toggle-label">${esc(_T('guide.tocHide') || 'Sommaire')}</span>
-  </button>
-  <div class="cca-guide-layout">
+  <div class="cca-guide-header">
+    <h2>${esc(_T('guide.title') || 'Guide fertilisation')}</h2>
+    <button id="guide-toc-toggle">☰ ${esc(_T('guide.tocShow') || 'Sommaire')}</button>
+    <a href="${GUIDE_PDF_URL}" download class="cca-btn-secondary">📄 ${esc(_T('guide.downloadPDF') || 'PDF')}</a>
+  </div>
+  <div class="cca-guide-layout" data-toc-visible="true">
     <aside class="cca-guide-toc">
       <div class="cca-guide-search">
         <input type="search" id="cca-guide-search" placeholder="${esc(_T('guide.search') || 'Rechercher…')}" autocomplete="off"/>
       </div>
       <nav id="cca-guide-toc-nav"></nav>
-      <div class="cca-guide-actions">
-        <a href="${GUIDE_PDF_URL}" download class="cca-btn-secondary">
-          📄 ${esc(_T('guide.downloadPDF') || 'Télécharger PDF')}
-        </a>
-      </div>
     </aside>
     <main class="cca-guide-content" id="cca-guide-content"></main>
   </div>
@@ -212,10 +209,16 @@ function _renderTOC(chapters = _parsedChapters) {
 }
 
 function _attachTOCListeners() {
+  const isMobile = () => window.matchMedia('(max-width: 768px)').matches
   document.querySelectorAll('#cca-guide-toc-nav a').forEach(a => {
     a.addEventListener('click', e => {
       e.preventDefault()
       showChapter(a.getAttribute('data-anchor'))
+      // Sur mobile : refermer le dropdown après sélection
+      if (isMobile()) {
+        localStorage.setItem(LS_TOC_VISIBLE, 'false')
+        _applyTocVisibility(false)
+      }
     })
   })
 }
@@ -365,24 +368,21 @@ function _onSearch(e) {
 // ── TOC toggle ────────────────────────────────────────────────────────────────
 
 function _applyTocVisibility(visible) {
-  const toc = document.querySelector('.cca-guide-toc')
   const layout = document.querySelector('.cca-guide-layout')
   const toggle = document.getElementById('guide-toc-toggle')
-  if (!toc || !layout) return
-  layout.classList.toggle('cca-guide-toc-hidden', !visible)
+  if (!layout) return
+  layout.setAttribute('data-toc-visible', visible ? 'true' : 'false')
   if (toggle) {
-    const icon = toggle.querySelector('.cca-guide-toc-toggle-icon')
-    const label = toggle.querySelector('.cca-guide-toc-toggle-label')
-    if (icon) icon.textContent = visible ? '◀' : '☰'
-    if (label) label.textContent = visible
-      ? (_T('guide.tocHide') || 'Masquer le sommaire')
-      : (_T('guide.tocShow') || 'Afficher le sommaire')
+    toggle.textContent = visible
+      ? `☰ ${_T('guide.tocHide') || 'Masquer'}`
+      : `☰ ${_T('guide.tocShow') || 'Sommaire'}`
   }
 }
 
 function _initTocToggle() {
   const isMobile = window.matchMedia('(max-width: 768px)').matches
   const stored = localStorage.getItem(LS_TOC_VISIBLE)
+  // Mobile : masqué par défaut sauf si l'utilisateur a explicitement affiché
   let tocVisible = stored !== null ? stored === 'true' : !isMobile
 
   _applyTocVisibility(tocVisible)
