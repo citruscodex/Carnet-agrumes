@@ -7,12 +7,13 @@
 const WIKI_KEY = 'agrumes_wiki_pages';
 
 const WIKI_CATS = [
-  { slug: 'especes',  icon: '🍊', color: '#e65100' },
-  { slug: 'culture',  icon: '🌱', color: '#388e3c' },
-  { slug: 'maladies', icon: '🦠', color: '#c62828' },
-  { slug: 'greffage', icon: '✂️',  color: '#6a1b9a' },
-  { slug: 'histoire', icon: '📜', color: '#1565c0' },
-  { slug: 'general',  icon: '📄', color: '#546e7a' },
+  { slug: 'especes',             icon: '🍊', color: '#e65100' },
+  { slug: 'culture',             icon: '🌱', color: '#388e3c' },
+  { slug: 'maladies',            icon: '🦠', color: '#c62828' },
+  { slug: 'greffage',            icon: '✂️',  color: '#6a1b9a' },
+  { slug: 'histoire',            icon: '📜', color: '#1565c0' },
+  { slug: 'general',             icon: '📄', color: '#546e7a' },
+  { slug: 'guide-fertilisation', icon: '📚', color: '#c75b2a' },
 ];
 const CAT_COLOR = Object.fromEntries(WIKI_CATS.map(c => [c.slug, c.color]));
 const CAT_ICON  = Object.fromEntries(WIKI_CATS.map(c => [c.slug, c.icon]));
@@ -40,7 +41,8 @@ function _relTime(iso) {
 function _catLabel(slug, T) {
   if (T) { const v = T('wiki.cat.' + slug); if (v && v !== 'wiki.cat.' + slug) return v; }
   return { especes:'Espèces', culture:'Culture', maladies:'Maladies',
-           greffage:'Greffage', histoire:'Histoire', general:'Général' }[slug] || slug;
+           greffage:'Greffage', histoire:'Histoire', general:'Général',
+           'guide-fertilisation':'Guide fertilisation' }[slug] || slug;
 }
 
 function _wT(key, T, fallback) {
