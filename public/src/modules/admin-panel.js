@@ -403,7 +403,8 @@ function renderUserCards(users) {
         <button class="cca-admin-btn cca-admin-btn-blue" data-adusr-resetpwd="${esc(u.id)}">🔑 ${T('users','resetPassword')}</button>
         ${isActive
           ? `<button class="cca-admin-btn cca-admin-btn-danger" data-adusr-deactivate="${esc(u.id)}">${T('users','deactivate')}</button>`
-          : `<button class="cca-admin-btn" data-adusr-activate="${esc(u.id)}">${T('users','activate')}</button>`
+          : `<button class="cca-admin-btn" data-adusr-activate="${esc(u.id)}">${T('users','activate')}</button>
+             <button class="cca-admin-btn cca-admin-btn-danger" data-adusr-delete="${esc(u.id)}" data-adusr-email="${esc(u.email)}">${T('users','delete')}</button>`
         }
         <button class="cca-admin-btn" style="font-size:.7rem" data-adusr-history="${esc(u.id)}">📋 ${T('users','history')}</button>
       </div>
@@ -533,6 +534,23 @@ function bindUserCardActions(container) {
       try {
         await apiFetch('/api/admin/users/' + btn.dataset.adusrActivate + '/activate', { method: 'PUT' });
         toast('Compte réactivé');
+      } catch (e) { toast(e.message, true); }
+    });
+  });
+
+  // Supprimer définitivement (comptes désactivés uniquement)
+  container.querySelectorAll('[data-adusr-delete]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const email = btn.dataset.adusrEmail;
+      const confirmed = prompt(`${T('users','deleteConfirm')}\n\n${email}`);
+      if (confirmed !== 'DELETE') return;
+      try {
+        await apiFetch('/api/admin/users/' + btn.dataset.adusrDelete + '/hard-delete', {
+          method: 'POST',
+          body: JSON.stringify({ confirm: `DELETE_USER_${email}` })
+        });
+        btn.closest('.cca-admin-card').remove();
+        toast('Compte supprimé définitivement');
       } catch (e) { toast(e.message, true); }
     });
   });
