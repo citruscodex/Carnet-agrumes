@@ -21281,6 +21281,7 @@ function _srvTokenValid(){
       if(u.includes('/api/admin/bugs/groups')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
       if(u.includes('/api/admin/bugs/list'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.bugs||[]),{status:200,headers:{'Content-Type':'application/json'}});
       if(u.includes('/api/admin/audit-log'))   return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.audit||[]),{status:200,headers:{'Content-Type':'application/json'}});
+      if(u.includes('/api/admin/invitation-codes')) return new Response(JSON.stringify(window.__ADMIN_MOCK_DATA?.invCodes||[]),{status:200,headers:{'Content-Type':'application/json'}});
       if(u.includes('/api/admin'))    return new Response(JSON.stringify({ok:true}),{status:200,headers:{'Content-Type':'application/json'}});
       if(u.includes('/api/observatoire')) return new Response(JSON.stringify([]),{status:200,headers:{'Content-Type':'application/json'}});
       return _orig(url,opts);

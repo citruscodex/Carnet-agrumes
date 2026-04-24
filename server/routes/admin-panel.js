@@ -32,7 +32,7 @@ module.exports = async function adminPanelPlugin(fastify) {
   // ── PUT /api/admin/users/:id/activate ────────────────────────────────────────
   fastify.put('/api/admin/users/:id/activate', guardCfg, async (req, reply) => {
     const { rows } = await fastify.pg.query(
-      `UPDATE users SET is_active=true, disabled_at=NULL, deactivated_at=NULL, deactivated_reason=NULL
+      `UPDATE users SET is_active=true, deactivated_at=NULL, deactivated_reason=NULL
        WHERE id=$1 RETURNING id, email`,
       [req.params.id]
     );
@@ -49,7 +49,7 @@ module.exports = async function adminPanelPlugin(fastify) {
       return reply.code(403).send({ error: 'Cannot deactivate yourself' });
     const reason = sanitize(req.body?.reason || '', 500);
     const { rows } = await fastify.pg.query(
-      `UPDATE users SET is_active=false, disabled_at=NOW(), deactivated_at=NOW(), deactivated_reason=$2
+      `UPDATE users SET is_active=false, deactivated_at=NOW(), deactivated_reason=$2
        WHERE id=$1 RETURNING id, email`,
       [req.params.id, reason || null]
     );

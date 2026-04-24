@@ -41,7 +41,8 @@ const I18N = {
       inactive: 'Inactifs', loginsWeek: 'Connexions 7j', bugsOpen: 'Bugs ouverts',
       bugsResolved: 'Bugs résolus', plantsCreated: 'Plantes', topUsers: 'Top 5 actifs',
       loading: '⏳ Chargement…'
-    }
+    },
+    invCodes: { title: 'Codes invitation', generate: '+ Générer', revoked: 'Code révoqué' }
   },
   en: {
     title: 'Administration',
@@ -76,7 +77,8 @@ const I18N = {
       inactive: 'Inactive', loginsWeek: 'Logins 7d', bugsOpen: 'Open bugs',
       bugsResolved: 'Resolved bugs', plantsCreated: 'Plants', topUsers: 'Top 5 active',
       loading: '⏳ Loading…'
-    }
+    },
+    invCodes: { title: 'Invite codes', generate: '+ Generate', revoked: 'Code revoked' }
   },
   it: {
     title: 'Amministrazione',
@@ -111,7 +113,8 @@ const I18N = {
       inactive: 'Inattivi', loginsWeek: 'Accessi 7g', bugsOpen: 'Bug aperti',
       bugsResolved: 'Bug risolti', plantsCreated: 'Piante', topUsers: 'Top 5 attivi',
       loading: '⏳ Caricamento…'
-    }
+    },
+    invCodes: { title: 'Codici invito', generate: '+ Genera', revoked: 'Codice revocato' }
   },
   es: {
     title: 'Administración',
@@ -146,7 +149,8 @@ const I18N = {
       inactive: 'Inactivos', loginsWeek: 'Accesos 7d', bugsOpen: 'Errores abiertos',
       bugsResolved: 'Errores resueltos', plantsCreated: 'Plantas', topUsers: 'Top 5 activos',
       loading: '⏳ Cargando…'
-    }
+    },
+    invCodes: { title: 'Códigos de invitación', generate: '+ Generar', revoked: 'Código revocado' }
   },
   pt: {
     title: 'Administração',
@@ -181,7 +185,8 @@ const I18N = {
       inactive: 'Inativos', loginsWeek: 'Acessos 7d', bugsOpen: 'Bugs abertos',
       bugsResolved: 'Bugs resolvidos', plantsCreated: 'Plantas', topUsers: 'Top 5 ativos',
       loading: '⏳ Carregando…'
-    }
+    },
+    invCodes: { title: 'Códigos de convite', generate: '+ Gerar', revoked: 'Código revogado' }
   }
 };
 
@@ -195,16 +200,16 @@ function T(section, key) {
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
-function authHeader() {
+function authHeader(hasBody) {
   const token = sessionStorage.getItem('cca_srv_token');
   return {
-    'Content-Type': 'application/json',
+    ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
     'Authorization': 'Bearer ' + (token || '')
   };
 }
 
 async function apiFetch(url, options = {}) {
-  const res = await fetch(url, { ...options, headers: { ...authHeader(), ...(options.headers || {}) } });
+  const res = await fetch(url, { ...options, headers: { ...authHeader(options.body !== undefined), ...(options.headers || {}) } });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'HTTP ' + res.status);
   return data;
@@ -268,6 +273,8 @@ const CSS = `
 .cca-admin-temp-password { font-family: monospace; font-size: 1.1rem; font-weight: 700;
   letter-spacing: 2px; background: #2d3436; color: #fd9644; padding: 8px 14px;
   border-radius: 8px; display: inline-block; margin: 8px 0; }
+.cca-admin-code-row { display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--cream3,#e0d8ce);font-size:.8rem; }
+.cca-admin-code-badge { font-family:monospace;font-size:.85rem;font-weight:700;letter-spacing:1px;background:var(--cream2,#f5f0e8);border-radius:6px;padding:3px 8px; }
 `;
 
 let _cssInjected = false;
@@ -316,9 +323,10 @@ async function renderUsersTab(container) {
   container.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted)">${T('users','loading')}</div>`;
 
   try {
-    const [users, stats] = await Promise.all([
+    const [users, stats, codes] = await Promise.all([
       apiFetch('/api/admin/users?status=active'),
-      apiFetch('/api/admin/stats').catch(() => null)
+      apiFetch('/api/admin/stats').catch(() => null),
+      apiFetch('/api/admin/invitation-codes').catch(() => [])
     ]);
 
     container.innerHTML = `
@@ -344,6 +352,7 @@ async function renderUsersTab(container) {
       </div>
       <div id="cca-adm-user-list">${renderUserCards(users)}</div>
       ${renderInviteSection()}
+      ${renderInviteCodesSection(codes)}
     `;
 
     bindUsersTab(container);
@@ -430,6 +439,63 @@ function renderInviteSection() {
   </div>`;
 }
 
+function renderCodeRows(codes) {
+  if (!codes.length) return `<div style="font-size:.78rem;color:var(--muted);padding:4px 0">—</div>`;
+  return codes.map(c => `
+    <div class="cca-admin-code-row">
+      <span class="cca-admin-code-badge">${esc(c.code)}</span>
+      <span style="font-size:.72rem;color:var(--muted)">${PROFILE_ICONS[c.profile_type]||'🍋'} ${esc(c.profile_type)}</span>
+      <span style="font-size:.72rem;color:var(--muted)">${c.uses}/${c.max_uses} · exp. ${fmtDate(c.expires_at)}</span>
+      <button class="cca-admin-btn cca-admin-btn-danger" style="font-size:.7rem;padding:2px 8px;margin-left:auto"
+        data-adm-revoke-code="${esc(c.id)}">✕</button>
+    </div>`).join('');
+}
+
+function renderInviteCodesSection(codes = []) {
+  return `
+  <div class="cca-admin-section-title">🔑 ${T('invCodes','title')}</div>
+  <div id="cca-adm-inv-codes-list" style="margin-bottom:8px">${renderCodeRows(codes)}</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+    <select id="cca-admin-code-profile" class="cca-admin-select">
+      ${Object.entries(PROFILE_LABELS).map(([v,l]) => `<option value="${v}">${PROFILE_ICONS[v]} ${esc(l)}</option>`).join('')}
+    </select>
+    <input id="cca-admin-code-maxuses" class="cca-admin-input" type="number" min="1" max="100" value="1" style="width:64px" title="Uses max">
+    <input id="cca-admin-code-days" class="cca-admin-input" type="number" min="1" max="365" value="30" style="width:64px" title="Jours">
+    <button class="cca-admin-btn cca-admin-btn-primary" id="cca-admin-gen-code-btn">${T('invCodes','generate')}</button>
+  </div>
+  <div id="cca-admin-code-result" style="font-size:.78rem;margin-top:6px"></div>`;
+}
+
+function bindInvCodeActions(container) {
+  container.querySelector('#cca-admin-gen-code-btn')?.addEventListener('click', async () => {
+    const profile  = container.querySelector('#cca-admin-code-profile')?.value || 'collectionneur';
+    const max_uses = parseInt(container.querySelector('#cca-admin-code-maxuses')?.value || '1');
+    const days     = parseInt(container.querySelector('#cca-admin-code-days')?.value || '30');
+    try {
+      const r = await apiFetch('/api/admin/invitation-codes', {
+        method: 'POST', body: JSON.stringify({ profile_type: profile, max_uses, expires_days: days })
+      });
+      const newCode = r.codes?.[0]?.code || r.code || '';
+      const res = container.querySelector('#cca-admin-code-result');
+      if (res && newCode) res.innerHTML = `<span class="cca-admin-code-badge" style="cursor:pointer" title="Copier" onclick="navigator.clipboard.writeText('${esc(newCode)}')">${esc(newCode)}</span> ✓`;
+      const codes = await apiFetch('/api/admin/invitation-codes').catch(() => []);
+      const listDiv = container.querySelector('#cca-adm-inv-codes-list');
+      if (listDiv) listDiv.innerHTML = renderCodeRows(codes);
+      bindInvCodeActions(container);
+    } catch (e) { toast(e.message, true); }
+  });
+
+  container.querySelectorAll('[data-adm-revoke-code]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      try {
+        await apiFetch('/api/admin/invitation-codes/' + btn.dataset.admRevokeCode, { method: 'DELETE' });
+        btn.closest('.cca-admin-code-row').remove();
+        toast(T('invCodes','revoked'));
+      } catch (e) { toast(e.message, true); }
+    });
+  });
+}
+
 function bindUsersTab(container) {
   // Filtres
   container.querySelector('#cca-adm-filter-btn')?.addEventListener('click', async () => {
@@ -480,6 +546,7 @@ function bindUsersTab(container) {
   });
 
   bindUserCardActions(container);
+  bindInvCodeActions(container);
 }
 
 function bindUserCardActions(container) {
