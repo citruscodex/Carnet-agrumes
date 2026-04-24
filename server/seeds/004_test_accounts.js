@@ -108,30 +108,33 @@ async function run() {
         for (const ev of EVENT_TEMPLATES.slice(0, 2 + Math.floor(Math.random() * 2))) {
           const evDate = new Date();
           evDate.setDate(evDate.getDate() - ev.days_ago);
-          await client.query(
-            `INSERT INTO user_events (user_id, plant_id, type, date, notes)
-             VALUES ($1,$2,$3,$4,$5)`,
-            [userId, plantId, ev.type, evDate.toISOString().split('T')[0], ev.notes]
-          ).catch(() => {}); // ignorer si colonne manquante
+          await client.query('SAVEPOINT ev_insert');
+          try {
+            await client.query(
+              `INSERT INTO user_events (user_id, plant_id, event_type, event_date, notes)
+               VALUES ($1,$2,$3,$4,$5)`,
+              [userId, plantId, ev.type, evDate.toISOString().split('T')[0], ev.notes]
+            );
+            await client.query('RELEASE SAVEPOINT ev_insert');
+          } catch { await client.query('ROLLBACK TO SAVEPOINT ev_insert'); }
         }
       }
 
-      // Logger dans admin_audit_log (admin_id = premier admin trouvé)
-      const adminRow = await client.query(
-        `SELECT id FROM users WHERE role='admin' LIMIT 1`
-      );
-      if (adminRow.rows.length) {
-        await client.query(
-          `INSERT INTO admin_audit_log (admin_id, target_user_id, action, details)
-           VALUES ($1,$2,'user_created',$3)
-           ON CONFLICT DO NOTHING`,
-          [adminRow.rows[0].id, userId, JSON.stringify({
-            email: account.email,
-            profile_type: account.profile_type,
-            purpose: 'test_account_beta'
-          })]
-        );
-      }
+      // Logger dans admin_audit_log si possible (droits optionnels)
+      await client.query('SAVEPOINT audit_insert');
+      try {
+        const adminRow = await client.query(`SELECT id FROM users WHERE role='admin' LIMIT 1`);
+        if (adminRow.rows.length) {
+          await client.query(
+            `INSERT INTO admin_audit_log (admin_id, target_user_id, action, details)
+             VALUES ($1,$2,'user_created',$3) ON CONFLICT DO NOTHING`,
+            [adminRow.rows[0].id, userId, JSON.stringify({
+              email: account.email, profile_type: account.profile_type, purpose: 'test_account_beta'
+            })]
+          );
+        }
+        await client.query('RELEASE SAVEPOINT audit_insert');
+      } catch { await client.query('ROLLBACK TO SAVEPOINT audit_insert'); }
     }
 
     await client.query('COMMIT');

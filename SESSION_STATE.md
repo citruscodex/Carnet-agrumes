@@ -145,9 +145,26 @@ DB PostgreSQL (`ccadb`) — 19 tables `user_*` ajoutées en Phase 0A :
 
 ---
 
+## Phase 1 ✅ — commits `f0f2929`→`2af7f24`
+Admin panel + comptes test multi-profils + notif BBCH
+
+| Livrable | Statut |
+|---|---|
+| Migration 008 — `admin_audit_log`, `bug_report_groups`, colonnes `users` | ✅ appliquée sur ccadb |
+| Migration 009 — `user_bbch_tracking` | ✅ appliquée sur ccadb |
+| `server/routes/admin-panel.js` — routes activate/deactivate/hard-delete/audit/bugs/stats | ✅ |
+| `public/src/modules/admin-panel.js` — module ES 4 onglets, i18n 5 langues | ✅ |
+| `server/seeds/004_test_accounts.js` — 4 comptes test (collectionneur/pepinieriste/arboriculteur/conservatoire) | ✅ seedés sur ccadb |
+| `server/crons/bbch-notifications.js` — cron 7h30, notification uniquement au changement de stade | ✅ |
+| Wiki : catégorie `guide-fertilisation` (📚) visible dans l'interface — 17 articles | ✅ |
+| Base de données renommée ccadb partout dans la doc (était cca_prod) | ✅ |
+| Tests Playwright : **6/6 passent** | ✅ |
+
+---
+
 ## Prochaine session — À FAIRE DANS CET ORDRE
 
-1. **Phase 1** : admin panel + comptes test multi-profils + notif BBCH changement de stade uniquement
+1. **Phase 2** : à définir
 
 ---
 
