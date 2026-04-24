@@ -98,6 +98,19 @@ function _mapPlant(p) {
     variety:          p.variety || null,
     rootstock:        p.rootstock || null,
     acquisition_date: p.acquisitionDate || p.plantingDate || null,
+    // F1 — Numérotation
+    cca_number:       p.accessionId || null,
+    // F2 — Précision de date
+    date_precision:   p.datePrecision || 'full',
+    // F3 — Provenance
+    provenance_type:   p.provenanceType   || 'inconnu',
+    provenance_mode:   p.provenanceMode   || 'inconnu',
+    production_type:   p.productionType   || 'inconnu',
+    provenance_detail: p.provenanceDetail || null,
+    // F9 — Emplacement
+    emplacement_zone:     p.locationData?.zone     || p.location || null,
+    emplacement_section:  p.locationData?.section  || null,
+    emplacement_position: p.locationData?.position || null,
     notes:            p.notes || null,
     photo_urls:       p.photos || [],
     metadata: { cultureType: p.cultureType, location: p.location, status: p.status },
@@ -303,6 +316,15 @@ export async function bulkImportLocalData(strategy = 'skip_existing') {
     variety:          p.variety || null,
     rootstock:        p.rootstock || null,
     acquisition_date: p.acquisitionDate || p.plantingDate || null,
+    cca_number:       p.accessionId || null,
+    date_precision:   p.datePrecision || 'full',
+    provenance_type:   p.provenanceType   || 'inconnu',
+    provenance_mode:   p.provenanceMode   || 'inconnu',
+    production_type:   p.productionType   || 'inconnu',
+    provenance_detail: p.provenanceDetail || null,
+    emplacement_zone:     p.locationData?.zone     || p.location || null,
+    emplacement_section:  p.locationData?.section  || null,
+    emplacement_position: p.locationData?.position || null,
     notes:            p.notes || null,
     photo_urls:       p.photos || [],
     metadata:         { cultureType: p.cultureType, location: p.location, status: p.status }
