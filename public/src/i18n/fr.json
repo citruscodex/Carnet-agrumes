@@ -1590,6 +1590,8 @@
     "notTranslatedYet": "Le guide débutant est actuellement disponible uniquement en français. Les traductions EN/IT/ES/PT seront publiées après la beta.",
     "openChapter": "Ouvrir le chapitre",
     "readMore": "📖 Comprendre",
-    "fullGuide": "Guide nutrition complet"
+    "fullGuide": "Guide nutrition complet",
+    "tocShow": "Afficher le sommaire",
+    "tocHide": "Masquer le sommaire"
   }
 }

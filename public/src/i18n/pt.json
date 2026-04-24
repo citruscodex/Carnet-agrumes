@@ -1588,6 +1588,8 @@
     "notTranslatedYet": "O guia para principiantes está disponível atualmente apenas em francês. As traduções PT/EN/IT/ES serão publicadas após a beta. 🇫🇷 Le guide est disponible en français.",
     "openChapter": "Abrir capítulo",
     "readMore": "📖 Perceber",
-    "fullGuide": "Guia nutrição"
+    "fullGuide": "Guia nutrição",
+    "tocShow": "Mostrar sumário",
+    "tocHide": "Ocultar sumário"
   }
 }

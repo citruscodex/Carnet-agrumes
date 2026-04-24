@@ -4,6 +4,7 @@ const GUIDE_URL = '/guide/guide-debutant-citruscodex.md'
 const GUIDE_PDF_URL = '/guide/guide-debutant-citruscodex.pdf'
 const LS_BOOKMARKS = 'agrumes_guide_bookmarks'
 const LS_LAST_READ = 'agrumes_guide_last_read'
+const LS_TOC_VISIBLE = 'agrumes_guide_toc_visible'
 
 let _guideContent = null
 let _parsedChapters = null
@@ -26,10 +27,17 @@ export const CARENCE_GUIDE_ANCHOR = 'chapitre-10-diagnostiquer-et-corriger-les-c
 const _CSS = `
 .cca-guide{max-width:1200px;margin:0 auto;padding:16px}
 .cca-lang-notice{background:#fff3cd;border:1px solid #ffc107;padding:12px;margin-bottom:16px;border-radius:6px;font-size:.85rem}
-.cca-guide-layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+.cca-guide-layout{display:grid;grid-template-columns:260px 1fr;gap:20px;transition:grid-template-columns 0.3s ease}
+.cca-guide-layout.cca-guide-toc-hidden{grid-template-columns:0 1fr}
+.cca-guide-layout.cca-guide-toc-hidden .cca-guide-toc{opacity:0;pointer-events:none;overflow:hidden;padding:0;border:none}
+.cca-guide-toc{transition:opacity 0.3s ease,padding 0.3s ease}
+.cca-guide-toc-toggle{position:fixed;top:80px;left:8px;z-index:100;background:var(--primary,#2e7d32);color:white;border:none;border-radius:4px;padding:6px 12px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.cca-guide-toc-toggle:hover{background:var(--primary-dark,#1b5e20)}
 @media(max-width:768px){
   .cca-guide-layout{grid-template-columns:1fr}
+  .cca-guide-layout.cca-guide-toc-hidden{grid-template-columns:1fr}
   .cca-guide-toc{position:static;max-height:280px;overflow-y:auto;border-right:none;border-bottom:1px solid #e0e0e0;padding-bottom:12px;margin-bottom:12px}
+  .cca-guide-layout:not(.cca-guide-toc-hidden) .cca-guide-toc{position:fixed;top:120px;left:0;right:0;bottom:0;background:white;z-index:99;padding:20px;overflow-y:auto;max-height:unset}
 }
 .cca-guide-toc{position:sticky;top:16px;max-height:calc(100vh - 60px);overflow-y:auto;padding-right:10px;border-right:1px solid #e0e0e0}
 .cca-guide-search input{width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;margin-bottom:12px;box-sizing:border-box;font-size:.85rem}
@@ -93,6 +101,10 @@ export async function renderGuide(container, { deepLink = null } = {}) {
   container.innerHTML = `
 <div class="cca-guide">
   ${showFRNotice ? `<div class="cca-lang-notice">🇫🇷 ${esc(_T('guide.notTranslatedYet') || 'Guide available in French only during beta.')}</div>` : ''}
+  <button class="cca-guide-toc-toggle" id="guide-toc-toggle" aria-label="${esc(_T('guide.tocHide') || 'Masquer le sommaire')}">
+    <span class="cca-guide-toc-toggle-icon">◀</span>
+    <span class="cca-guide-toc-toggle-label">${esc(_T('guide.tocHide') || 'Sommaire')}</span>
+  </button>
   <div class="cca-guide-layout">
     <aside class="cca-guide-toc">
       <div class="cca-guide-search">
@@ -118,6 +130,7 @@ export async function renderGuide(container, { deepLink = null } = {}) {
   if (searchEl) searchEl.addEventListener('input', _onSearch)
 
   _attachTOCListeners()
+  _initTocToggle()
 }
 
 export function showChapter(anchor) {
@@ -347,6 +360,38 @@ function _onSearch(e) {
   } else {
     nav.innerHTML = `<div class="cca-no-results">${esc(_T('guide.noResults') || 'Aucun résultat')}</div>`
   }
+}
+
+// ── TOC toggle ────────────────────────────────────────────────────────────────
+
+function _applyTocVisibility(visible) {
+  const toc = document.querySelector('.cca-guide-toc')
+  const layout = document.querySelector('.cca-guide-layout')
+  const toggle = document.getElementById('guide-toc-toggle')
+  if (!toc || !layout) return
+  layout.classList.toggle('cca-guide-toc-hidden', !visible)
+  if (toggle) {
+    const icon = toggle.querySelector('.cca-guide-toc-toggle-icon')
+    const label = toggle.querySelector('.cca-guide-toc-toggle-label')
+    if (icon) icon.textContent = visible ? '◀' : '☰'
+    if (label) label.textContent = visible
+      ? (_T('guide.tocHide') || 'Masquer le sommaire')
+      : (_T('guide.tocShow') || 'Afficher le sommaire')
+  }
+}
+
+function _initTocToggle() {
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+  const stored = localStorage.getItem(LS_TOC_VISIBLE)
+  let tocVisible = stored !== null ? stored === 'true' : !isMobile
+
+  _applyTocVisibility(tocVisible)
+
+  document.getElementById('guide-toc-toggle')?.addEventListener('click', () => {
+    tocVisible = !tocVisible
+    localStorage.setItem(LS_TOC_VISIBLE, String(tocVisible))
+    _applyTocVisibility(tocVisible)
+  })
 }
 
 // ── Window interop ────────────────────────────────────────────────────────────

@@ -1588,6 +1588,8 @@
     "notTranslatedYet": "The beginner guide is currently available in French only. EN/IT/ES/PT translations will be published after the beta. 🇫🇷 Le guide est disponible en français.",
     "openChapter": "Open chapter",
     "readMore": "📖 Learn more",
-    "fullGuide": "Nutrition guide"
+    "fullGuide": "Nutrition guide",
+    "tocShow": "Show table of contents",
+    "tocHide": "Hide table of contents"
   }
 }
