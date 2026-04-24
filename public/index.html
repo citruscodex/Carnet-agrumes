@@ -3985,6 +3985,7 @@ function render(){
   else{bk.style.display='none';sb.textContent=`${plants.length} sujets`;if(!selMode)ac.innerHTML=`<button class="btn btn-sec btn-sm" data-action="enter-sel-mode">☑</button><button class="btn btn-g btn-sm" data-action="open-add-plant">＋</button>`;
   if(collView!=='verger')empCadastreMode=false;
   const hadMap=!!vergerMap;m.innerHTML=renderColl();
+  if(collView==='list'){requestAnimationFrame(()=>{const r=document.getElementById('cca-filters-root');if(r&&window.__CCA_filters)window.__CCA_filters.mount(r,rGrid,plants);});}
   if(collView==='verger'&&empCadastreMode&&!hadMap)setTimeout(initVergerMap,80);
   else if(collView==='verger'&&empCadastreMode&&hadMap)setTimeout(()=>{if(document.getElementById('verger-map')&&!vergerMap)initVergerMap();},80);
   else if(collView==='verger'&&!empCadastreMode&&hadMap){try{vergerMap.remove();}catch{}vergerMap=null;}
@@ -4398,6 +4399,7 @@ function renderColl(){
 ${collSwitcher}
 ${statChips}
 ${viewTabs}
+<div id="cca-filters-root"></div>
 <div style="display:flex;gap:7px;margin-bottom:10px;align-items:center">
   <input class="fsrch" placeholder="🔍 Rechercher nom, espèce, variété…" value="${esc(srch)}" oninput="srch=this.value;rGrid()" style="flex:1;margin-bottom:0"/>
   <button data-action="open-adv-filters" style="white-space:nowrap;font-size:.78rem;padding:6px 10px;border-radius:8px;cursor:pointer;border:1.5px solid ${advFilters.length?'rgba(45,90,61,.3)':'var(--cream3)'};background:${advFilters.length?'rgba(45,90,61,.1)':'var(--cream2)'};color:${advFilters.length?'var(--text-accent)':'var(--muted)'}">🔍${advFilters.length?` ${advFilters.length}`:''}</button>
@@ -4419,7 +4421,7 @@ ${selMode?`<div style="font-size:.75rem;color:var(--amber3);margin-bottom:9px;fo
 }
 
 function filtered(){return plants.filter(p=>{if(fCt!=='all'&&(fCt==='terre'?isPot(p):!isPot(p)))return false;if(fSt!=='all'&&p.status!==fSt)return false;if(srch&&!`${p.name} ${p.species} ${p.variety}`.toLowerCase().includes(srch.toLowerCase()))return false;if(advFilters.length&&!advFilters.every(f=>matchFilter(p,f)))return false;return true})}
-function rGrid(){const g=document.getElementById('pgrid'),fl=filtered();if(g)g.innerHTML=fl.length?fl.map(rCard).join(''):`<div class="emp">${T('misc.collNoSubjects')}</div>`}
+function rGrid(){const g=document.getElementById('pgrid');let fl=filtered();if(window.__CCA_filters)fl=window.__CCA_filters.applyFilters(fl);if(g)g.innerHTML=fl.length?fl.map(rCard).join(''):`<div class="emp">${T('misc.collNoSubjects')}</div>`}
 
 // ── F5 — Filtres composables ──────────────────────────────────────────────────
 const _AF_FIELDS={species:'Espèce',variety:'Variété',zone:'Zone / Emplacement',provenanceType:'Type provenance',status:'État sanitaire',iucnStatus:'Statut UICN',accessionId:'Accession ID'};
@@ -4654,6 +4656,7 @@ ${lp?`<img class="pthumb" src="${esc(lp.url)}" alt="" loading="lazy" onerror="th
     ${!isTerre&&p.potSize?`<span class="pcard-tag" style="background:rgba(45,90,61,.09);color:var(--text-accent)">∅${esc(p.potSize)}cm</span>`:''}
     ${isTerre&&p.sol?`<span class="pcard-tag" style="background:rgba(139,69,19,.08);color:var(--terra)">⛰ ${esc(p.sol.slice(0,10))}</span>`:''}
     <span class="pcard-tag" style="background:${isTerre?'rgba(139,69,19,.07)':'rgba(232,148,26,.1)'};color:${isTerre?'var(--terra)':'var(--brown)'}">📍 ${esc(locLabel)}</span>
+    ${window.__CCA_location?.renderEmplacementBadges(p)||''}
     ${hasPhotos?`<span class="pcard-tag" style="background:#e3f2fd;color:#1565c0">📷 ${photoCount}</span>`:''}
     ${rsLabel?`<span class="pcard-tag" style="background:rgba(92,107,192,.09);color:#5c6bc0">🌿 ${esc(rsLabel)}</span>`:''}
     ${p.sunExposure&&p.sunExposure!=='non renseigné'?`<span class="pcard-tag" style="background:rgba(232,148,26,.08);color:var(--amber3)">${p.sunExposure==='plein soleil'?'☀':p.sunExposure==='mi-ombre'?'⛅':'🌑'} ${esc(p.sunExposure)}</span>`:''}
@@ -7901,6 +7904,7 @@ ${renderSpeciesKB(p)}
 <div class="dr"><span class="drl">Section / Parcelle</span><span class="drv"><input id="ed-lo-sec" type="text" value="${esc(eb.locationData?.section||'')}" oninput="eb.locationData.section=this.value" placeholder="ex: carré B" style="width:120px"></span></div>
 <div class="dr"><span class="drl">Position précise</span><span class="drv"><input id="ed-lo-pos" type="text" value="${esc(eb.locationData?.position||'')}" oninput="eb.locationData.position=this.value" placeholder="ex: rang 2, place 4" style="width:150px"></span></div>
 <div class="dr"><span class="drl">GPS</span><span class="drv"><span id="ed-lo-gps" style="font-size:.8rem;color:var(--muted)">${eb.locationData?.lat?`${eb.locationData.lat}, ${eb.locationData.lng}`:'Non défini'}</span> <button class="btn btn-sm" data-action="get-location-gps" style="font-size:.75rem;padding:3px 8px;margin-left:6px">📍</button></span></div>
+${window.__CCA_location?.renderEmplacementDisplay(p)||''}
 ${!isTerre?`<div class="dr"><span class="drl">Ø pot (cm)</span><span class="drv"><input type="number" id="ed-pt" value="${esc(eb.potSize)}" oninput="eb.potSize=this.value" style="width:62px"></span></div>`:''}
 <div class="dr"><span class="drl">Hauteur (cm)</span><span class="drv"><input type="number" id="ed-ht" value="${esc(eb.height)}" oninput="eb.height=this.value" style="width:62px"></span></div>
 <div class="dr"><span class="drl">Ø couronne (cm)</span><span class="drv"><input type="number" id="ed-cr" value="${esc(eb.crownDiameter)}" oninput="eb.crownDiameter=this.value" style="width:62px"></span></div>
@@ -21548,6 +21552,18 @@ window.addEventListener('cca-navigate', e => {
     if(typeof showPage === 'function') showPage('fert');
   }
 });
+</script>
+<!-- F9 — Emplacement display (ES module) -->
+<script type="module">
+import * as location from './src/modules/plant-location.js';
+window.__CCA_location = location;
+</script>
+<!-- F5 — Filtres composables (ES module) -->
+<script type="module">
+import * as collFilters from './src/modules/collection-filters.js';
+window.__CCA_filters = collFilters;
+const filtersRoot = document.getElementById('cca-filters-root');
+if(filtersRoot && typeof rGrid === 'function' && typeof plants !== 'undefined') collFilters.mount(filtersRoot, rGrid, plants);
 </script>
 </body>
 </html>
