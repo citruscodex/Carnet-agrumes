@@ -92,7 +92,6 @@ tr:nth-child(even) td{background:var(--cream2)}
     <li><a href="#wiki">Wiki &amp; Observatoire</a></li>
     <li><a href="#reglages">Profil &amp; Réglages</a></li>
     <li><a href="#signalement">Signalement &amp; Support</a></li>
-    <li><a href="#admin">Administration</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ol>
 </nav>
@@ -655,8 +654,14 @@ tr:nth-child(even) td{background:var(--cream2)}
 
   <div class="subsection" id="securite">
     <h3>🔒 Sécurité et données</h3>
-    <p>Toutes vos données restent 100% locales — rien n'est envoyé vers un serveur tiers (hors sync optionnelle). Mot de passe → SHA-256. Token GitHub → XOR+SHA-256. Export : ⚙ Réglages → ⬇ Exporter JSON.</p>
-    <div class="warn-box">L'import <strong>écrase</strong> la collection existante. Exportez toujours avant d'importer.</div>
+    <p>Vos données sont synchronisées automatiquement sur nos serveurs hébergés en France (Scaleway SAS, Paris) via connexion chiffrée HTTPS.</p>
+    <ul>
+      <li>Mot de passe : haché bcrypt 12 rounds — jamais stocké en clair</li>
+      <li>Export complet : ⚙ Réglages → Télécharger mes données (JSON, format RGPD)</li>
+      <li>Suppression de compte : ⚙ Réglages → Supprimer mon compte (irréversible, cascade complète)</li>
+      <li>Sauvegarde chiffrée optionnelle (AES-256-GCM) disponible dans ⚙ Réglages → Sauvegarde manuelle</li>
+    </ul>
+    <div class="warn-box">L'import <strong>écrase</strong> les données locales existantes. Exportez toujours avant d'importer.</div>
   </div>
 </section>
 
@@ -683,25 +688,7 @@ tr:nth-child(even) td{background:var(--cream2)}
 </section>
 
 <!-- ════════════════════════════════════════════════════════
-     16. ADMINISTRATION
-════════════════════════════════════════════════════════ -->
-<section id="admin" class="section">
-  <h2>16. Administration (comptes admin uniquement)</h2>
-
-  <div class="subsection">
-    <h3>👥 Gestion des utilisateurs</h3>
-    <p>⚙ Réglages → Administration. Liste complète des utilisateurs avec email, profil, date de création, dernière connexion, statut. Fonctions : invitations bêta, reset mot de passe, notes admin, suspension de compte.</p>
-    <p><strong>Statistiques globales :</strong> total utilisateurs actifs, connexions 24h/7j, nombre total de sujets dans la collection globale.</p>
-  </div>
-
-  <div class="subsection">
-    <h3>🐛 Gestion des signalements</h3>
-    <p>Liste globale de tous les signalements. Gestion des statuts : Ouvert → En cours → Résolu → Fermé · Ne sera pas corrigé. Notes de résolution visibles par l'utilisateur. Filtres par catégorie, sévérité, statut, utilisateur.</p>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════════════════════
-     17. FAQ
+     16. FAQ
 ════════════════════════════════════════════════════════ -->
 <section id="faq" class="section">
   <h2>17. FAQ — Questions fréquentes</h2>
