@@ -2,6 +2,23 @@ import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
 
+// Plugin: rend esc.js disponible pour les chunks dynamiques en production.
+// Les chunks (admin-panel, migration-modal, server-sync) ont `import { esc } from '../lib/esc.js'`.
+// Servis depuis /assets/, cet import résout à /lib/esc.js — qui doit exister dans build/.
+function copyEscForDynamicChunksPlugin() {
+  return {
+    name: 'copy-esc-for-dynamic-chunks',
+    closeBundle() {
+      const src = path.resolve('public/src/lib/esc.js');
+      const dest = path.resolve('build/lib/esc.js');
+      if (fs.existsSync(src)) {
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.copyFileSync(src, dest);
+      }
+    },
+  };
+}
+
 // Plugin: copy static subdirectories from public/ to build/
 function copyStaticDirsPlugin(dirs) {
   return {
@@ -45,7 +62,7 @@ export default defineConfig({
   // public/ est la racine web — index.html s'y trouve directement
   root: 'public',
   publicDir: false,
-  plugins: [inlineLangsPlugin(), copyStaticDirsPlugin(['guide'])],
+  plugins: [inlineLangsPlugin(), copyStaticDirsPlugin(['guide']), copyEscForDynamicChunksPlugin()],
   build: {
     outDir: '../build',
     emptyOutDir: true,

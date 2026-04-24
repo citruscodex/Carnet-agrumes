@@ -819,6 +819,18 @@ async function renderStatsTab(container) {
 // ── Point d'entrée principal ──────────────────────────────────────────────────
 export async function initAdminPanel(container) {
   if (!container) return;
+  try {
+    await _initAdminPanel(container);
+  } catch (err) {
+    console.error('[admin-panel] erreur init', err);
+    container.innerHTML = `<div style="color:#c62828;padding:16px;font-family:monospace;font-size:.82rem">
+      ⚠ Erreur admin panel : ${esc(err.message)}
+      <pre style="margin-top:8px;font-size:.72rem;color:#888">${esc((err.stack || '').slice(0, 400))}</pre>
+    </div>`;
+  }
+}
+
+async function _initAdminPanel(container) {
   injectCSS();
 
   let activeTab = 'users';
