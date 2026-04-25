@@ -210,6 +210,8 @@ async function _submitServerLogin() {
     sessionStorage.setItem('cca_srv_role', d.role || 'member');
     const pt = d.profile || d.profile_type;
     if (pt) sessionStorage.setItem('cca_srv_profile_type', pt);
+    // Purge previous account's data so it cannot bleed into the new session
+    Object.keys(localStorage).filter(k => k.startsWith('agrumes_')).forEach(k => localStorage.removeItem(k));
     if (pt) {
       const cfg = window.getCfg?.();
       if (cfg?.profile) { cfg.profile.profileType = pt; window.setCfg?.(cfg); }
