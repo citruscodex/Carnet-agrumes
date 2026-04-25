@@ -18600,6 +18600,14 @@ async function submitExportRGPD(){
 
 async function _startLocalFlow(){
   console.log('[CCA Auth] _startLocalFlow() — démarrage');
+  // Afficher spinner immédiatement — rien d'autre avant la décision serveur
+  document.getElementById('cca-boot-loading')?.remove();
+  const _loadEl=document.createElement('div');
+  _loadEl.id='cca-boot-loading';
+  _loadEl.style.cssText='position:fixed;inset:0;background:#2d5a3d;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9998';
+  _loadEl.innerHTML='<span style="font-size:3rem;margin-bottom:16px">🍊</span><p style="color:rgba(255,255,255,.9);font-size:1rem;margin:0 0 28px;font-family:system-ui,sans-serif">Chargement de votre collection…</p><div id="cca-boot-spinner" style="width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%"></div>';
+  document.body.appendChild(_loadEl);
+  if(!document.getElementById('cca-boot-spin-style')){const s=document.createElement('style');s.id='cca-boot-spin-style';s.textContent='@keyframes _ccaSpin{to{transform:rotate(360deg)}}#cca-boot-spinner{animation:_ccaSpin .75s linear infinite}';document.head.appendChild(s);}
   // Le SERVEUR décide si c'est un nouveau compte ou un compte existant — pas localStorage
   let serverHasData = null; // null = status inconnu (erreur réseau)
   try {
@@ -18623,23 +18631,23 @@ async function _startLocalFlow(){
   const c=getCfg();
   console.log('[CCA Auth] serverHasData='+serverHasData+' getCfg()→'+(c?(c.pwdHash?'pwdHash:OUI':'pwdHash:ABSENT'):'null'));
   if(serverHasData===true){
-    // Compte existant confirmé par le serveur — contourner la vérification pwdHash locale
     if(!c?.pwdHash){const bypass=c||{};bypass.pwdHash='srv-auth-bypass';if(!bypass.profile)bypass.profile={profileType:srvPT||'collectionneur'};setCfg(bypass);}
     console.log('[CCA Auth] → launchApp() (has_data serveur confirmé)');
+    document.getElementById('cca-boot-loading')?.remove();
     loadData();launchApp();
   }else if(serverHasData===false){
-    // Le serveur confirme : aucune donnée — vraie première connexion légitime
     if(c?.pwdHash){
-      // Config locale présente malgré serveur vide (ex: sync en attente) → dashboard quand même
       console.log('[CCA Auth] → launchApp() (config locale présente, serveur vide)');
+      document.getElementById('cca-boot-loading')?.remove();
       loadData();launchApp();
     }else{
       console.log('[CCA Auth] → startSetup() (nouveau compte confirmé par serveur)');
+      document.getElementById('cca-boot-loading')?.remove();
       startSetup();
     }
   }else{
-    // Fallback : status serveur inconnu (erreur réseau) — comportement pré-existant
     console.log('[CCA Auth] → fallback local (status serveur indisponible)');
+    document.getElementById('cca-boot-loading')?.remove();
     if(!c||!c.pwdHash){startSetup();}else{loadData();launchApp();}
   }
 }

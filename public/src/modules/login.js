@@ -242,6 +242,9 @@ async function _submitServerLogin() {
     const prevEmail = localStorage.getItem('agrumes_last_email');
     if (prevEmail && prevEmail !== (d.email || '')) {
       clearUserData();
+      window.__CCA_accountJustSwitched = true;
+    } else {
+      window.__CCA_accountJustSwitched = false;
     }
     localStorage.setItem('agrumes_last_email', d.email || '');
     if (pt) {

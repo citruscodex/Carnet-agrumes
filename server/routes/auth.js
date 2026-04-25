@@ -21,8 +21,8 @@ module.exports = async function authRoutes(fastify) {
   const bcrypt = require('bcrypt');
   const BASE   = fastify.baseUrl || 'https://citruscodex.fr';
 
-  const rlStrict = { max: 10, timeWindow: '15 minutes', keyGenerator: req => req.ip };
-  const rlLoose  = { max: 20, timeWindow: '15 minutes', keyGenerator: req => req.ip };
+  const rlStrict = { max: 20, timeWindow: '5 minutes', keyGenerator: req => req.ip };
+  const rlLoose  = { max: 60, timeWindow: '5 minutes', keyGenerator: req => req.ip };
 
   // ── POST /api/auth/register ──────────────────────────────────────────────────
   fastify.post('/api/auth/register', { config: { rateLimit: rlStrict } }, async (req, reply) => {

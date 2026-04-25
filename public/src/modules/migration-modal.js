@@ -45,6 +45,7 @@ function _T(key, vars = {}) {
 }
 
 export async function showMigrationModalIfNeeded() {
+  if (window.__CCA_accountJustSwitched) return
   if (localStorage.getItem(LS_MIGRATED) === 'true') return
 
   const localCount = _countLocalPlants()

@@ -560,6 +560,7 @@ function bindUserCardActions(container) {
         if (profile) await apiFetch('/api/admin/users/' + id + '/profile', { method: 'PUT', body: JSON.stringify({ profile_type: profile }) });
         if (role)    await apiFetch('/api/admin/users/' + id + '/role',    { method: 'PUT', body: JSON.stringify({ role }) });
         toast('Mis à jour ✓');
+        renderUsersTab(container);
       } catch (e) { toast(e.message, true); }
     });
   });
@@ -570,10 +571,10 @@ function bindUserCardActions(container) {
       if (!confirm('Réinitialiser le mot de passe ?')) return;
       try {
         const d = await apiFetch('/api/admin/users/' + btn.dataset.adusrResetpwd + '/reset-password', { method: 'POST', body: '{}' });
-        const pwdHtml = `<div class="cca-admin-temp-password">${esc(d.temp_password)}</div>`;
         const msg = `Mot de passe temporaire pour ${d.email} :\n\n${d.temp_password}\n\nConsultable dans Historique des actions.`;
         alert(msg);
         toast('Mot de passe réinitialisé — voir audit');
+        renderUsersTab(container);
       } catch (e) { toast(e.message, true); }
     });
   });
@@ -588,9 +589,7 @@ function bindUserCardActions(container) {
           method: 'PUT', body: JSON.stringify({ reason })
         });
         toast('Compte désactivé');
-        btn.closest('.cca-admin-card').querySelector('.cca-admin-badge-active, .cca-admin-badge-disabled').className = 'cca-admin-badge-disabled';
-        btn.closest('.cca-admin-card').querySelector('.cca-admin-badge-disabled').textContent = T('users','inactive');
-        btn.remove();
+        renderUsersTab(container);
       } catch (e) { toast(e.message, true); }
     });
   });
@@ -601,6 +600,7 @@ function bindUserCardActions(container) {
       try {
         await apiFetch('/api/admin/users/' + btn.dataset.adusrActivate + '/activate', { method: 'PUT' });
         toast('Compte réactivé');
+        renderUsersTab(container);
       } catch (e) { toast(e.message, true); }
     });
   });
