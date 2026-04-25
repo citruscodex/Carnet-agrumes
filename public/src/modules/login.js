@@ -1,7 +1,5 @@
 'use strict';
 
-import { clearUserData } from './clear-user-data.js';
-
 const _api = () => window.CCA_API || '';
 let _onAuthSuccess = null;
 
@@ -178,6 +176,34 @@ export function showSrvReset(token) {
   document.getElementById('sc-srv-reset').style.display = 'block';
   setTimeout(() => document.getElementById('reset-pwd')?.focus(), 100);
 }
+
+function clearUserData() {
+  const keys = [
+    'agrumes_amendments', 'agrumes_app_version', 'agrumes_bug_fab_pos',
+    'agrumes_bug_queue', 'agrumes_certifications', 'agrumes_cfg',
+    'agrumes_clients', 'agrumes_coll_filters', 'agrumes_collections',
+    'agrumes_devis', 'agrumes_drip_systems', 'agrumes_eau',
+    'agrumes_eco', 'agrumes_epandage', 'agrumes_exchanges',
+    'agrumes_fertilizers', 'agrumes_guide_bookmarks', 'agrumes_guide_last_read',
+    'agrumes_guide_toc_visible', 'agrumes_iot_v1', 'agrumes_light',
+    'agrumes_lots', 'agrumes_migrated_to_server', 'agrumes_nursery',
+    'agrumes_profile', 'agrumes_readonly', 'agrumes_saisonniers',
+    'agrumes_saved_filters', 'agrumes_shopping', 'agrumes_sortis',
+    'agrumes_srv_id_map', 'agrumes_srv_last_sync', 'agrumes_stocks',
+    'agrumes_substrats', 'agrumes_suppliers', 'agrumes_sync',
+    'agrumes_sync_queue', 'agrumes_v5', 'agrumes_verger',
+    'agrumes_weather_location', 'agrumes_wikiPages', 'agrumes_wiki_pages',
+    'agrumes_wishlist', 'agrumes_yield',
+  ];
+  try {
+    const cols = JSON.parse(localStorage.getItem('agrumes_collections') || '[]');
+    for (const c of cols) {
+      if (c.id) { keys.push('agrumes_v5_' + c.id, 'agrumes_pheno_last_' + c.id); }
+    }
+  } catch (_) {}
+  keys.forEach(k => localStorage.removeItem(k));
+}
+window.clearUserData = clearUserData;
 
 async function _submitServerLogin() {
   const email = document.getElementById('sl-email')?.value?.trim();

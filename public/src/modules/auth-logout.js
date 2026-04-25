@@ -1,5 +1,3 @@
-import { clearUserData } from './clear-user-data.js';
-
 export async function logoutUser(confirmMsg) {
   if (!confirm(confirmMsg || 'Se déconnecter ?')) return;
   try {
@@ -11,7 +9,7 @@ export async function logoutUser(confirmMsg) {
   sessionStorage.removeItem('cca_srv_email');
   sessionStorage.removeItem('cca_srv_role');
   sessionStorage.removeItem('cca_srv_profile_type');
-  clearUserData();
+  window.clearUserData?.();
   window.location.reload();
 }
 

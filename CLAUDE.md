@@ -55,6 +55,22 @@ node --check public/src/modules/*.js   # valider syntaxe AVANT tout commit
 5. `esc()` obligatoire sur tout contenu dynamique injecté via innerHTML
 6. `addEventListener` exclusivement dans les nouveaux modules (pas d'attributs onclick inline)
 
+## Règle : nouveaux fichiers JS modules
+
+INTERDIT de créer un fichier JS séparé pour moins de 50 lignes de code.
+Les petites fonctions utilitaires s'intègrent dans le module qui les utilise.
+
+Modules autorisés comme fichiers séparés :
+- Modules dans `public/src/modules/` importés dynamiquement par le routeur (vues)
+- `public/src/lib/esc.js` (géré par le plugin Vite copyEsc)
+- `public/src/lib/i18n.js`, `public/src/lib/utils.js`
+
+Tout autre fichier JS doit être bundlé statiquement via import standard (jamais dynamique sauf pour les chunks routeur).
+
+**Avant de créer un nouveau fichier JS :** vérifier que `npm run build` le produit dans `build/assets/` — sinon c'est un 404 en production garanti.
+
+Incidents passés : esc.js, admin-panel.js, clear-user-data.js → 404 → page blanche.
+
 ## Zones protégées (NE PAS MODIFIER)
 - Pipeline phytosanitaire (logique réglementaire validée)
 - Chiffrement AES-GCM sync
