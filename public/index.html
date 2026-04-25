@@ -8625,7 +8625,7 @@ let wikiSearchQuery='';
 let _wikiNavStack=[]; // [{view, slug, query}] for back navigation
 
 function _srvUserRole(){
-  try{const t=_srvToken;if(!t)return'member';const p=JSON.parse(atob(t.split('.')[1]));return p.role||'member';}
+  try{const t=_srvToken||window._srvToken;if(!t)return'member';const p=JSON.parse(atob(t.split('.')[1]));return p.role||'member';}
   catch{return sessionStorage.getItem('cca_srv_role')||'member';}
 }
 function _srvCurrentUserId(){

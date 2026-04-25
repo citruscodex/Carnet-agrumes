@@ -109,9 +109,6 @@ ${firstDate ? `<div style="font-size:.75rem;color:var(--muted);font-style:italic
 function renderProfSecurity(isGhOk, gh, totalPhotos, cfg) {
   const srvToken = _ctx.srvToken;
   return `
-<div style="padding:0 14px;margin-top:10px">
-<div class="security-badge">${T('misc.securityBadge')}</div>
-</div>
 <div class="prof-section"><div class="prof-section-title">Authentification</div>
 <div class="prof-row"><span class="prof-row-label">Authentification</span><span class="prof-row-val" style="font-size:.75rem;color:var(--text-accent)">${T('misc.profPwdActive')}</span></div>
 <div class="prof-row"><span class="prof-row-label">${T('misc.profTokenEnc')}</span><span class="prof-row-val" style="font-size:.75rem;color:var(--text-accent)">XOR + SHA-256</span></div>

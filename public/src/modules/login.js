@@ -207,6 +207,7 @@ async function _submitServerLogin() {
     sessionStorage.setItem('cca_srv_profile', d.profile);
     if (d.refreshToken) sessionStorage.setItem('cca_srv_refresh', d.refreshToken);
     if (d.email)        sessionStorage.setItem('cca_srv_email',   d.email);
+    sessionStorage.setItem('cca_srv_role', d.role || 'member');
     const pt = d.profile || d.profile_type;
     if (pt) sessionStorage.setItem('cca_srv_profile_type', pt);
     if (pt) {
