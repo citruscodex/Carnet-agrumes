@@ -331,4 +331,29 @@ module.exports = async function userDataRoutes(fastify) {
     const r = await fastify.pg.query(`SELECT profile_type FROM users WHERE id=$1`, [req.user.id])
     return { profile_type: r.rows[0] ? r.rows[0].profile_type : 'collectionneur' }
   })
+
+  // ── STATUS — arbitre du flow post-login ──────────────────────────
+  // Le CLIENT interroge cette route pour savoir si c'est un compte existant
+  // ou une vraie première connexion. Plus de dépendance à localStorage.
+  fastify.get('/api/user/status', auth, async (req) => {
+    const uid = req.user.id
+    const [plantsR, settingsR, userR] = await Promise.all([
+      fastify.pg.query(
+        `SELECT COUNT(*)::int AS count FROM user_plants WHERE user_id=$1 AND deleted_at IS NULL`,
+        [uid]),
+      fastify.pg.query(`SELECT 1 FROM user_settings WHERE user_id=$1 LIMIT 1`, [uid]),
+      fastify.pg.query(`SELECT profile_type, role, email FROM users WHERE id=$1`, [uid])
+    ])
+    const plantsCount = plantsR.rows[0].count
+    const hasSettings = settingsR.rowCount > 0
+    const user = userR.rows[0] || {}
+    return {
+      has_data: plantsCount > 0,
+      has_settings: hasSettings,
+      plants_count: plantsCount,
+      profile_type: user.profile_type || 'collectionneur',
+      role: user.role || 'member',
+      email: user.email || null
+    }
+  })
 }

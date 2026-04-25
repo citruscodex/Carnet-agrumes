@@ -18600,21 +18600,47 @@ async function submitExportRGPD(){
 
 async function _startLocalFlow(){
   console.log('[CCA Auth] _startLocalFlow() — démarrage');
+  // Le SERVEUR décide si c'est un nouveau compte ou un compte existant — pas localStorage
+  let serverHasData = null; // null = status inconnu (erreur réseau)
+  try {
+    const statusR = await fetch('/api/user/status', {
+      headers: { 'Authorization': 'Bearer ' + _srvToken },
+      cache: 'no-store'
+    });
+    if (statusR.ok) {
+      const status = await statusR.json();
+      serverHasData = !!(status.has_data || status.has_settings);
+      console.log('[CCA Auth] /api/user/status →', JSON.stringify(status));
+    } else {
+      console.warn('[CCA Auth] /api/user/status HTTP', statusR.status, '— fallback local');
+    }
+  } catch(e) {
+    console.warn('[CCA Auth] /api/user/status exception:', e.message, '— fallback local');
+  }
   await _syncPull();
-  // 1B — Appliquer srvPT UNIQUEMENT si le pull n'a pas restauré de profileType
-  // (évite d'écraser un profileType choisi via switchProfileType)
   const srvPT=sessionStorage.getItem('cca_srv_profile_type');
   if(srvPT){const _cfg=getCfg();if(_cfg?.profile&&!_cfg.profile.profileType){_cfg.profile.profileType=srvPT;setCfg(_cfg);_syncPush('agrumes_cfg',JSON.stringify(_cfg));}}
   const c=getCfg();
-  console.log('[CCA Auth] getCfg() après sync pull →', c ? (c.pwdHash?'config trouvée (pwdHash présent)':'config sans pwdHash'):'null/vide', '— isDemoMode:', c?.isDemoMode||false);
-  console.log('[CCA Auth] currentDataKey() =', currentDataKey(), '— données locales :', localStorage.getItem(currentDataKey())?'présentes':'ABSENTES');
-  if(!c||!c.pwdHash){
-    console.log('[CCA Auth] → startSetup() (pas de config locale après pull)');
-    startSetup();
+  console.log('[CCA Auth] serverHasData='+serverHasData+' getCfg()→'+(c?(c.pwdHash?'pwdHash:OUI':'pwdHash:ABSENT'):'null'));
+  if(serverHasData===true){
+    // Compte existant confirmé par le serveur — contourner la vérification pwdHash locale
+    if(!c?.pwdHash){const bypass=c||{};bypass.pwdHash='srv-auth-bypass';if(!bypass.profile)bypass.profile={profileType:srvPT||'collectionneur'};setCfg(bypass);}
+    console.log('[CCA Auth] → launchApp() (has_data serveur confirmé)');
+    loadData();launchApp();
+  }else if(serverHasData===false){
+    // Le serveur confirme : aucune donnée — vraie première connexion légitime
+    if(c?.pwdHash){
+      // Config locale présente malgré serveur vide (ex: sync en attente) → dashboard quand même
+      console.log('[CCA Auth] → launchApp() (config locale présente, serveur vide)');
+      loadData();launchApp();
+    }else{
+      console.log('[CCA Auth] → startSetup() (nouveau compte confirmé par serveur)');
+      startSetup();
+    }
   }else{
-    // Auth serveur déjà validée — accès direct au dashboard sans double mot de passe
-    console.log('[CCA Auth] → launchApp() direct (auth serveur OK)');
-    loadData(); launchApp();
+    // Fallback : status serveur inconnu (erreur réseau) — comportement pré-existant
+    console.log('[CCA Auth] → fallback local (status serveur indisponible)');
+    if(!c||!c.pwdHash){startSetup();}else{loadData();launchApp();}
   }
 }
 
