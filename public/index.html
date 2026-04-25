@@ -1277,6 +1277,7 @@ const BBCH_STAGES = [
   { id:'veraison',     gjc: 900, bbch:'81-85', icon:'🟠', label:'Véraison / coloration', action:'Réduire l\'azote, maintenir K pour la qualité gustative' },
   { id:'maturite',     gjc:1150, bbch:'87-89', icon:'🍊', label:'Maturité commerciale',  action:'Mesurer le Brix (≥ 9°), programmer la récolte' },
 ];
+window.BBCH_STAGES=BBCH_STAGES;
 
 function getBBCHCurrentStage(gjcVal) {
   let cur = null;
@@ -1649,6 +1650,7 @@ function checkTempVigilance(plant){
 function initI18n(){
   STATUS=buildSTATUS();
   ET=buildET();
+  window.STATUS=STATUS;window.ET=ET;
   const ld=getLd();
   LO_POT=[...ld.lo_pot];
   LO_TERRE=[...ld.lo_terre];
@@ -2170,12 +2172,14 @@ function fmtDate(d){if(!d)return'—';try{return new Date(d).toLocaleDateString(
 const dys=d=>d?Math.floor((Date.now()-new Date(d))/86400000):null;
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const isPot=p=>!p||p.cultureType!=='terre';
+window.isPot=isPot;
 function toast(m,err=false){const t=document.getElementById('toast');t.textContent=m;t.classList.toggle('err',err);t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 
 function wmoInfo(code){const c=Number(code);if(c===0)return{i:'☀️',d:T('misc.wmoClear')};if(c===1)return{i:'🌤️',d:T('misc.wmoFewCloud')};if(c===2)return{i:'⛅',d:T('misc.wmoPartCloud')};if(c===3)return{i:'☁️',d:T('misc.wmoOvercast')};if(c<=48)return{i:'🌫️',d:T('misc.wmoFog')};if(c<=55)return{i:'🌦️',d:T('misc.wmoDrizzle')};if(c<=65)return{i:'🌧️',d:T('misc.wmoRain')};if(c<=75)return{i:'🌨️',d:T('misc.wmoSnow')};if(c<=77)return{i:'❄️',d:T('misc.wmoSleet')};if(c<=82)return{i:'🌦️',d:T('misc.wmoShowers')};if(c<=86)return{i:'🌨️',d:T('misc.wmoSnowShower')};if(c<=99)return{i:'⛈️',d:T('misc.wmoThunder')};return{i:'🌡️',d:'—'}}
 function dayName(iso,i){const ld=getLd();if(i===0)return ld.ui?.today||'Auj.';if(i===1)return ld.ui?.tomorrow||'Dem.';try{return new Date(iso).toLocaleDateString(ld.locale||'fr-FR',{weekday:'short'})}catch{return'?'}}
 
 let WX={data:null,loading:false,err:null,coords:null,city:''};
+window.WX=WX;
 
 function initWeather(){
   try{
@@ -3897,7 +3901,7 @@ function render(){
   _updateNavbarForProfile();
   const m=document.getElementById('main'),bk=document.getElementById('tb-back'),sb=document.getElementById('tb-sub'),ac=document.getElementById('tb-act');
   if(selId){bk.style.display='block';sb.textContent='Fiche sujet';ac.innerHTML='';m.innerHTML=renderDetail();_mountPheno('detail');}
-  else if(page==='dashboard'){bk.style.display='none';sb.textContent=T('misc.appSubtitle');ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-infographic">📊</button><button class="btn btn-g btn-sm" data-action="nav" data-page="settings" title="Réglages">⚙</button>`;try{m.innerHTML=renderDash();_mountPheno('dash');}catch(e){m.innerHTML='<div class="page" style="padding:20px"><h3 style="color:#c62828">⚠ Erreur</h3><p style="font-size:.8rem;font-family:monospace;color:#c62828">'+esc(e.message)+'</p></div>';console.error('renderDash:',e);}}
+  else if(page==='dashboard'){bk.style.display='none';sb.textContent=T('misc.appSubtitle');ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-infographic">📊</button><button class="btn btn-g btn-sm" data-action="nav" data-page="settings" title="Réglages">⚙</button>`;try{if(window.__CCA_dashboard){window.__CCA_dashboard.mount(m,{plants,nurseryData});}else{m.innerHTML='<div class="page" style="padding:20px"><p style="color:var(--muted)">⏳ Chargement…</p></div>';}}catch(e){m.innerHTML='<div class="page" style="padding:20px"><h3 style="color:#c62828">⚠ Erreur</h3><p style="font-size:.8rem;font-family:monospace;color:#c62828">'+esc(e.message)+'</p></div>';console.error('renderDash:',e);}}
   else if(page==='fert'){bk.style.display='none';sb.textContent='Fertilisation';ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-add-fert">${T('misc.collAddFertBtn')}</button>`+(PRO_PROFILES.includes((getProfile().profileType)||'collectionneur')?'<button class="btn btn-g btn-sm" data-action="nav" data-page="settings">⚙</button>':'');m.innerHTML=renderFertPage();if(fertView==='substrats'){requestAnimationFrame(()=>{const r=document.getElementById('cca-substrats-root');if(r&&window.__CCA_substrats)window.__CCA_substrats.mount(r,T,plants);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module substrats en cours de chargement…</div>';});}else if(fertView==='guide'){const _pa=_guidePendingAnchor;_guidePendingAnchor=null;requestAnimationFrame(()=>{const r=document.getElementById('cca-guide-root');if(r&&window.__CCA_guide)window.__CCA_guide.mount(r,T,getLang,_pa);else if(r)r.innerHTML='<div style="padding:24px;text-align:center;color:var(--muted)">⏳ Module guide en cours de chargement…</div>';});}}
   else if(page==='eco'){bk.style.display='none';sb.textContent=T('misc.ecoTitle');const _ecoIsC=!PRO_PROFILES.includes((getProfile().profileType)||'collectionneur');ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="open-eco-entry" data-entry-type="cost">${_ecoIsC?'+ Dépense':'+ '+T('misc.ecoCosts')}</button>`;try{m.innerHTML=renderEcoPage();}catch(e){console.error('renderEco:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else if(page==='nursery'){showPage('pro');}
@@ -3912,7 +3916,7 @@ function render(){
   else if(page==='nursery'){bk.style.display='none';sb.textContent='🌱 Pépinière';ac.innerHTML=`<button class="btn btn-g btn-sm" data-action="nav" data-page="settings">⚙</button>`;try{m.innerHTML=renderNurseryPage();}catch(e){console.error('renderNursery:',e);m.innerHTML='<div style="padding:20px;color:#c62828;font-family:monospace;font-size:.8rem">⚠ '+esc(e.message)+'</div>';}}
   else{bk.style.display='none';sb.textContent=`${plants.length} sujets`;if(!selMode)ac.innerHTML=`<button class="btn btn-sec btn-sm" data-action="enter-sel-mode">☑</button><button class="btn btn-g btn-sm" data-action="open-add-plant">＋</button>`;
   if(collView!=='verger')empCadastreMode=false;
-  const hadMap=!!vergerMap;m.innerHTML=renderColl();
+  const hadMap=!!vergerMap;if(window.__CCA_collection){window.__CCA_collection.mount(m,{plants,collView,srch,fCt,fSt,selMode,activeCollectionId,advFilters});}else{m.innerHTML='<div class="page" style="padding:20px"><p style="color:var(--muted)">⏳ Chargement…</p></div>';}
   if(collView==='list'){requestAnimationFrame(()=>{const r=document.getElementById('cca-filters-root');if(r&&window.__CCA_filters)window.__CCA_filters.mount(r,rGrid,plants);});}
   if(collView==='verger'&&empCadastreMode&&!hadMap)setTimeout(initVergerMap,80);
   else if(collView==='verger'&&empCadastreMode&&hadMap)setTimeout(()=>{if(document.getElementById('verger-map')&&!vergerMap)initVergerMap();},80);
@@ -3968,384 +3972,6 @@ function getGraftAlerts(){
     });
   });
   return alerts;
-}
-
-function renderDash(){
-  const pType=(getProfile().profileType)||'collectionneur';
-  if(pType==='pepinieriste')  return _renderDashPepinieriste();
-  if(pType==='arboriculteur') return _renderDashArboriculteur();
-  if(pType==='conservatoire') return _renderDashConservatoire();
-  return _renderDashCollectionneur();
-}
-function _dashWeatherGelBlock(){
-  const gel=getGelAlert();const gelForecastTemp=WX.data?.daily?.temperature_2m_min?.[0]??null;const tomorrowMin=WX.data?.daily?.temperature_2m_min?.[1]??null;
-  const triggered=gel.enabled&&gelForecastTemp!==null&&gelForecastTemp<=gel.threshold;
-  const tomorrowWarn=gel.enabled&&!triggered&&tomorrowMin!==null&&tomorrowMin<=gel.threshold;
-  let alertBanner='';
-  if(triggered){alertBanner=`<div class="gel-alert-banner danger"><div class="gel-alert-ico">🚨</div><div class="gel-alert-text"><div class="gel-alert-title">Alerte gel active — ${Math.round(gelForecastTemp)}°C prévu aujourd'hui</div><div class="gel-alert-sub">Minimum en dessous du seuil (${gel.threshold}°C). Vérifiez la protection de vos agrumes en pot et pleine terre.</div></div></div>`;}
-  else if(tomorrowWarn){alertBanner=`<div class="gel-alert-banner"><div class="gel-alert-ico">❄️</div><div class="gel-alert-text"><div class="gel-alert-title">Risque gel demain — ${Math.round(tomorrowMin)}°C prévu</div><div class="gel-alert-sub">Anticipez la rentrée des pots sensibles. Seuil : ${gel.threshold}°C.</div></div></div>`;}
-  let sortisBanner='';
-  const sortisPl=getSortisPlants();
-  if(sortisPl.length>0&&gel.enabled&&(triggered||tomorrowWarn)){
-    const names=sortisPl.map(p=>`<span style="font-weight:700">${esc(p.name)}</span>`).join(', ');
-    const urgency=triggered?'danger':'';
-    sortisBanner=`<div class="gel-alert-banner ${urgency}" style="margin-bottom:8px"><div class="gel-alert-ico">☀️</div><div class="gel-alert-text"><div class="gel-alert-title">⚠ ${sortisPl.length} sujet${sortisPl.length>1?'s':''} à rentrer ce soir</div><div class="gel-alert-sub">${names} — marqué${sortisPl.length>1?'s':''} comme sorti${sortisPl.length>1?'s':''} au soleil.</div></div><button style="background:rgba(255,255,255,.18);border:none;border-radius:8px;color:white;font-size:.75rem;padding:4px 9px;cursor:pointer;flex-shrink:0;white-space:nowrap" data-action="nav" data-page="collection">Voir →</button></div>`;
-  } else if(sortisPl.length>0&&!gel.enabled){
-    sortisBanner=`<div style="background:rgba(232,148,26,.08);border-radius:var(--r);padding:8px 12px;margin-bottom:8px;border:1px solid rgba(232,148,26,.2);display:flex;align-items:center;gap:10px"><span style="font-size:1rem">☀️</span><div style="font-size:.75rem;color:var(--amber3);flex:1">${sortisPl.length} sujet${sortisPl.length>1?'s':''} sorti${sortisPl.length>1?'s':''} au soleil — activez l'alerte gel pour recevoir des rappels de rentrée.</div></div>`;
-  }
-  const _nc=getNotifCfg();const _nActive=[_nc.gel,_nc.watering,_nc.fert,_nc.graft,_nc.bbch].filter(Boolean).length;
-  const notifIndicator=_nc.enabled?`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(45,90,61,.06);border-radius:8px;margin-bottom:6px;border:1px solid rgba(45,90,61,.12)"><span style="font-size:.75rem;color:var(--g2)">🔔 ${_nActive} notification${_nActive>1?'s':''} active${_nActive>1?'s':''}</span><button style="background:none;border:none;color:var(--g2);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-weight:600" data-action="nav" data-page="settings" data-prof-view="notifs">Gérer →</button></div>`:`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(100,100,100,.05);border-radius:8px;margin-bottom:6px;border:1px solid rgba(100,100,100,.12)"><span style="font-size:.75rem;color:var(--muted)">🔕 Notifications désactivées</span><button style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;padding:2px 6px;border-radius:6px;font-weight:600" data-action="nav" data-page="settings" data-prof-view="notifs">Activer →</button></div>`;
-  return`${sortisBanner}${alertBanner}${notifIndicator}<div class="wx-card"><div id="wx-inner">${renderWxInner()}</div></div>`;
-}
-function _dashEventsBlock(limit){
-  const evs=plants.flatMap(p=>p.events.map(e=>({...e,pn:p.name,pi:p.id,ct:p.cultureType||'pot'}))).filter(e=>!e.audit).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,limit||6);
-  return evs.length?evs.map(ev=>{const et=ET[ev.type]||ET.observation;const bb=ev.bulk?`<span style="font-size:.75rem;background:rgba(232,148,26,.14);color:var(--amber3);border-radius:4px;padding:1px 4px;margin-left:3px">${T('misc.collBulkTag')}</span>`:'';const ctb=ev.ct==='terre'?`<span style="font-size:.75rem;color:var(--terra);margin-left:3px">🌳</span>`:`<span style="font-size:.75rem;color:var(--g3);margin-left:3px">🪴</span>`;return`<div class="evrow" data-action="open-plant" data-id="${ev.pi}"><div class="evdot" style="background:${et.c}"></div><div style="flex:1;min-width:0"><div class="evpl">${esc(ev.pn)}${ctb}</div><div class="evds">${et.i} ${et.label}${bb} · ${esc(ev.description.slice(0,50))}${ev.description.length>50?'…':''}</div></div><div class="evdt">${fmtDate(ev.date)}</div></div>`}).join(''):`<div style="color:var(--muted);font-style:italic;padding:14px 0">${T('misc.noData')}</div>`;
-}
-function _dashSeasonBanner(){
-  const s=getSz();
-  return`<div id="sbanner"><div class="sb-ph">${T('misc.periodCurrent')}</div><div class="sb-nm">${s.i} ${s.p}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 16px;margin-top:4px"><div><div style="font-size:.75rem;color:rgba(255,255,255,.32);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">${T('misc.statPot')}</div>${s.pot.slice(0,2).map(t=>`<div class="sb-tp">${esc(t)}</div>`).join('')}</div><div><div style="font-size:.75rem;color:rgba(255,255,255,.32);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">${T('misc.statGround')}</div>${s.terre.slice(0,2).map(t=>`<div class="sb-tp">${esc(t)}</div>`).join('')}</div></div></div>`;
-}
-
-function _renderDashCollectionneur(){
-  if(!plants.length&&!localStorage.getItem('cca_onboarding_done')){
-    return`<div class="page" style="padding:32px 20px;text-align:center">
-<div style="font-size:3.5rem;margin-bottom:16px">🍊</div>
-<h2 style="font-size:1.3rem;font-weight:700;color:var(--g1);margin-bottom:8px">Bienvenue sur CitrusCodex !</h2>
-<p style="font-size:.9rem;color:var(--muted);line-height:1.6;max-width:320px;margin:0 auto 24px">Votre carnet de collection d'agrumes.<br>Commencez par ajouter votre premier sujet !</p>
-<button class="btn btn-p" style="font-size:.95rem;padding:12px 28px;margin-bottom:24px" data-action="open-add-form">🌱 Ajouter mon premier agrume</button>
-<div style="margin-top:4px;border-top:1px solid var(--cream3);padding-top:20px;text-align:left;max-width:320px;margin:20px auto 0">
-  <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;font-family:monospace">Découvrir CitrusCodex</div>
-  <div style="display:flex;flex-direction:column;gap:8px">
-    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='home';showPage('community')"><span style="font-size:1.1rem">📖</span><span style="font-size:.87rem">Wiki collaboratif agrumes</span></button>
-    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='observatoire';showPage('community')"><span style="font-size:1.1rem">🗺</span><span style="font-size:.87rem">Observatoire CitrusCodex</span></button>
-    <button class="btn btn-o" style="text-align:left;display:flex;align-items:center;gap:10px" onclick="wikiView='bourse';showPage('community')"><span style="font-size:1.1rem">🔄</span><span style="font-size:.87rem">Bourse aux greffons</span></button>
-  </div>
-</div>
-<button style="background:none;border:none;color:var(--muted);font-size:.75rem;cursor:pointer;margin-top:20px" onclick="localStorage.setItem('cca_onboarding_done','1');render()">Passer l'introduction</button>
-</div>`;
-  }
-  const s=getSz();
-  const nPot=plants.filter(p=>isPot(p)).length,nTerre=plants.filter(p=>!isPot(p)).length;
-  const iss=plants.filter(p=>['vigilance','traitement','critique'].includes(p.status)).length;
-  const nIotActive=plants.filter(p=>p.sensor?.enabled&&p.sensor?.endpoint&&_iotIsFresh(p.sensor)).length;
-  const als=plants.filter(p=>{const u=getWateringUrgency(p);return['vigilance','traitement','critique'].includes(p.status)||(u.rawDays!==null&&u.effDays>u.t3)});
-  const kbAlerts=getKBAlerts().slice(0,4);
-  const graftAlerts=getGraftAlerts().slice(0,3);
-  const prof=getProfile();
-  const wish=getWishlist().filter(w=>w.status!=='acquired').slice(0,3);
-  return`${_dashSeasonBanner()}
-<div class="page">
-${prof.name?`<div style="font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:12px">${T('misc.greetHi')} ${esc(prof.name.split(' ')[0])} 👋</div>`:''}
-<div class="secttl">🌤 Météo locale${helpBtn('meteo')}</div>
-${_dashWeatherGelBlock()}
-<div class="strow">
-<div class="stcard"><div class="stlbl">${T('misc.statPot')}</div><div class="stval">${nPot}</div><div class="stsub">${T('misc.statSubjects')}</div></div>
-<div class="stcard"><div class="stlbl">${T('misc.statGround')}</div><div class="stval" style="color:var(--terra)">${nTerre}</div><div class="stsub">${T('misc.statSubjects')}</div></div>
-<div class="stcard"><div class="stlbl">${T('misc.statAttention')}</div><div class="stval" style="color:#c62828">${iss}</div><div class="stsub">${T('misc.toWatch')||'à surveiller'}</div></div>
-${nIotActive>0?`<div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="iot"><div class="stlbl">📡 Capteurs</div><div class="stval" style="color:var(--blue)">${nIotActive}</div><div class="stsub">actifs</div></div>`:`<div class="stcard"><div class="stlbl">${T('misc.statTotal')}</div><div class="stval">${plants.length}</div><div class="stsub">${T('misc.statSubjects')}</div></div>`}
-</div>
-<div id="wg-container">${(()=>{try{return renderNeedsGauges();}catch(e){return '';}})()}</div>
-${(()=>{try{return renderETPPanel();}catch(e){return '';}})()}
-<div id="fg-container">${(()=>{try{return renderFertGauges();}catch(e){return '';}})()}</div>
-${als.length?`<h3 class="secttl">${T('misc.watchPoints')}</h3>${als.map(p=>{const u=getWateringUrgency(p),d=u.rawDays,iw=d!==null&&u.effDays>u.t3;return`<div class="alcard ${p.status==='critique'?'danger':iw&&p.status==='bon'?'info':''}" data-action="open-plant" data-id="${p.id}"><div style="font-size:1rem;flex-shrink:0">${p.status==='critique'?'🚨':iw?'💧':'⚠️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(p.name)}</div><div style="font-size:.75rem;color:var(--muted)">${p.status!=='bon'&&p.status!=='excellent'?STATUS[p.status]?.label:''}${iw?` · ${T('misc.wateringAgo')}${d}${T('misc.daysAgo')}`:''}</div></div></div>`}).join('')}`:''}
-${wish.length?`<h3 class="secttl">🌱 Wishlist — acquisitions souhaitées</h3>${wish.map(w=>`<div class="alcard info" data-action="nav" data-page="collection" data-coll-view="wishlist"><div style="font-size:1rem;flex-shrink:0">${{high:'🔴',med:'🟡',low:'🟢'}[w.priority]||'🟡'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(w.species)}</div><div style="font-size:.75rem;color:var(--muted)">${w.source||''} · ${{'wanted':'Souhaité','searching':'En recherche','found':'Trouvé'}[w.status]||w.status}</div></div></div>`).join('')}<div style="text-align:right;margin-top:4px"><button class="btn btn-sm" style="font-size:.75rem" data-action="nav" data-page="collection" data-coll-view="wishlist">Voir tout →</button></div>`:''}
-${graftAlerts.length?`<div style="margin-bottom:8px;background:#f0f7f0;border-radius:10px;border:1px solid rgba(56,142,60,.2);overflow:hidden"><div style="padding:8px 12px 4px;font-size:.75rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#388e3c;font-weight:700">🌿 Greffes</div>${graftAlerts.map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid rgba(56,142,60,.1);font-size:.75rem"><span>${a.type==='graft_ready'?'🌿✓':'⏱'}</span><span style="flex:1"><strong>${esc(a.pname)}</strong> — ${esc(a.msg)}</span><button class="btn btn-sm" style="font-size:.75rem;padding:2px 7px;flex-shrink:0" data-action="sel-plant" data-id="${a.pid}">→</button></div>`).join('')}</div>`:''}
-${_renderDashBBCHCard()}
-${(()=>{
-  const _oadAlerts=getOADAlerts();
-  if(!_oadAlerts.length)return'';
-  const rc=r=>r===3?'#c62828':r===2?'#e65100':'#f9a825';
-  const rl=r=>r===3?'Élevé':r===2?'Modéré':'Faible';
-  return`<div style="margin-bottom:8px;background:rgba(198,40,40,.04);border-radius:10px;border:1px solid rgba(198,40,40,.2);overflow:hidden">
-    <div style="padding:8px 12px 4px;font-size:.75rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#c62828;font-weight:700">🔬 OAD — Risques phyto (7 jours)</div>
-    ${_oadAlerts.map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid rgba(198,40,40,.1);font-size:.75rem">
-      <span style="font-weight:700;color:${rc(a.risk)};font-size:.75rem;font-family:'JetBrains Mono',monospace">${rl(a.risk)}</span>
-      <span style="flex:1"><strong>${esc(a.plant.name)}</strong> — ${a.model.icon} ${a.model.name}</span>
-      <button class="btn btn-sm" style="font-size:.75rem;padding:2px 7px;flex-shrink:0;color:#c62828;background:rgba(198,40,40,.08)" data-action="open-plant" data-id="${a.plant.id}">→</button>
-    </div>`).join('')}
-  </div>`;
-})()}
-${kbAlerts.length?`<div style="margin-bottom:8px;background:#f5f5ff;border-radius:10px;border:1px solid rgba(92,107,192,.2);overflow:hidden"><div style="padding:8px 12px 4px;font-size:.75rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:#5c6bc0;font-weight:700">📚 Alertes KB</div>${kbAlerts.map(a=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid rgba(92,107,192,.1);font-size:.75rem"><span>${a.type==='pest'?(a.risk===3?'🔴':'🟡'):'✂️'}</span><span style="flex:1"><strong>${esc(a.pname)}</strong> — ${esc(a.msg)}</span><button class="btn btn-sm" style="font-size:.75rem;padding:2px 7px;flex-shrink:0" data-action="sel-plant" data-id="${a.pid}">→</button></div>`).join('')}</div>`:''}
-${(()=>{if(!window.__CCA_drip)return'';const _dSystems=window.__CCA_drip.getAllSystems();if(!_dSystems.length)return'';const _dToday=_dSystems.map(sys=>{const _dRes=window.__CCA_drip.calcSystemIrrigation(sys,plants);return{sys,durationMin:_dRes.durationMin,overCount:(_dRes.overIrrigated||[]).length};});return`<div style="margin-bottom:8px;background:rgba(21,101,192,.04);border-radius:10px;border:1px solid rgba(21,101,192,.18);overflow:hidden"><div style="padding:8px 12px 4px;display:flex;align-items:center;justify-content:space-between"><span style="font-size:.75rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--blue,#1565c0);font-weight:700">💧 ${T('drip.title')||"Irrigation"}</span><button class="btn btn-sm" style="font-size:.72rem;padding:2px 7px;color:var(--blue,#1565c0);background:rgba(21,101,192,.08)" data-action="nav" data-page="drip">${T('drip.manage')||'Gérer'} →</button></div>${_dToday.map(({sys,durationMin,overCount})=>`<div style="display:flex;align-items:center;gap:8px;padding:5px 12px;border-top:1px solid rgba(21,101,192,.1);font-size:.77rem"><span style="flex:1;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(sys.name)}</span><span style="font-family:'JetBrains Mono',monospace;color:var(--blue,#1565c0)">${durationMin}min</span>${overCount?`<span class="cca-drip-over-tag">⚠ ${overCount}</span>`:''}</div>`).join('')}</div>`;})()}
-<h3 class="secttl" style="margin-top:4px">${T('misc.lastEvents')}</h3>
-${_dashEventsBlock(6)}
-${(()=>{const nd=nurseryData;const semis=(nd.semis||[]).filter(s=>!s.archived);const greffes=(nd.grafts||[]).filter(g=>!g.archived);const boutures=(nd.boutures||[]).filter(b=>!b.archived);if(!semis.length&&!greffes.length&&!boutures.length)return'';return`<h3 class="secttl" style="margin-top:4px">🌱 Pépinière</h3><div style="display:flex;gap:8px;margin-bottom:8px">${semis.length?`<div class="stcard" style="flex:1;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="semis"><div class="stlbl">🌱 Semis</div><div class="stval">${semis.length}</div><div class="stsub">en cours</div></div>`:''}${greffes.length?`<div class="stcard" style="flex:1;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="greffes"><div class="stlbl">✂️ Greffes</div><div class="stval" style="color:var(--text-accent)">${greffes.length}</div><div class="stsub">en cours</div></div>`:''}${boutures.length?`<div class="stcard" style="flex:1;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="boutures"><div class="stlbl">🌿 Boutures</div><div class="stval" style="color:#1565c0">${boutures.length}</div><div class="stsub">en cours</div></div>`:''}</div>`;})()}
-</div>`;
-}
-
-
-function _renderDashBBCHCard() {
-  const cfg    = getCfg();
-  const gjc    = cfg.gjcCumul || 0;
-  const cur    = getBBCHCurrentStage(gjc);
-  const next   = getBBCHNextStage(gjc);
-  const maxGJC = 1200;
-  const pct    = Math.min(Math.round(gjc / maxGJC * 100), 100);
-  if (!cur && !next) return '';
-  const markers = BBCH_STAGES.map(s => {
-    const p      = Math.min(Math.round(s.gjc / maxGJC * 100), 100);
-    const passed = gjc >= s.gjc;
-    return '<div title="' + esc(s.label) + '" style="position:absolute;left:' + p + '%;top:-4px;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;border:1.5px solid white;background:' + (passed ? 'var(--g2)' : 'var(--cream3)') + ';box-shadow:0 0 0 1px ' + (passed ? 'var(--g2)' : '#ccc') + '"></div>';
-  }).join('');
-  const curRow = cur
-    ? '<div style="display:flex;align-items:center;gap:8px;padding:4px 12px 2px;border-top:1px solid rgba(74,124,89,.1);font-size:.75rem">'
-      + '<span>' + cur.icon + '</span>'
-      + '<span style="flex:1"><strong>' + esc(cur.label) + '</strong> (BBCH ' + cur.bbch + ') — <em style="color:var(--muted)">' + esc(cur.action) + '</em></span>'
-      + '</div>'
-    : '';
-  const nextRow = next
-    ? '<div style="display:flex;align-items:center;gap:8px;padding:4px 12px 8px;font-size:.75rem;color:var(--muted)">'
-      + '<span>→</span><span>Prochain : ' + next.icon + ' <strong>' + esc(next.label) + '</strong> dans ' + Math.max(0, next.gjc - gjc) + ' GJC</span>'
-      + '</div>'
-    : '<div style="padding:4px 12px 8px;font-size:.75rem;color:var(--text-accent);font-weight:600">🏁 Tous les stades atteints</div>';
-  return '<div style="margin-bottom:8px;background:linear-gradient(135deg,rgba(74,124,89,.06),rgba(21,101,192,.04));border-radius:10px;border:1px solid rgba(74,124,89,.2);overflow:hidden">'
-    + '<div style="padding:8px 12px 6px;font-size:.75rem;font-family:\'JetBrains Mono\',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--text-accent);font-weight:700">'
-    + '🌸 Phénologie BBCH — GJC ' + gjc + ' / ' + maxGJC
-    + '</div>'
-    + '<div style="padding:0 12px 4px;position:relative;height:6px;background:var(--cream3);border-radius:3px;margin:0 12px 8px">'
-    + '<div style="width:' + pct + '%;height:6px;background:linear-gradient(90deg,#1565c0,var(--g2),var(--amber3));border-radius:3px"></div>'
-    + markers
-    + '</div>'
-    + curRow + nextRow
-    + '</div>';
-}
-
-function _renderDashPepinieriste(){
-  const prof=getProfile();
-  const nd=getNursery();
-  const sa=getStockAlerts().slice(0,4);
-  const kbAlerts=getKBAlerts().slice(0,3);
-  const lotsActifs=nd.orders.filter(o=>o.status!=='livré'&&o.status!=='annulé').length;
-  const plantsReady=nd.catalog.filter(c=>(c.qtyAvail||0)>0).length;
-  const semisEnCours=nd.semis.filter(s=>!s.archived).length;
-  const greffesEnCours=(nd.grafts||[]).filter(g=>!g.archived).length;
-  const caMonth=(()=>{const m=new Date().toISOString().slice(0,7);return(nd.orders||[]).filter(o=>o.status==='livré'&&(o.deliveredAt||'').startsWith(m)).reduce((s,o)=>s+(o.totalAmount||0),0);})();
-  return`${_dashSeasonBanner()}
-<div class="page">
-${prof.name?`<div style="font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:12px">🌱 ${esc(prof.name.split(' ')[0])} — Espace Pépiniériste</div>`:''}
-<div class="secttl">🌤 Météo & Conditions${helpBtn('meteo')}</div>
-${_dashWeatherGelBlock()}
-<div class="strow">
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="orders"><div class="stlbl">📦 Commandes</div><div class="stval" style="color:var(--amber)">${lotsActifs}</div><div class="stsub">en cours</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="catalog"><div class="stlbl">🌿 En catalogue</div><div class="stval" style="color:var(--text-accent)">${plantsReady}</div><div class="stsub">lots disponibles</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="semis"><div class="stlbl">🌱 Semis</div><div class="stval">${semisEnCours}</div><div class="stsub">en cours</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="greffes"><div class="stlbl">✂️ Greffes</div><div class="stval" style="color:var(--text-accent)">${greffesEnCours}</div><div class="stsub">en cours</div></div>
-</div>
-${caMonth>0?`<div style="background:linear-gradient(135deg,var(--g1),#1a4028);border-radius:10px;padding:10px 14px;margin-bottom:10px;color:white;display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:.75rem;opacity:.6;font-family:'JetBrains Mono',monospace">CA CE MOIS</div><div style="font-size:1.2rem;font-weight:700">${caMonth.toLocaleString('fr-FR',{style:'currency',currency:'EUR'})}</div></div><button style="background:rgba(255,255,255,.14);border:none;border-radius:8px;color:white;font-size:.7rem;padding:5px 10px;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="rentabilite">📈 Détail →</button></div>`:''}
-${sa.length?`<h3 class="secttl">📦 Stocks critiques</h3>${sa.map(a=>`<div class="alcard ${a.empty?'danger':'info'}" data-action="nav" data-page="fert" data-fert-view="stocks"><div style="font-size:1rem;flex-shrink:0">${a.empty?'🔴':'⚠️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.name)}</div><div style="font-size:.75rem;color:var(--muted)">${a.currentQty} ${_stockUnitLabel(a.unit)}${a.alertQty?' · seuil '+a.alertQty:''}</div></div></div>`).join('')}`:''}
-${(()=>{const _oa=getOADAlerts();if(!_oa.length)return'';const rc=r=>r===3?'#c62828':r===2?'#e65100':'#f9a825';const rl=r=>r===3?'Élevé':r===2?'Modéré':'Faible';return`<h3 class="secttl">🔬 OAD Risques phyto</h3>${_oa.map(a=>`<div class="alcard ${a.risk===3?'danger':'info'}" data-action="open-plant" data-id="${a.plant.id}"><div style="font-size:1rem;flex-shrink:0">${a.model.icon}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.plant.name)}</div><div style="font-size:.75rem;color:${rc(a.risk)}">${rl(a.risk)} — ${a.model.name}</div></div></div>`).join('')}`;})()} ${kbAlerts.length?`<h3 class="secttl">📚 Alertes culturales</h3>${kbAlerts.map(a=>`<div class="alcard info" data-action="open-plant" data-id="${a.pid}"><div style="font-size:1rem;flex-shrink:0">${a.type==='pest'?(a.risk===3?'🔴':'🟡'):'✂️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.pname)}</div><div style="font-size:.75rem;color:var(--muted)">${esc(a.msg)}</div></div></div>`).join('')}`:''}
-<div style="display:flex;gap:8px;margin:12px 0 8px"><button class="btn btn-o" style="flex:1" data-action="nav" data-page="pro" data-pro-view="pepiniere" data-nurs-view="dashboard">🌱 Pépinière</button></div>
-<h3 class="secttl">${T('misc.lastEvents')}</h3>
-${_dashEventsBlock(5)}
-</div>`;
-}
-
-function _renderDashArboriculteur(){
-  const prof=getProfile();
-  const nTerre=plants.filter(p=>!isPot(p)).length;
-  const nPot=plants.filter(p=>isPot(p)).length;
-  const iss=plants.filter(p=>['vigilance','traitement','critique'].includes(p.status)).length;
-  const sa=getStockAlerts().slice(0,3);
-  const kbAlerts=getKBAlerts().slice(0,4);
-  const etp=WX.data?.daily;
-  const etpVal=etp?renderETPPanel():'';
-  const today=todayStr();
-  const certifs=getCertifs();
-  const certifAlerts=certifs.filter(c=>{
-    if(!c.expiryDate||c.status!=='actif') return false;
-    const diff=(new Date(c.expiryDate)-new Date(today))/(1000*86400);
-    return diff>=0&&diff<=90;
-  });
-  const expiredCertifs=certifs.filter(c=>c.status==='actif'&&c.expiryDate&&c.expiryDate<today);
-  const parcelles=getYieldParcelles();
-  const totalPrev=parcelles.reduce((s,p)=>s+(parseFloat(p.yieldForecast)||0),0);
-  const totalReel=parcelles.reduce((s,p)=>s+(parseFloat(p.yieldActual)||0),0);
-  return`${_dashSeasonBanner()}
-<div class="page">
-${prof.name?`<div style="font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:12px">🌳 ${esc(prof.name.split(' ')[0])} — Espace Arboriculteur</div>`:''}
-<div class="secttl">🌤 Météo & Irrigation${helpBtn('meteo')}</div>
-${_dashWeatherGelBlock()}
-<div class="strow">
-  <div class="stcard"><div class="stlbl">🌳 Pleine terre</div><div class="stval" style="color:var(--terra)">${nTerre}</div><div class="stsub">sujets</div></div>
-  <div class="stcard"><div class="stlbl">🪴 En pot</div><div class="stval">${nPot}</div><div class="stsub">sujets</div></div>
-  <div class="stcard"><div class="stlbl">⚠️ Vigilance</div><div class="stval" style="color:#c62828">${iss}</div><div class="stsub">à surveiller</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-pro-view="certif"><div class="stlbl">🏅 Certifs</div><div class="stval" style="color:${(certifAlerts.length||expiredCertifs.length)?'var(--red)':'var(--g2)'}">${certifs.filter(c=>c.status==='actif').length}</div><div class="stsub">actives</div></div>
-</div>
-<div id="wg-container">${(()=>{try{return renderNeedsGauges();}catch(e){return '';}})()}</div>
-${etpVal}
-<div id="fg-container">${(()=>{try{return renderFertGauges();}catch(e){return '';}})()}</div>
-${expiredCertifs.length?`<h3 class="secttl">🏅 Certifications expirées</h3>${expiredCertifs.map(c=>`<div class="alcard danger" data-action="nav" data-page="pro" data-pro-view="certif"><div style="font-size:1rem;flex-shrink:0">❌</div><div><div style="font-size:.84rem;font-weight:600">${esc(c.type)}${c.body?' · '+esc(c.body):''}</div><div style="font-size:.75rem;color:var(--muted)">Expirée le ${fmtDate(c.expiryDate)}</div></div></div>`).join('')}`:''}
-${certifAlerts.length?`<h3 class="secttl">⏰ Certifications à renouveler</h3>${certifAlerts.map(c=>`<div class="alcard info" data-action="nav" data-page="pro" data-pro-view="certif"><div style="font-size:1rem;flex-shrink:0">🏅</div><div><div style="font-size:.84rem;font-weight:600">${esc(c.type)}${c.body?' · '+esc(c.body):''}</div><div style="font-size:.75rem;color:var(--muted)">Expire le ${fmtDate(c.expiryDate)}</div></div></div>`).join('')}`:''}
-${parcelles.length?`<h3 class="secttl">🍊 Récolte ${new Date().getFullYear()}</h3><div style="display:flex;gap:8px;margin-bottom:8px"><div class="stcard" style="flex:1;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="recolte"><div class="stlbl">Prévu</div><div class="stval" style="font-size:.95rem;color:var(--blue)">${totalPrev.toLocaleString('fr-FR',{maximumFractionDigits:0})} kg</div><div class="stsub">${parcelles.length} parcelle(s)</div></div><div class="stcard" style="flex:1;cursor:pointer" data-action="nav" data-page="pro" data-pro-view="recolte"><div class="stlbl">Récolté</div><div class="stval" style="font-size:.95rem;color:var(--text-accent)">${totalReel.toLocaleString('fr-FR',{maximumFractionDigits:0})} kg</div><div class="stsub">${totalPrev?Math.round(totalReel/totalPrev*100)+'%':'—'} réalisé</div></div></div>`:''}
-${sa.length?`<h3 class="secttl">📦 Stocks critiques</h3>${sa.map(a=>`<div class="alcard ${a.empty?'danger':'info'}" data-action="nav" data-page="fert" data-fert-view="stocks"><div style="font-size:1rem;flex-shrink:0">${a.empty?'🔴':'⚠️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.name)}</div><div style="font-size:.75rem;color:var(--muted)">${a.currentQty} ${_stockUnitLabel(a.unit)}</div></div></div>`).join('')}`:''}
-${(()=>{const _oa=getOADAlerts();if(!_oa.length)return'';const rc=r=>r===3?'#c62828':r===2?'#e65100':'#f9a825';const rl=r=>r===3?'Élevé':r===2?'Modéré':'Faible';return`<h3 class="secttl">🔬 OAD Risques phyto</h3>${_oa.map(a=>`<div class="alcard ${a.risk===3?'danger':'info'}" data-action="open-plant" data-id="${a.plant.id}"><div style="font-size:1rem;flex-shrink:0">${a.model.icon}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.plant.name)}</div><div style="font-size:.75rem;color:${rc(a.risk)}">${rl(a.risk)} — ${a.model.name}</div></div></div>`).join('')}`;})()} ${kbAlerts.length?`<h3 class="secttl">🌿 Alertes culturales & phyto</h3>${kbAlerts.map(a=>`<div class="alcard ${a.type==='pest'&&a.risk===3?'danger':'info'}" data-action="open-plant" data-id="${a.pid}"><div style="font-size:1rem;flex-shrink:0">${a.type==='pest'?(a.risk===3?'🔴':'🟡'):'✂️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.pname)}</div><div style="font-size:.75rem;color:var(--muted)">${esc(a.msg)}</div></div></div>`).join('')}`:''}
-<div style="display:flex;gap:8px;margin:12px 0 8px"><button class="btn btn-o" style="flex:1" data-action="nav" data-page="pro" data-pro-view="certif">🏅 Certifications</button><button class="btn btn-o" style="flex:1" data-action="nav" data-page="pro" data-pro-view="recolte">🍊 Récolte</button></div>
-<div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn btn-o" style="flex:1" data-action="nav" data-page="pro" data-pro-view="phyto">🌿 Registre phyto</button><button class="btn btn-o" style="flex:1" data-action="nav" data-page="pro" data-pro-view="lots">📦 Lots</button></div>
-<h3 class="secttl">${T('misc.lastEvents')}</h3>
-${_dashEventsBlock(5)}
-</div>`;
-}
-
-function _renderDashConservatoire(){
-  const prof=getProfile();
-  const accPlants=plants.filter(p=>p.accessionNumber);
-  const noAcc=plants.filter(p=>!p.accessionNumber);
-  const activeEx=getExchanges().filter(e=>e.status==='active');
-  const iucnCounts={VU:0,EN:0,CR:0,EW:0};
-  plants.forEach(p=>{if(p.iucnStatus&&iucnCounts[p.iucnStatus]!==undefined)iucnCounts[p.iucnStatus]++;});
-  const threatened=iucnCounts.VU+iucnCounts.EN+iucnCounts.CR+iucnCounts.EW;
-  const kbAlerts=getKBAlerts().slice(0,3);
-  const recentAcc=accPlants.slice(-3).reverse();
-  return`${_dashSeasonBanner()}
-<div class="page">
-${prof.name?`<div style="font-size:.82rem;color:var(--muted);font-style:italic;margin-bottom:12px">🏛 ${esc(prof.name.split(' ')[0])} — Collection vivante</div>`:''}
-<div class="secttl">🌤 Conditions météo${helpBtn('meteo')}</div>
-${_dashWeatherGelBlock()}
-<div class="strow">
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-cons-view="accessions"><div class="stlbl">🔢 Accessions</div><div class="stval" style="color:var(--blue)">${accPlants.length}</div><div class="stsub">enregistrées</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-cons-view="exchanges"><div class="stlbl">🔄 Échanges</div><div class="stval" style="color:${activeEx.length?'var(--amber)':'var(--g2)'}">${activeEx.length}</div><div class="stsub">actifs</div></div>
-  <div class="stcard" style="cursor:pointer" data-action="nav" data-page="pro" data-cons-view="taxonomy"><div class="stlbl">🌿 Taxons</div><div class="stval" style="color:var(--text-accent)">${[...new Set(plants.map(p=>p.species).filter(Boolean))].length}</div><div class="stsub">distincts</div></div>
-  <div class="stcard"><div class="stlbl">⚠️ Menacés</div><div class="stval" style="color:${threatened?'var(--red)':'var(--g2)'}">${threatened}</div><div class="stsub">IUCN VU+</div></div>
-</div>
-${noAcc.length?`<div class="alcard" style="background:rgba(232,148,26,.08);border:1px solid rgba(232,148,26,.2)"><div style="font-size:1rem;flex-shrink:0">⚠️</div><div><div style="font-size:.84rem;font-weight:600">${noAcc.length} sujet(s) sans accession</div><div style="font-size:.75rem;color:var(--muted)">Assignez des numéros depuis chaque fiche plante.</div></div></div>`:''}
-${activeEx.length?`<h3 class="secttl">🔄 Échanges en cours</h3>${activeEx.slice(0,3).map(e=>`<div class="alcard info" data-action="nav" data-page="pro" data-cons-view="exchanges"><div style="font-size:1rem;flex-shrink:0">${{pret:'📤',depot:'📥',echange:'🔄',cession:'📋'}[e.type]||'🔄'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(e.partnerInstitution||'—')}</div><div style="font-size:.75rem;color:var(--muted)">${{pret:'Prêt',depot:'Dépôt',echange:'Échange',cession:'Cession'}[e.type]||e.type}${e.dateReturn?' · retour '+fmtDate(e.dateReturn):''}</div></div></div>`).join('')}`:''}
-${recentAcc.length?`<h3 class="secttl">🔢 Accessions récentes</h3>${recentAcc.map(p=>`<div class="alcard info" data-action="open-plant" data-id="${p.id}"><div style="font-size:.75rem;font-family:'JetBrains Mono',monospace;color:var(--blue);font-weight:700;flex-shrink:0;writing-mode:vertical-lr;transform:rotate(180deg)">${esc(p.accessionNumber)}</div><div><div style="font-size:.84rem;font-weight:600">${esc(p.name)}</div><div style="font-size:.75rem;color:var(--muted);font-style:italic">${esc(p.species||'')}${p.iucnStatus?' · '+p.iucnStatus:''}</div></div></div>`).join('')}`:''}
-${kbAlerts.length?`<h3 class="secttl">📚 Alertes culturales</h3>${kbAlerts.map(a=>`<div class="alcard ${a.risk===3?'danger':'info'}" data-action="open-plant" data-id="${a.pid}"><div style="font-size:1rem;flex-shrink:0">${a.type==='pest'?(a.risk===3?'🔴':'🟡'):'✂️'}</div><div><div style="font-size:.84rem;font-weight:600">${esc(a.pname)}</div><div style="font-size:.75rem;color:var(--muted)">${esc(a.msg)}</div></div></div>`).join('')}`:''}
-<div style="display:flex;gap:8px;margin:12px 0 8px"><button class="btn btn-p" style="flex:1" data-action="nav" data-page="pro" data-cons-view="accessions">📋 Accessions</button><button class="btn btn-p" style="flex:1" data-action="cons-label-pdf">🏷 Étiquettes</button><button class="btn btn-p" style="flex:1" data-action="export-bgci">📤 BGCI</button></div>
-<h3 class="secttl">${T('misc.lastEvents')}</h3>
-${_dashEventsBlock(5)}
-</div>`;
-}
-
-function _renderWishlist(){
-  const items=getWishlist().sort((a,b)=>{const po={high:0,med:1,low:2};return(po[a.priority]||1)-(po[b.priority]||1);});
-  const prioIcon={high:'🔴',med:'🟡',low:'🟢'};
-  const statusLabel={wanted:'Souhaité',searching:'En recherche',found:'Trouvé',acquired:'Acquis'};
-  const statusColor={wanted:'var(--muted)',searching:'var(--amber)',found:'var(--g2)',acquired:'var(--blue)'};
-  return`<div>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-  <h3 class="secttl" style="margin:0">🌱 Wishlist — Acquisitions souhaitées ${helpBtn('wishlist')}</h3>
-  <button class="btn btn-p btn-sm" onclick="_openWishModal(null)">+ Souhait</button>
-</div>
-${items.length?items.map(w=>`
-<div style="background:var(--white);border-radius:10px;padding:10px 12px;margin-bottom:6px;border:1px solid var(--cream3)">
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-    <div style="flex:1;min-width:0">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
-        <span style="font-size:1rem">${prioIcon[w.priority]||'🟡'}</span>
-        <div style="font-size:.84rem;font-weight:600">${esc(w.species)}</div>
-      </div>
-      ${w.source?`<div style="font-size:.75rem;color:var(--muted)">🏪 ${esc(w.source)}</div>`:''}
-      ${w.budget?`<div style="font-size:.75rem;color:var(--muted)">💶 Budget max : ${esc(String(w.budget))} €</div>`:''}
-      ${w.notes?`<div style="font-size:.7rem;color:var(--muted);font-style:italic;margin-top:2px">${esc(w.notes)}</div>`:''}
-      <div style="margin-top:4px"><span style="font-size:.75rem;color:${statusColor[w.status]||'var(--muted)'};font-weight:600">${statusLabel[w.status]||w.status}</span></div>
-    </div>
-    <div style="display:flex;gap:4px;flex-shrink:0">
-      ${w.status!=='acquired'?`<button class="btn btn-sm" style="font-size:.75rem;padding:2px 6px;background:rgba(45,90,61,.1);color:var(--text-accent)" onclick="_wishAcquired('${w.id}')" title="Marquer acquis">✓</button>`:''}
-      <button class="btn btn-sm" style="font-size:.75rem;padding:2px 6px" onclick="_openWishModal('${w.id}')">✏</button>
-      <button class="btn btn-sm" style="font-size:.75rem;padding:2px 6px;background:rgba(192,57,43,.1);color:var(--red)" onclick="_deleteWish('${w.id}')">✕</button>
-    </div>
-  </div>
-</div>`).join(''):`<div style="color:var(--muted);font-style:italic;padding:20px;text-align:center">Aucun souhait enregistré.<br><span style="font-size:.75rem">Ajoutez les espèces ou cultivars que vous recherchez.</span></div>`}
-</div>`;
-}
-function _openWishModal(id){
-  const w=id?getWishlist().find(i=>i.id===id):null;
-  const modal=document.createElement('div');
-  modal.id='wish-modal';
-  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center';
-  modal.innerHTML=`<div style="background:var(--white);border-radius:18px 18px 0 0;width:100%;max-width:480px;padding:18px 16px 28px;max-height:85vh;overflow-y:auto">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-  <div style="font-size:.9rem;font-weight:700;color:var(--text-strong)">${id?'Modifier':'Nouveau'} souhait</div>
-  <button onclick="document.getElementById('wish-modal').remove()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted)">✕</button>
-</div>
-<div class="ff"><label>Espèce / Cultivar *</label><input id="wi-sp" type="text" value="${esc(w?.species||'')}" placeholder="ex : Citrus medica 'Etrog'"/></div>
-<div class="ff"><label>Priorité</label><select id="wi-prio"><option value="high" ${(w?.priority||'')==='high'?'selected':''}>🔴 Haute</option><option value="med" ${(w?.priority||'med')==='med'?'selected':''}>🟡 Moyenne</option><option value="low" ${(w?.priority||'')==='low'?'selected':''}>🟢 Basse</option></select></div>
-<div class="ff"><label>Source / Fournisseur</label><input id="wi-src" type="text" value="${esc(w?.source||'')}" placeholder="pépinière, échange, collecte…"/></div>
-<div class="ff"><label>Budget max (€)</label><input id="wi-bgt" type="number" value="${w?.budget||''}" placeholder="0"/></div>
-<div class="ff"><label>Statut</label><select id="wi-st"><option value="wanted" ${(w?.status||'wanted')==='wanted'?'selected':''}>Souhaité</option><option value="searching" ${(w?.status||'')==='searching'?'selected':''}>En recherche</option><option value="found" ${(w?.status||'')==='found'?'selected':''}>Trouvé</option><option value="acquired" ${(w?.status||'')==='acquired'?'selected':''}>Acquis</option></select></div>
-<div class="ff"><label>Notes</label><textarea id="wi-notes" rows="2" style="width:100%">${esc(w?.notes||'')}</textarea></div>
-<button class="btn btn-p" style="width:100%;margin-top:6px" onclick="_saveWish('${id||''}')">Enregistrer</button>
-</div>`;
-  document.body.appendChild(modal);
-}
-function _saveWish(id){
-  const species=document.getElementById('wi-sp')?.value?.trim();
-  if(!species){toast('Espèce requise');return;}
-  const data={species,priority:document.getElementById('wi-prio')?.value||'med',source:document.getElementById('wi-src')?.value?.trim()||'',budget:parseFloat(document.getElementById('wi-bgt')?.value)||null,status:document.getElementById('wi-st')?.value||'wanted',notes:document.getElementById('wi-notes')?.value?.trim()||''};
-  if(id){updateWishlistItem(id,data);}else{addWishlistItem(data);}
-  document.getElementById('wish-modal')?.remove();
-  toast('Souhait enregistré ✓');render();
-}
-function _deleteWish(id){if(!confirm('Supprimer ce souhait ?'))return;deleteWishlistItem(id);toast('Supprimé');render();}
-function _wishAcquired(id){updateWishlistItem(id,{status:'acquired'});toast('Marqué comme acquis ✓');render();}
-
-function renderColl(){
-  const fl=filtered();
-  const nPot=plants.filter(p=>isPot(p)).length;
-  const nTerre=plants.filter(p=>!isPot(p)).length;
-  const nUrgent=plants.filter(p=>{const u=getWateringUrgency(p);return u.rawDays!==null&&u.effDays>u.t3}).length;
-  const nExt=plants.filter(p=>isPot(p)&&p.location==='extérieur').length;
-  const nVerger=plants.filter(p=>!isPot(p)||(isPot(p)&&p.location==='extérieur')).length;
-
-  const collIdx=loadCollIndex();
-  const defName=collIdx.find(c=>c.id==='')?collIdx.find(c=>c.id==='').name:'Collection principale';
-  const activeName=activeCollectionId?(collIdx.find(c=>c.id===activeCollectionId)?.name||'Collection'):defName;
-  const collSwitcher=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-  <div style="display:flex;align-items:center;gap:6px;background:var(--white);border:1.5px solid var(--cream3);border-radius:20px;padding:5px 13px 5px 10px;cursor:pointer;box-shadow:0 1px 3px rgba(22,45,31,.06)" data-action="open-coll-switcher">
-    <span style="font-size:.82rem">🍋</span>
-    <span style="font-size:.78rem;font-weight:600;color:var(--text-strong);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(activeName)}</span>
-    <span style="font-size:.75rem;color:var(--muted)">▾</span>
-  </div>
-  <button class="btn btn-sm" style="border-radius:20px;font-size:.7rem;padding:4px 10px;background:rgba(45,90,61,.08);color:var(--text-strong);border:1.5px solid rgba(45,90,61,.15)" data-action="open-new-coll-modal">＋ Nouvelle</button>
-  <button class="btn btn-pri btn-sm" style="border-radius:20px;margin-left:auto;padding:6px 14px;font-size:.82rem;font-weight:700" onclick="openAddPlant()" aria-label="${T('misc.collAddBtn')||'Ajouter un sujet'}">＋ ${T('misc.collAddBtn')||'Ajouter'}</button>
-</div>`;
-
-  const statChips=`<div style="display:flex;gap:7px;margin-bottom:10px;overflow-x:auto;padding-bottom:2px;align-items:center">
-  <div style="display:flex;align-items:center;gap:4px;background:var(--white);border:1px solid var(--cream3);border-radius:20px;padding:5px 11px;font-size:.7rem;white-space:nowrap;box-shadow:0 1px 3px rgba(22,45,31,.05)"><span style="font-weight:700;color:var(--text-strong)">${plants.length}</span><span style="color:var(--muted)">${T('misc.statSubjects')}</span></div>
-  <div style="display:flex;align-items:center;gap:4px;background:rgba(45,90,61,.08);border:1px solid rgba(45,90,61,.15);border-radius:20px;padding:5px 11px;font-size:.7rem;white-space:nowrap"><span>🪴</span><span style="font-weight:700;color:var(--text-accent)">${nPot}</span><span style="color:var(--muted)">${T('misc.potMode').replace('🪴 ','')}</span></div>
-  <div style="display:flex;align-items:center;gap:4px;background:rgba(139,69,19,.07);border:1px solid rgba(139,69,19,.15);border-radius:20px;padding:5px 11px;font-size:.7rem;white-space:nowrap"><span>🌳</span><span style="font-weight:700;color:var(--terra)">${nTerre}</span><span style="color:var(--muted)">${T('misc.groundMode').replace('🌳 ','')}</span></div>
-  ${nExt>0?`<div style="display:flex;align-items:center;gap:4px;background:rgba(56,142,60,.08);border:1px solid rgba(56,142,60,.2);border-radius:20px;padding:5px 11px;font-size:.7rem;white-space:nowrap"><span>☀</span><span style="font-weight:700;color:#388e3c">${nExt}</span><span style="color:var(--muted)">${T('misc.outside')}</span></div>`:''}
-  ${nUrgent>0?`<div style="display:flex;align-items:center;gap:4px;background:rgba(198,40,40,.08);border:1px solid rgba(198,40,40,.2);border-radius:20px;padding:5px 11px;font-size:.7rem;white-space:nowrap"><span>💧</span><span style="font-weight:700;color:#c62828">${nUrgent}</span><span style="color:var(--muted)">${T('misc.statUrgent')}</span></div>`:''}
-</div>`;
-
-  const isCollOrCons=['collectionneur','conservatoire'].includes((getProfile().profileType)||'collectionneur');
-  const wishCount=getWishlist().filter(w=>w.status!=='acquired').length;
-  const viewTabs=`<div class="coll-view-tabs" style="position:relative">
-  <div class="coll-view-tab${collView==='list'?' active':''}" data-action="coll-view" data-view="list">📋 Liste</div>
-  <div class="coll-view-tab${collView==='verger'?' active':''}" data-action="coll-view" data-view="verger">📍 Emplacements${nVerger>0?` (${nVerger})`:''}</div>
-  ${isCollOrCons?`<div class="coll-view-tab${collView==='wishlist'?' active':''}" data-action="coll-view" data-view="wishlist">🌱 Wishlist${wishCount>0?` (${wishCount})`:''}</div>`:''}
-</div>`;
-
-  if(collView==='wishlist') return`<div class="page">${collSwitcher}${statChips}${viewTabs}${_renderWishlist()}</div>`;
-
-  if(collView==='verger'){
-    return`<div class="page" style="padding:10px 14px 0">${collSwitcher}${statChips}${viewTabs}${renderVergerPage()}</div>`;
-  }
-
-  return`<div class="page">
-${collSwitcher}
-${statChips}
-${viewTabs}
-<div id="cca-filters-root"></div>
-<div style="display:flex;gap:7px;margin-bottom:10px;align-items:center">
-  <input class="fsrch" placeholder="🔍 Rechercher nom, espèce, variété…" value="${esc(srch)}" oninput="srch=this.value;rGrid()" style="flex:1;margin-bottom:0"/>
-  <button data-action="open-adv-filters" style="white-space:nowrap;font-size:.78rem;padding:6px 10px;border-radius:8px;cursor:pointer;border:1.5px solid ${advFilters.length?'rgba(45,90,61,.3)':'var(--cream3)'};background:${advFilters.length?'rgba(45,90,61,.1)':'var(--cream2)'};color:${advFilters.length?'var(--text-accent)':'var(--muted)'}">🔍${advFilters.length?` ${advFilters.length}`:''}</button>
-  ${helpBtn('collection')}
-</div>
-<div class="frow" style="margin-bottom:10px">
-  <select class="fsel" onchange="fCt=this.value;rGrid()">
-    <option value="all"${fCt==='all'?' selected':''}>${T('misc.allModes')}</option>
-    <option value="pot"${fCt==='pot'?' selected':''}>${T('misc.potOnly')}</option>
-    <option value="terre"${fCt==='terre'?' selected':''}>${T('misc.groundOnly')}</option>
-  </select>
-  <select class="fsel" onchange="fSt=this.value;rGrid()">
-    ${[['all','Tous états'],...Object.entries(STATUS).map(([k,v])=>[k,v.label])].map(([k,l])=>`<option value="${k}"${fSt===k?' selected':''}>${l}</option>`).join('')}
-  </select>
-</div>
-${selMode?`<div style="font-size:.75rem;color:var(--amber3);margin-bottom:9px;font-family:'JetBrains Mono',monospace;background:rgba(232,148,26,.08);padding:6px 10px;border-radius:7px">${T('misc.selectMode')}</div>`:''}
-<div class="pgrid" id="pgrid">${fl.length?fl.map(rCard).join(''):`<div class="emp">${T('misc.collNoMatch')}</div>`}</div>
-</div>`;
 }
 
 function filtered(){return plants.filter(p=>{if(fCt!=='all'&&(fCt==='terre'?isPot(p):!isPot(p)))return false;if(fSt!=='all'&&p.status!==fSt)return false;if(srch&&!`${p.name} ${p.species} ${p.variety}`.toLowerCase().includes(srch.toLowerCase()))return false;if(advFilters.length&&!advFilters.every(f=>matchFilter(p,f)))return false;return true})}
@@ -21350,6 +20976,15 @@ initBottomnav();
 // Sync active state with current page
 if(typeof page !== 'undefined') setActive(page);
 updateForProfile();
+</script>
+<!-- Étape 5 — Dashboard + Collection (ES modules) -->
+<script type="module">
+import { mount as mountDashboard } from './src/modules/dashboard.js';
+window.__CCA_dashboard = { mount: mountDashboard };
+</script>
+<script type="module">
+import { mount as mountCollection } from './src/modules/collection.js';
+window.__CCA_collection = { mount: mountCollection };
 </script>
 </body>
 </html>
